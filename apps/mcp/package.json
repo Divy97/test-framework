@@ -1,0 +1,28 @@
+{
+	"name": "mcp",
+	"private": true,
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"build": "tsdown",
+		"check-types": "tsc -b",
+		"dev": "tsx watch src/index.ts",
+		"start": "node dist/index.mjs"
+	},
+	"dependencies": {
+		"dotenv": "catalog:",
+		"zod": "catalog:",
+		"@test-framework/artifacts": "workspace:*",
+		"@test-framework/core": "workspace:*",
+		"@test-framework/env": "workspace:*",
+		"@test-framework/planner": "workspace:*",
+		"@test-framework/repo-scan": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "catalog:",
+		"tsdown": "^0.21.9",
+		"tsx": "^4.19.2",
+		"@types/node": "^22.13.14",
+		"@test-framework/config": "workspace:*"
+	}
+}

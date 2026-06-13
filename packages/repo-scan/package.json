@@ -1,0 +1,21 @@
+{
+	"name": "@test-framework/repo-scan",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		}
+	},
+	"dependencies": {
+		"zod": "catalog:",
+		"@test-framework/core": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "catalog:",
+		"@test-framework/config": "workspace:*"
+	},
+	"scripts": {
+		"check-types": "tsc --noEmit"
+	}
+}
