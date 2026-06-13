@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # JS/TS dependencies across the pnpm workspace (root, apps/*, packages/*).
+  # The MCP SDK and model-provider packages are pinned in lockfile; grouped
+  # minor/patch bumps keep the engineering gate honest without PR noise.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ":arrow_up: chore(infra)"
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # The CI workflow actions themselves.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ":arrow_up: ci(infra)"

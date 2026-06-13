@@ -25,6 +25,10 @@
 		"db:stop": "turbo -F @test-framework/db db:stop",
 		"db:down": "turbo -F @test-framework/db db:down",
 		"check": "biome check --write .",
+		"check:ci": "biome ci .",
+		"build:ci": "turbo build --filter=./apps/mcp --filter=./packages/*",
+		"test:ci": "turbo test --filter=./apps/mcp --filter=./packages/*",
+		"check-types:ci": "turbo check-types --filter=./apps/mcp --filter=./packages/*",
 		"prepare": "husky"
 	},
 	"packageManager": "pnpm@10.24.0",

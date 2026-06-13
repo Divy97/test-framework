@@ -1,14 +1,16 @@
 # V1 Checkpoint
 
-Date: 2026-06-13  
-Baseline: `main` at `f860dd4`  
-Last milestone: [PR #3 - MCP tool stubs](https://github.com/Divy97/test-framework/pull/3)
+Date: 2026-06-14  
+Baseline: `main` at `48896e0`  
+Last milestone: [PR #6 - safe repository scanner](https://github.com/Divy97/test-framework/pull/6)
 
 ## Headline Status
 
-**Phase:** foundation complete; functional V1 pipeline pending.
+**Phase:** foundation + safe repository scanner complete; functional V1 reasoning pipeline pending.
 
-The repository now has the correct local MCP architecture, domain contracts, five registered tools, deterministic stubs, and protocol-level tests. It does **not** yet perform real repository analysis, AI reasoning, testcase review, or artifact export.
+The repository has the correct local MCP architecture, domain contracts, five registered tools, and protocol-level tests. One stub is now real: `map_feature` runs a bounded, secret-safe repository scan via `packages/repo-scan`. The remaining four tools (`analyze_feature`, `generate_test_cases`, `review_test_cases`, `export_test_cases`) are still deterministic stubs. The product does **not** yet perform AI reasoning, testcase generation/review, or artifact writes.
+
+Verification (this baseline): `packages/repo-scan` 107 tests and `apps/mcp` 20 tests pass. A GitHub Actions engineering gate (`.github/workflows/ci.yml`) now runs Biome, typecheck, build, test, and commitlint on every PR.
 
 Current user-visible behavior proves the protocol and schema boundaries. It does not yet satisfy the V1 product success criteria in `docs/v1-mvp.md`.
 
@@ -160,19 +162,24 @@ Missing:
 
 ## Pending Workstreams
 
-### 1. Engineering Gate
+### 1. Engineering Gate — Done
 
-Goal: stop regressions before expanding behavior.
+Completed in `.github/workflows/ci.yml` and `.github/dependabot.yml`:
 
-- Add GitHub Actions for install, test, typecheck, build, Biome, and commitlint.
-- Pin supported Node.js version in tracked configuration.
-- Remove generated/local build artifacts from normal repository searches.
-- Define dependency update policy for MCP SDK and model providers.
+- `verify` job runs install (`--frozen-lockfile`), Biome (`biome ci`), typecheck, build, and test on every push to `main` and every PR.
+- `commitlint` job lints the PR commit range against the gitmoji-conventional rules.
+- Node is pinned via `node-version-file: .nvmrc` (`25.2.1`); pnpm via the `packageManager` field.
+- Generated/build artifacts (`node_modules`, `dist`, `.turbo`) are git-ignored, so default repository searches skip them.
+- Dependency update policy defined via Dependabot (weekly grouped npm + github-actions PRs).
 
-Exit criteria:
+Scope decision: Biome runs repo-wide (lint/format has no env dependency). Build, typecheck, and test are scoped to the V1 surface (`apps/mcp` + `packages/*`) via `*:ci` scripts. The `apps/web` and `apps/api` scaffolds are deferred out of V1 and require env CI does not hold, so building them would only test dead scaffolds. When those surfaces become real, widen the `--filter` in `build:ci`/`test:ci`/`check-types:ci`.
 
-- Every PR runs the same gates used locally.
-- A failing test, typecheck, build, format, or commit message blocks merge.
+Exit criteria met:
+
+- Every PR runs the same checks used locally (`pnpm check:ci`, `check-types:ci`, `build:ci`, `test:ci`, `commitlint`).
+- A failing lint, typecheck, build, test, or commit-message check blocks merge.
+
+Verification: both jobs are green on GitHub runners for PR #7 — `verify` (Biome, typecheck 6/6, build 1/1 `mcp`, test 127/127) and `commitlint`. The same `*:ci` scripts run locally.
 
 ### 2. Safe Repository Scanner — Done
 
@@ -275,9 +282,9 @@ Exit criteria:
 
 ## Recommended Execution Order
 
-1. Engineering Gate.
-2. Safe Repository Scanner.
-3. Project Context and Ingestion.
+1. Engineering Gate. ✅ done
+2. Safe Repository Scanner. ✅ done (PR #6)
+3. Project Context and Ingestion. ← next
 4. BYOK Provider and Real Analysis.
 5. Testcase Generation and Review.
 6. Artifact Export and Editable Loop.
@@ -287,23 +294,27 @@ Do not start web dashboard, database persistence, hosted API behavior, or test e
 
 ## Immediate Next Milestone
 
-**Milestone:** safe repository scanner.
+**Milestone:** Project Context and Ingestion (Pending Workstream #3).
 
 Why next:
 
-- It is deterministic and testable without provider decisions.
-- Every reasoning tool needs trustworthy code context.
-- It establishes security and context-budget boundaries early.
-- It converts `packages/repo-scan` from a schema placeholder into a real service.
+- The engineering gate and scanner are done; the next blocker is representing all V1 inputs in one stable, validated context bundle.
+- Every reasoning tool (`analyze_feature`, `map_feature`, `generate_test_cases`) needs a single typed input that carries spec text, repo context, optional target URL/API docs, branch/diff, existing tests, and user hints.
+- It is still deterministic and provider-independent, so it unblocks the BYOK reasoning work (#4) without taking on model decisions.
 
 First implementation tasks:
 
-1. Define scanner input/options, result errors, default ignore rules, and limits.
-2. Build safe filesystem traversal with root confinement and symlink policy.
-3. Add framework/package-manager detection.
-4. Add category classifiers and evidence references.
-5. Add fixture repositories and negative/security tests.
-6. Wire scanner into `map_feature` behind the existing handler interface.
+1. Define the project/session manifest and its lifecycle (create/load/save).
+2. Extend planner tool inputs into one validated context bundle covering every V1 input category.
+3. Add source IDs and metadata so outputs can cite evidence through to the planner layer.
+4. Add size/type validation and clear unsupported-input errors.
+
+Exit criteria:
+
+- One validated input bundle contains every V1 input category.
+- Source references survive through planner outputs.
+
+After this, proceed to Workstream #4 (BYOK Provider and Real Analysis).
 
 ## V1 Definition of Done
 
@@ -359,10 +370,11 @@ These are not V1 blockers:
 - MCP implementation plan: `docs/superpowers/plans/2026-06-13-mcp-tool-stubs.md`
 - QA entities: `packages/core/src/index.ts`
 - Planner contracts: `packages/planner/src/index.ts`
-- Repo scan contract: `packages/repo-scan/src/index.ts`
+- Repo scanner (real): `packages/repo-scan/src/scanner.ts`, `traverse.ts`, `classify.ts`, `technology.ts`, `path-safety.ts`, `policy.ts`
 - Artifact path contract: `packages/artifacts/src/index.ts`
 - MCP registration: `apps/mcp/src/tools.ts`
-- Current stub behavior: `apps/mcp/src/stub-handlers.ts`
+- Scanner wiring into `map_feature`: `apps/mcp/src/tool-handlers.ts`
+- Remaining stub behavior (four tools): `apps/mcp/src/stub-handlers.ts`
 - MCP protocol tests: `apps/mcp/src/server.test.ts`
 - Local setup: `README.md`
 
