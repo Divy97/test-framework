@@ -82,4 +82,5 @@ Notes:
 ## Notes
 
 - V1 scope is in [docs/v1-mvp.md](/Users/divy/Developer/personal/test-framework/docs/v1-mvp.md)
+- V1 progress and next milestones are in [docs/v1-checkpoint.md](/Users/divy/Developer/personal/test-framework/docs/v1-checkpoint.md)
 - product baseline is in [docs/product-baseline.md](/Users/divy/Developer/personal/test-framework/docs/product-baseline.md)
