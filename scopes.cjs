@@ -15,6 +15,7 @@ const scopes = [
 	"docs",
 	"infra",
 	"mcp",
+	"stack",
 	...readDirNames(join(__dirname, "apps")),
 	...readDirNames(join(__dirname, "packages")),
 ];
