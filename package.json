@@ -10,6 +10,7 @@
 		"dev": "turbo dev",
 		"build": "turbo build",
 		"check-types": "turbo check-types",
+		"test": "turbo test",
 		"commitlint": "commitlint --from origin/main --to HEAD",
 		"commit": "cz",
 		"dev:mcp": "turbo -F mcp dev",
