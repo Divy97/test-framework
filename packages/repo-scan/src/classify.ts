@@ -104,6 +104,17 @@ const PRISMA_MODEL = /\bmodel\s+\w+\s*\{/;
 const MONGOOSE = /new\s+(?:mongoose\.)?Schema\s*\(|mongoose\.model\s*\(/;
 const SEQUELIZE = /sequelize\.define\s*\(|extends\s+Model\b/;
 const TYPEORM = /@Entity\s*\(/;
+const TEST_RUNNER_PACKAGES: readonly string[] = [
+	"node:test",
+	"vitest",
+	"mocha",
+	"bun:test",
+	"@jest/globals",
+	"@playwright/test",
+	"uvu",
+	"ava",
+];
+const TEST_CALL = /\b(?:test|it|describe)\s*\(/;
 
 function basenameOf(path: string): string {
 	return path.split("/").at(-1) ?? path;
@@ -175,6 +186,15 @@ export function classifyFile(input: ClassifyInput): ClassifyMatch[] {
 		dirSet.has("e2e")
 	) {
 		add("existingTests", "Test filename or directory convention");
+	} else if (
+		isCode &&
+		text !== null &&
+		TEST_CALL.test(text) &&
+		TEST_RUNNER_PACKAGES.some((pkg) => importsPackage(specifiers, pkg))
+	) {
+		// Layout-agnostic: an imported test runner plus a test/it/describe call
+		// identifies a test regardless of filename or directory convention.
+		add("existingTests", "Test runner declaration");
 	}
 
 	// API handlers (evaluate before routes/pages so Next route handlers win)
@@ -195,6 +215,16 @@ export function classifyFile(input: ClassifyInput): ClassifyMatch[] {
 			hasBackend)
 	) {
 		add("apiHandlers", "Route module with HTTP handler signals");
+	} else if (
+		isCode &&
+		text !== null &&
+		(HTTP_VERB_EXPORT.test(text) ||
+			HONO_NEW.test(text) ||
+			ROUTE_CALL.test(text))
+	) {
+		// Layout-agnostic: an exported HTTP verb or framework route call is an
+		// API handler regardless of directory name (e.g. `domains/.../http`).
+		add("apiHandlers", "Exported HTTP handler signal");
 	}
 
 	// Routes / pages

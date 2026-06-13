@@ -195,6 +195,101 @@ test("scans the Next.js + Hono monorepo fixture into exact evidence", async () =
 	assert.deepEqual(summary, NEXT_HONO_EXPECTED);
 });
 
+const UNCONVENTIONAL_EXPECTED: RepoScanSummary = {
+	framework: "react",
+	packageManager: null,
+	frameworks: [
+		{ path: "package.json", reason: "react dependency (react)", name: "react" },
+	],
+	packageManagers: [],
+	routesPages: [],
+	components: [
+		{ path: "ui/widgets/UserCard.tsx", reason: "PascalCase component module" },
+	],
+	apiHandlers: [
+		{
+			path: "product/domains/accounts/http/users.ts",
+			reason: "Exported HTTP handler signal",
+		},
+	],
+	dbSchemasModels: [
+		{ path: "business/entities/user.ts", reason: "Drizzle table declaration" },
+	],
+	existingTests: [
+		{ path: "quality/accounts.check.ts", reason: "Test runner declaration" },
+	],
+	authMiddleware: [
+		{
+			path: "security/session-guard.ts",
+			reason: "Auth library import (lucia)",
+		},
+	],
+	validationSchemas: [],
+	featureFlags: [],
+	externalIntegrations: [],
+	truncated: false,
+	stopReason: null,
+	warnings: [],
+	stats: {
+		entriesVisited: 16,
+		filesConsidered: 6,
+		filesRead: 6,
+		bytesRead: 726,
+		skippedByPolicy: 0,
+		skippedByGitignore: 0,
+		skippedSymlinks: 0,
+		skippedLargeFiles: 0,
+		skippedBinaryFiles: 0,
+		unreadablePaths: 0,
+	},
+};
+
+test("discovers evidence in an unconventional layout from content signals", async () => {
+	const summary = await scanRepository({
+		rootPath: join(fixturesRoot, "unconventional-layout"),
+		relevantFiles: [],
+		options: {},
+	});
+	assert.deepEqual(summary, UNCONVENTIONAL_EXPECTED);
+});
+
+test("unconventional-layout detection uses no conventional directory or test names", async () => {
+	const summary = await scanRepository({
+		rootPath: join(fixturesRoot, "unconventional-layout"),
+		relevantFiles: [],
+		options: {},
+	});
+	const evidencePaths = [
+		...summary.components,
+		...summary.apiHandlers,
+		...summary.dbSchemasModels,
+		...summary.existingTests,
+		...summary.authMiddleware,
+	].map((ref) => ref.path);
+	assert.ok(evidencePaths.length >= 5);
+	for (const path of evidencePaths) {
+		const dirs = path.split("/").slice(0, -1);
+		for (const conventional of [
+			"src",
+			"app",
+			"apps",
+			"pages",
+			"routes",
+			"components",
+			"packages",
+			"__tests__",
+			"tests",
+		]) {
+			assert.equal(
+				dirs.includes(conventional),
+				false,
+				`${path} via ${conventional}`,
+			);
+		}
+		assert.equal(/\.(test|spec)\./.test(path), false, path);
+	}
+});
+
 test("scans the Express single-app fixture into exact evidence", async () => {
 	const summary = await scanRepository({
 		rootPath: join(fixturesRoot, "express-app"),

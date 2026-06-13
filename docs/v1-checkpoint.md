@@ -181,14 +181,18 @@ Completed in `packages/repo-scan` and wired into `map_feature`:
 - Scan options and immutable exclusion policy defined and bounded by Zod hard caps.
 - Safe, confined, non-following traversal and file classification implemented.
 - Framework, package manager, routes, components, APIs, DB, tests, auth, validation, flags, and integrations detected with paths and reasons (no excerpts in this milestone).
-- Fixtures cover the Next.js/Hono monorepo and single-app repo; runtime tests cover empty repo, ignored secrets, large/binary files, symlinks, directory loops, conflicting lockfiles, and malformed manifests.
+- Discovery is layout-agnostic: conventional directory names are signals, not requirements. Content/package signals (exported HTTP verbs, ORM declarations, JSX, auth-library imports, imported test runners) classify evidence from arbitrary nested directories.
+- Fixtures cover the Next.js/Hono monorepo, single-app repo, and an unconventional arbitrary-nested layout (no `src`/`app`/`routes`/`components`/workspace metadata); runtime tests cover empty repo, ignored secrets, large/binary files, symlinks, directory loops, conflicting lockfiles, and malformed manifests.
 
 Exit criteria met:
 
 - `map_feature` returns a real `RepoScanSummary` from the default handlers.
 - Scanner never reads excluded secrets/build output and respects configured limits.
+- Detection works for flat, monorepo, single-app, and unconventional nested layouts.
 
-Verification: `packages/repo-scan` 101 tests and `apps/mcp` 20 tests pass; repository-wide `pnpm test`, `pnpm check-types`, `pnpm build`, and `pnpm check` (Biome) are green.
+Known limitation: directory traversal canonical-revalidates each directory before reading it, which narrows but does not fully eliminate a parent-component symlink TOCTOU (Node exposes no fd-relative `readdir`/directory `O_NOFOLLOW`); the residual race is a documented platform limitation.
+
+Verification: `packages/repo-scan` 107 tests and `apps/mcp` 20 tests pass; repository-wide `pnpm test`, `pnpm check-types`, `pnpm build`, and `pnpm check` (Biome) are green.
 
 ### 3. Project Context and Ingestion
 

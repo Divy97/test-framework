@@ -85,6 +85,7 @@ Notes:
 `map_feature` reads the repository at `repoPath` and returns a deterministic, secret-safe evidence summary under `repoScan`:
 
 - Detects framework(s) and package manager, and classifies routes/pages, components, API handlers, DB schemas/models, existing tests, auth/middleware, validation schemas, feature flags, and external integrations. Every item carries a repo-relative path and a reason.
+- Detection is layout-agnostic: conventional directory names (`app/`, `routes/`, `components/`, …) are signals, not requirements. Content and package signals — exported HTTP verbs, ORM declarations, JSX, auth-library imports, imported test runners — classify evidence from arbitrary nested directories.
 - Symlinks are never followed (for files or directories), so a scan cannot escape the root or loop.
 - `.env*` files, private keys, credentials, dependency directories (`node_modules`, etc.), build output (`dist`, `.next`, …), generated files, binary/media files, and lockfile contents are never read. Lockfiles are used by filename only, for package-manager detection. Hard exclusions cannot be re-included by `.gitignore` or by any option.
 - `.gitignore` (including nested files) is honored; `additionalIgnorePatterns` can only add exclusions.

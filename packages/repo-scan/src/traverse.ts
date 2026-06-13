@@ -90,11 +90,16 @@ export async function traverseRepository(
 		}
 
 		// Revalidate the dequeued directory's canonical location before reading
-		// it. A directory entry is only checked once, at enqueue time; if it is
-		// swapped for an external symlink afterwards, `readdir` would follow it
-		// (O_NOFOLLOW only guards the final file component). Resolving the real
-		// path here and re-confining closes that parent-component TOCTOU. The
-		// root is already canonical, so it needs no recheck.
+		// it. A directory entry is only checked once, at enqueue time; resolving
+		// its real path here and re-confining catches a directory that is (or has
+		// become) a symlink pointing outside the root, which `readdir` would
+		// otherwise follow (O_NOFOLLOW only guards the final file component).
+		// This NARROWS but does not fully eliminate the parent-component TOCTOU:
+		// a swap between this realpath and the readdir below remains possible.
+		// Node exposes no fd-relative readdir / directory O_NOFOLLOW, so the
+		// residual race is an accepted, documented platform limitation
+		// (consistent with the O_NOFOLLOW note in filesystem.ts). The root is
+		// already canonical, so it needs no recheck.
 		if (dir.relPath !== "") {
 			let realDir: string;
 			try {
