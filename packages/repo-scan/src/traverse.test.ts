@@ -1,18 +1,12 @@
 import assert from "node:assert/strict";
-import {
-	mkdir,
-	mkdtemp,
-	realpath,
-	symlink,
-	writeFile,
-} from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { nodeFileSystem } from "./filesystem.js";
 import type { ScanFileSystem } from "./filesystem.js";
-import { traverseRepository } from "./traverse.js";
+import { nodeFileSystem } from "./filesystem.js";
 import type { TraverseOptions } from "./traverse.js";
+import { traverseRepository } from "./traverse.js";
 
 async function tempRoot(): Promise<string> {
 	return realpath(await mkdtemp(join(tmpdir(), "repo-scan-walk-")));
@@ -164,10 +158,10 @@ test("prunes directories beyond maxDepth and reports max-depth", async () => {
 	await writeFile(join(root, "a", "b", "f2.ts"), "2");
 
 	const shallow = await traverseRepository({ ...defaults(root), maxDepth: 1 });
-	assert.deepEqual(
-		shallow.files.map((file) => file.path).sort(),
-		["a/f1.ts", "f0.ts"],
-	);
+	assert.deepEqual(shallow.files.map((file) => file.path).sort(), [
+		"a/f1.ts",
+		"f0.ts",
+	]);
 	assert.equal(shallow.truncated, true);
 	assert.equal(shallow.stopReason, "max-depth");
 

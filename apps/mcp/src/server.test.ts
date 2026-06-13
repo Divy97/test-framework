@@ -403,14 +403,16 @@ test("default map_feature runs a real scan over a temporary repository", async (
 	try {
 		const result = await client.callTool({
 			name: "map_feature",
-			arguments: { normalizedPrd: samplePrd, repoPath: root, relevantFiles: [] },
+			arguments: {
+				normalizedPrd: samplePrd,
+				repoPath: root,
+				relevantFiles: [],
+			},
 		});
 		assert.notEqual(result.isError, true);
 		const structured = mapFeatureOutputSchema.parse(result.structuredContent);
 		assert.equal(structured.repoScan.framework, "next");
-		assert.ok(
-			structured.repoScan.frameworks.some((f) => f.name === "next"),
-		);
+		assert.ok(structured.repoScan.frameworks.some((f) => f.name === "next"));
 	} finally {
 		await client.close();
 	}

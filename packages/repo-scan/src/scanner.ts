@@ -1,4 +1,9 @@
 import {
+	type CategoryKey,
+	classifyFile,
+	INTEGRATION_PACKAGES,
+} from "./classify.js";
+import {
 	type RepoFileReference,
 	type RepoScanRequest,
 	type RepoScanSummary,
@@ -6,24 +11,16 @@ import {
 	repoScanRequestSchema,
 	repoScanSummarySchema,
 } from "./contracts.js";
+import { resolveRelevantFileHints, resolveScanRoot } from "./path-safety.js";
 import {
-	type CategoryKey,
-	INTEGRATION_PACKAGES,
-	classifyFile,
-} from "./classify.js";
-import {
-	resolveRelevantFileHints,
-	resolveScanRoot,
-} from "./path-safety.js";
-import {
-	type ManifestSource,
 	detectFrameworks,
 	detectPackageManagers,
+	type ManifestSource,
 	parseManifest,
 	primaryFramework,
 } from "./technology.js";
-import { traverseRepository } from "./traverse.js";
 import type { TraversedFile } from "./traverse.js";
+import { traverseRepository } from "./traverse.js";
 
 const CATEGORY_KEYS: readonly CategoryKey[] = [
 	"routesPages",
@@ -83,10 +80,16 @@ export async function scanRepository(
 		traversal.lockfiles,
 	);
 
-	const categories = collectCategories(traversal.files, packageSignals, manifests);
+	const categories = collectCategories(
+		traversal.files,
+		packageSignals,
+		manifests,
+	);
 
 	const hintOrder = new Map<string, number>();
-	hintResolution.hints.forEach((path, index) => hintOrder.set(path, index));
+	for (const [index, path] of hintResolution.hints.entries()) {
+		hintOrder.set(path, index);
+	}
 
 	const warnings = [
 		...traversal.warnings,

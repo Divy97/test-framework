@@ -88,7 +88,11 @@ const FRAMEWORKS: readonly FrameworkEntry[] = [
 	{
 		name: "remix",
 		tier: 1,
-		dependencies: ["@remix-run/react", "@remix-run/node", "@remix-run/server-runtime"],
+		dependencies: [
+			"@remix-run/react",
+			"@remix-run/node",
+			"@remix-run/server-runtime",
+		],
 		configFiles: ["remix.config.js", "remix.config.mjs"],
 	},
 	{
@@ -109,7 +113,12 @@ const FRAMEWORKS: readonly FrameworkEntry[] = [
 		dependencies: ["astro"],
 		configFiles: ["astro.config.mjs", "astro.config.ts"],
 	},
-	{ name: "nestjs", tier: 2, dependencies: ["@nestjs/core"], configFiles: ["nest-cli.json"] },
+	{
+		name: "nestjs",
+		tier: 2,
+		dependencies: ["@nestjs/core"],
+		configFiles: ["nest-cli.json"],
+	},
 	{ name: "hono", tier: 2, dependencies: ["hono"], configFiles: [] },
 	{ name: "express", tier: 2, dependencies: ["express"], configFiles: [] },
 	{ name: "fastify", tier: 2, dependencies: ["fastify"], configFiles: [] },
@@ -184,7 +193,9 @@ export function primaryFramework(
 ): string | null {
 	let best: { tier: number; order: number; name: string } | null = null;
 	for (const detection of detections) {
-		const order = FRAMEWORKS.findIndex((entry) => entry.name === detection.name);
+		const order = FRAMEWORKS.findIndex(
+			(entry) => entry.name === detection.name,
+		);
 		if (order === -1) {
 			continue;
 		}

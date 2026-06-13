@@ -20,10 +20,12 @@ test("parseManifest merges all dependency groups and ignores non-string values",
 	);
 	assert.ok(parsed);
 	assert.equal(parsed.packageManager, "pnpm");
-	assert.deepEqual(
-		[...parsed.dependencyNames].sort(),
-		["fsevents", "next", "react", "vite"],
-	);
+	assert.deepEqual([...parsed.dependencyNames].sort(), [
+		"fsevents",
+		"next",
+		"react",
+		"vite",
+	]);
 });
 
 test("parseManifest returns null for malformed or non-object JSON", () => {
@@ -111,8 +113,8 @@ test("detectPackageManagers reports a conflict for multiple lockfiles", () => {
 	const result = detectPackageManagers(null, ["pnpm-lock.yaml", "yarn.lock"]);
 	assert.equal(result.primary, null);
 	assert.ok(result.warning);
-	assert.deepEqual(
-		result.detections.map((d) => d.name).sort(),
-		["pnpm", "yarn"],
-	);
+	assert.deepEqual(result.detections.map((d) => d.name).sort(), [
+		"pnpm",
+		"yarn",
+	]);
 });

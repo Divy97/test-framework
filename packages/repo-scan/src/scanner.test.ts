@@ -1,11 +1,5 @@
 import assert from "node:assert/strict";
-import {
-	mkdir,
-	mkdtemp,
-	realpath,
-	symlink,
-	writeFile,
-} from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -14,7 +8,9 @@ import type { RepoScanSummary } from "./contracts.js";
 import { RepoScanError } from "./errors.js";
 import { scanRepository } from "./scanner.js";
 
-const fixturesRoot = fileURLToPath(new URL("../test/fixtures", import.meta.url));
+const fixturesRoot = fileURLToPath(
+	new URL("../test/fixtures", import.meta.url),
+);
 
 async function tempRoot(): Promise<string> {
 	return realpath(await mkdtemp(join(tmpdir(), "repo-scan-scanner-")));
@@ -24,12 +20,28 @@ const NEXT_HONO_EXPECTED: RepoScanSummary = {
 	framework: "next",
 	packageManager: "pnpm",
 	frameworks: [
-		{ path: "apps/web/package.json", reason: "next dependency (next)", name: "next" },
-		{ path: "apps/api/package.json", reason: "hono dependency (hono)", name: "hono" },
-		{ path: "apps/web/package.json", reason: "react dependency (react)", name: "react" },
+		{
+			path: "apps/web/package.json",
+			reason: "next dependency (next)",
+			name: "next",
+		},
+		{
+			path: "apps/api/package.json",
+			reason: "hono dependency (hono)",
+			name: "hono",
+		},
+		{
+			path: "apps/web/package.json",
+			reason: "react dependency (react)",
+			name: "react",
+		},
 	],
 	packageManagers: [
-		{ path: "package.json", reason: "Explicit packageManager field", name: "pnpm" },
+		{
+			path: "package.json",
+			reason: "Explicit packageManager field",
+			name: "pnpm",
+		},
 	],
 	routesPages: [
 		{
@@ -38,12 +50,18 @@ const NEXT_HONO_EXPECTED: RepoScanSummary = {
 		},
 	],
 	components: [
-		{ path: "apps/web/src/app/dashboard/page.tsx", reason: "JSX component module" },
+		{
+			path: "apps/web/src/app/dashboard/page.tsx",
+			reason: "JSX component module",
+		},
 		{
 			path: "apps/web/src/components/UserCard.test.tsx",
 			reason: "Component directory and module",
 		},
-		{ path: "apps/web/src/components/UserCard.tsx", reason: "Component directory and module" },
+		{
+			path: "apps/web/src/components/UserCard.tsx",
+			reason: "Component directory and module",
+		},
 	],
 	apiHandlers: [
 		{ path: "apps/api/src/index.ts", reason: "API directory convention" },
@@ -62,18 +80,33 @@ const NEXT_HONO_EXPECTED: RepoScanSummary = {
 		},
 	],
 	authMiddleware: [
-		{ path: "apps/web/src/middleware.ts", reason: "Middleware filename convention" },
+		{
+			path: "apps/web/src/middleware.ts",
+			reason: "Middleware filename convention",
+		},
 	],
 	validationSchemas: [
-		{ path: "apps/web/src/validation/user.ts", reason: "Zod validation schema" },
+		{
+			path: "apps/web/src/validation/user.ts",
+			reason: "Zod validation schema",
+		},
 	],
 	featureFlags: [
-		{ path: "apps/web/src/flags.ts", reason: "Feature flag SDK usage (posthog-node)" },
+		{
+			path: "apps/web/src/flags.ts",
+			reason: "Feature flag SDK usage (posthog-node)",
+		},
 	],
 	externalIntegrations: [
 		{ path: "apps/web/package.json", reason: "Stripe SDK dependency (stripe)" },
-		{ path: "apps/web/src/flags.ts", reason: "PostHog SDK import (posthog-node)" },
-		{ path: "apps/web/src/integrations/stripe.ts", reason: "Stripe SDK import (stripe)" },
+		{
+			path: "apps/web/src/flags.ts",
+			reason: "PostHog SDK import (posthog-node)",
+		},
+		{
+			path: "apps/web/src/integrations/stripe.ts",
+			reason: "Stripe SDK import (stripe)",
+		},
 	],
 	truncated: false,
 	stopReason: null,
@@ -96,22 +129,42 @@ const EXPRESS_EXPECTED: RepoScanSummary = {
 	framework: "express",
 	packageManager: "npm",
 	frameworks: [
-		{ path: "package.json", reason: "express dependency (express)", name: "express" },
+		{
+			path: "package.json",
+			reason: "express dependency (express)",
+			name: "express",
+		},
 	],
-	packageManagers: [{ path: "package-lock.json", reason: "Lockfile present", name: "npm" }],
-	routesPages: [{ path: "src/routes/users.ts", reason: "Routes directory convention" }],
+	packageManagers: [
+		{ path: "package-lock.json", reason: "Lockfile present", name: "npm" },
+	],
+	routesPages: [
+		{ path: "src/routes/users.ts", reason: "Routes directory convention" },
+	],
 	components: [],
 	apiHandlers: [
-		{ path: "src/routes/users.ts", reason: "Route module with HTTP handler signals" },
+		{
+			path: "src/routes/users.ts",
+			reason: "Route module with HTTP handler signals",
+		},
 	],
 	dbSchemasModels: [
-		{ path: "src/models/user.model.ts", reason: "Model file or directory convention" },
+		{
+			path: "src/models/user.model.ts",
+			reason: "Model file or directory convention",
+		},
 	],
 	existingTests: [
-		{ path: "test/users.spec.ts", reason: "Test filename or directory convention" },
+		{
+			path: "test/users.spec.ts",
+			reason: "Test filename or directory convention",
+		},
 	],
 	authMiddleware: [
-		{ path: "src/auth/middleware.ts", reason: "Middleware filename convention" },
+		{
+			path: "src/auth/middleware.ts",
+			reason: "Middleware filename convention",
+		},
 	],
 	validationSchemas: [],
 	featureFlags: [],
@@ -235,7 +288,10 @@ test("a missing root is a fatal typed error", async () => {
 
 test("never exposes secrets, excluded dirs, or generated/binary/large files", async () => {
 	const root = await tempRoot();
-	await writeFile(join(root, "package.json"), '{"dependencies":{"express":"4.0.0"}}');
+	await writeFile(
+		join(root, "package.json"),
+		'{"dependencies":{"express":"4.0.0"}}',
+	);
 	await writeFile(join(root, "pnpm-lock.yaml"), "lockfileVersion: 9");
 	await writeFile(join(root, "yarn.lock"), "# yarn lock");
 	await writeFile(join(root, ".env"), "SECRET=topsecretvalue");
@@ -243,19 +299,31 @@ test("never exposes secrets, excluded dirs, or generated/binary/large files", as
 	await writeFile(join(root, "id_rsa"), "PRIVATE KEY MATERIAL");
 	await writeFile(join(root, "app.generated.ts"), "export const gen = 1;");
 	await writeFile(join(root, "big.ts"), "x".repeat(2048));
-	await writeFile(join(root, "blob.bin"), Buffer.from([0x00, 0x01, 0x02, 0x00]));
+	await writeFile(
+		join(root, "blob.bin"),
+		Buffer.from([0x00, 0x01, 0x02, 0x00]),
+	);
 	await writeFile(join(root, "keep.ts"), "export const ok = 1;");
 	await mkdir(join(root, "node_modules", "dep"), { recursive: true });
-	await writeFile(join(root, "node_modules", "dep", "index.js"), "module.exports={}");
+	await writeFile(
+		join(root, "node_modules", "dep", "index.js"),
+		"module.exports={}",
+	);
 	await mkdir(join(root, "dist"));
 	await writeFile(join(root, "dist", "bundle.js"), "console.log(1)");
 	await mkdir(join(root, "src", "api"), { recursive: true });
-	await writeFile(join(root, "src", "api", "handler.ts"), "export const GET=()=>1;");
+	await writeFile(
+		join(root, "src", "api", "handler.ts"),
+		"export const GET=()=>1;",
+	);
 	await mkdir(join(root, "pkg"), { recursive: true });
 	await writeFile(join(root, "pkg", "package.json"), "{ not valid json");
 	await writeFile(join(root, ".gitignore"), "ignored-dir/\n");
 	await mkdir(join(root, "ignored-dir"));
-	await writeFile(join(root, "ignored-dir", "secret-notes.ts"), "export const n=1;");
+	await writeFile(
+		join(root, "ignored-dir", "secret-notes.ts"),
+		"export const n=1;",
+	);
 	// External symlink, internal symlink, and a directory loop.
 	const outside = await tempRoot();
 	await writeFile(join(outside, "outside.ts"), "export const out = 1;");
@@ -292,7 +360,9 @@ test("never exposes secrets, excluded dirs, or generated/binary/large files", as
 	// Conflicting lockfiles with no explicit field: null primary plus a warning.
 	assert.equal(summary.packageManager, null);
 	assert.ok(summary.warnings.some((w) => /conflicting lockfiles/i.test(w)));
-	assert.ok(summary.apiHandlers.some((ref) => ref.path === "src/api/handler.ts"));
+	assert.ok(
+		summary.apiHandlers.some((ref) => ref.path === "src/api/handler.ts"),
+	);
 	// big.ts exceeds maxFileBytes and is never read.
 	assert.ok(summary.stats.skippedLargeFiles >= 1);
 });

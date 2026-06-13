@@ -28,16 +28,25 @@ export interface IntegrationEntry {
 /** External integration SDKs detected by dependency or import specifier. */
 export const INTEGRATION_PACKAGES: readonly IntegrationEntry[] = [
 	{ name: "Stripe", packages: ["stripe", "@stripe/stripe-js"] },
-	{ name: "Sentry", packages: ["@sentry/node", "@sentry/nextjs", "@sentry/react"] },
+	{
+		name: "Sentry",
+		packages: ["@sentry/node", "@sentry/nextjs", "@sentry/react"],
+	},
 	{ name: "OpenAI", packages: ["openai"] },
 	{ name: "Anthropic", packages: ["@anthropic-ai/sdk"] },
-	{ name: "AWS", packages: ["aws-sdk", "@aws-sdk/client-s3", "@aws-sdk/client-dynamodb"] },
+	{
+		name: "AWS",
+		packages: ["aws-sdk", "@aws-sdk/client-s3", "@aws-sdk/client-dynamodb"],
+	},
 	{ name: "Firebase", packages: ["firebase", "firebase-admin"] },
 	{ name: "Supabase", packages: ["@supabase/supabase-js"] },
 	{ name: "Twilio", packages: ["twilio"] },
 	{ name: "SendGrid", packages: ["@sendgrid/mail"] },
 	{ name: "PostHog", packages: ["posthog-js", "posthog-node"] },
-	{ name: "LaunchDarkly", packages: ["launchdarkly-node-server-sdk", "launchdarkly-js-client-sdk"] },
+	{
+		name: "LaunchDarkly",
+		packages: ["launchdarkly-node-server-sdk", "launchdarkly-js-client-sdk"],
+	},
 	{ name: "Clerk", packages: ["@clerk/nextjs", "@clerk/clerk-react"] },
 	{ name: "Auth0", packages: ["@auth0/nextjs-auth0", "auth0"] },
 ];
@@ -123,10 +132,7 @@ function importSpecifiers(text: string): Set<string> {
 	return specifiers;
 }
 
-function importsPackage(
-	specifiers: Set<string>,
-	pkg: string,
-): boolean {
+function importsPackage(specifiers: Set<string>, pkg: string): boolean {
 	if (specifiers.has(pkg)) {
 		return true;
 	}
@@ -183,7 +189,10 @@ export function classifyFile(input: ClassifyInput): ClassifyMatch[] {
 		isCode &&
 		dirSet.has("routes") &&
 		text !== null &&
-		(HTTP_VERB_EXPORT.test(text) || ROUTE_CALL.test(text) || HONO_NEW.test(text) || hasBackend)
+		(HTTP_VERB_EXPORT.test(text) ||
+			ROUTE_CALL.test(text) ||
+			HONO_NEW.test(text) ||
+			hasBackend)
 	) {
 		add("apiHandlers", "Route module with HTTP handler signals");
 	}
@@ -199,7 +208,10 @@ export function classifyFile(input: ClassifyInput): ClassifyMatch[] {
 
 	// Components
 	const componentBase = basename.replace(/\.[^.]+$/, "");
-	if ((extension === "tsx" || extension === "jsx") && dirSet.has("components")) {
+	if (
+		(extension === "tsx" || extension === "jsx") &&
+		dirSet.has("components")
+	) {
 		add("components", "Component directory and module");
 	} else if (
 		(extension === "tsx" || extension === "jsx") &&
@@ -237,7 +249,9 @@ export function classifyFile(input: ClassifyInput): ClassifyMatch[] {
 	}
 
 	// Auth / middleware
-	const authImport = AUTH_PACKAGES.find((pkg) => importsPackage(specifiers, pkg));
+	const authImport = AUTH_PACKAGES.find((pkg) =>
+		importsPackage(specifiers, pkg),
+	);
 	if (isCode && basename.startsWith("middleware.")) {
 		add("authMiddleware", "Middleware filename convention");
 	} else if (authImport) {
@@ -260,10 +274,15 @@ export function classifyFile(input: ClassifyInput): ClassifyMatch[] {
 	}
 
 	// Feature flags
-	const flagImport = FLAG_PACKAGES.find((pkg) => importsPackage(specifiers, pkg));
+	const flagImport = FLAG_PACKAGES.find((pkg) =>
+		importsPackage(specifiers, pkg),
+	);
 	if (flagImport) {
 		add("featureFlags", `Feature flag SDK usage (${flagImport})`);
-	} else if (isCode && (basename.startsWith("flags.") || dirSet.has("feature-flags"))) {
+	} else if (
+		isCode &&
+		(basename.startsWith("flags.") || dirSet.has("feature-flags"))
+	) {
 		add("featureFlags", "Feature flag module convention");
 	}
 

@@ -37,7 +37,12 @@ test("a file nested under an excluded directory is skipped by policy", () => {
 });
 
 test(".env and all .env.* files are excluded, including .env.example", () => {
-	for (const path of [".env", ".env.local", ".env.production", ".env.example"]) {
+	for (const path of [
+		".env",
+		".env.local",
+		".env.production",
+		".env.example",
+	]) {
 		const decision = evaluateFile(path);
 		assert.equal(decision.action, "skip", path);
 		if (decision.action === "skip") {

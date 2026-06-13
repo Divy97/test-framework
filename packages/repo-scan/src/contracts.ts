@@ -5,12 +5,7 @@ export const repoScanOptionsSchema = z.object({
 	maxEntries: z.number().int().min(1).max(200_000).default(50_000),
 	maxFiles: z.number().int().min(1).max(50_000).default(10_000),
 	maxFileBytes: z.number().int().min(1).max(1_048_576).default(262_144),
-	maxTotalReadBytes: z
-		.number()
-		.int()
-		.min(1)
-		.max(33_554_432)
-		.default(8_388_608),
+	maxTotalReadBytes: z.number().int().min(1).max(33_554_432).default(8_388_608),
 	maxEvidencePerCategory: z.number().int().min(1).max(500).default(100),
 	honorGitignore: z.boolean().default(true),
 	additionalIgnorePatterns: z

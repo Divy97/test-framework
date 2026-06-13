@@ -106,7 +106,13 @@ export async function traverseRepository(
 				(entry) => entry.isFile() && entry.name === ".gitignore",
 			);
 			if (hasGitignore) {
-				await loadGitignore(fs, options.canonicalRoot, dir, ignoreStack, warnings);
+				await loadGitignore(
+					fs,
+					options.canonicalRoot,
+					dir,
+					ignoreStack,
+					warnings,
+				);
 			}
 		}
 
@@ -121,7 +127,8 @@ export async function traverseRepository(
 			}
 			stats.entriesVisited += 1;
 
-			const relPath = dir.relPath === "" ? entry.name : `${dir.relPath}/${entry.name}`;
+			const relPath =
+				dir.relPath === "" ? entry.name : `${dir.relPath}/${entry.name}`;
 			const absolutePath = join(dir.absolutePath, entry.name);
 
 			if (entry.isSymbolicLink()) {

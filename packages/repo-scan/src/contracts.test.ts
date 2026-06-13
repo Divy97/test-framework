@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+	repoFileReferenceSchema,
 	repoScanOptionsSchema,
 	repoScanRequestSchema,
 	repoScanSummarySchema,
-	repoFileReferenceSchema,
 	repoTechnologyDetectionSchema,
 } from "./contracts.js";
 
@@ -23,7 +23,10 @@ test("options schema expands all defaults from an empty object", () => {
 });
 
 test("options schema rejects values above hard caps", () => {
-	assert.equal(repoScanOptionsSchema.safeParse({ maxDepth: 51 }).success, false);
+	assert.equal(
+		repoScanOptionsSchema.safeParse({ maxDepth: 51 }).success,
+		false,
+	);
 	assert.equal(
 		repoScanOptionsSchema.safeParse({ maxEntries: 200_001 }).success,
 		false,
@@ -78,12 +81,16 @@ test("request schema applies relevantFiles and options defaults", () => {
 });
 
 test("request schema rejects an empty root path", () => {
-	assert.equal(repoScanRequestSchema.safeParse({ rootPath: "" }).success, false);
+	assert.equal(
+		repoScanRequestSchema.safeParse({ rootPath: "" }).success,
+		false,
+	);
 });
 
 test("file reference requires non-empty path and reason", () => {
 	assert.equal(
-		repoFileReferenceSchema.safeParse({ path: "src/a.ts", reason: "x" }).success,
+		repoFileReferenceSchema.safeParse({ path: "src/a.ts", reason: "x" })
+			.success,
 		true,
 	);
 	assert.equal(
@@ -122,7 +129,9 @@ test("summary schema parses a complete deterministic summary", () => {
 		packageManagers: [
 			{ path: "package.json", reason: "packageManager field", name: "pnpm" },
 		],
-		routesPages: [{ path: "src/app/page.tsx", reason: "Next.js App Router page" }],
+		routesPages: [
+			{ path: "src/app/page.tsx", reason: "Next.js App Router page" },
+		],
 		components: [],
 		apiHandlers: [],
 		dbSchemasModels: [],

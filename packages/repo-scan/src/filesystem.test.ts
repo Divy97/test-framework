@@ -1,18 +1,12 @@
 import assert from "node:assert/strict";
-import {
-	mkdir,
-	mkdtemp,
-	realpath,
-	symlink,
-	writeFile,
-} from "node:fs/promises";
+import type { Dirent, Stats } from "node:fs";
+import type { FileHandle } from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import type { Dirent, Stats } from "node:fs";
-import type { FileHandle } from "node:fs/promises";
-import { nodeFileSystem, readBoundedTextFile } from "./filesystem.js";
 import type { ScanFileSystem } from "./filesystem.js";
+import { nodeFileSystem, readBoundedTextFile } from "./filesystem.js";
 
 async function tempRoot(): Promise<string> {
 	return realpath(await mkdtemp(join(tmpdir(), "repo-scan-fs-")));

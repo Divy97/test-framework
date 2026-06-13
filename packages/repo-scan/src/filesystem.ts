@@ -1,7 +1,7 @@
-import { constants } from "node:fs";
 import type { Dirent, Stats } from "node:fs";
-import { lstat, open, readdir, realpath } from "node:fs/promises";
+import { constants } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
+import { lstat, open, readdir, realpath } from "node:fs/promises";
 import { isPathInsideRoot } from "./path-safety.js";
 
 /** Minimal filesystem surface the scanner depends on; spyable in tests. */

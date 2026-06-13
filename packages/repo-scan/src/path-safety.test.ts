@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, realpath, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, realpath, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -67,7 +67,10 @@ test("isPathInsideRoot rejects unrelated and parent paths", () => {
 });
 
 test("toRepoRelativePath returns a posix repo-relative path", () => {
-	assert.equal(toRepoRelativePath("/repo", "/repo/src/app/page.tsx"), "src/app/page.tsx");
+	assert.equal(
+		toRepoRelativePath("/repo", "/repo/src/app/page.tsx"),
+		"src/app/page.tsx",
+	);
 });
 
 test("resolveRelevantFileHints normalizes relative and inside-absolute hints", () => {

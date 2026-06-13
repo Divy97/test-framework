@@ -52,9 +52,10 @@ test("a Drizzle schema file is a db schema/model", () => {
 
 test("a test file is detected by filename convention", () => {
 	assert.ok(
-		categories("src/components/UserCard.test.tsx", "test('x', () => {});").includes(
-			"existingTests",
-		),
+		categories(
+			"src/components/UserCard.test.tsx",
+			"test('x', () => {});",
+		).includes("existingTests"),
 	);
 });
 
@@ -135,9 +136,10 @@ test("a comment mention of stripe is NOT an integration", () => {
 
 test("a generic config file is NOT a feature flag", () => {
 	assert.equal(
-		categories("src/config.ts", "export const config = { debug: true };").includes(
-			"featureFlags",
-		),
+		categories(
+			"src/config.ts",
+			"export const config = { debug: true };",
+		).includes("featureFlags"),
 		false,
 	);
 });
