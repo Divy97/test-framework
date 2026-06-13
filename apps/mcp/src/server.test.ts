@@ -3,6 +3,8 @@ import { existsSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import type { TestCase } from "@test-framework/core";
 import {
 	analyzeFeatureOutputSchema,
@@ -12,7 +14,35 @@ import {
 	mapFeatureOutputSchema,
 	reviewTestCasesOutputSchema,
 } from "@test-framework/planner";
+import { createMcpServer } from "./server.js";
 import { createStubToolHandlers } from "./stub-handlers.js";
+
+const expectedToolNames = [
+	"analyze_feature",
+	"export_test_cases",
+	"generate_test_cases",
+	"map_feature",
+	"review_test_cases",
+];
+
+async function connectInMemoryClient(): Promise<Client> {
+	const server = createMcpServer();
+	const [clientTransport, serverTransport] =
+		InMemoryTransport.createLinkedPair();
+	await server.connect(serverTransport);
+	const client = new Client({ name: "in-memory-test", version: "0.1.0" });
+	await client.connect(clientTransport);
+	return client;
+}
+
+function jsonTextOf(result: unknown) {
+	const content =
+		(result as { content?: Array<{ type: string; text?: string }> }).content ??
+		[];
+	const textBlocks = content.filter((block) => block.type === "text");
+	assert.equal(textBlocks.length, 1);
+	return JSON.parse(textBlocks[0]?.text ?? "null");
+}
 
 const validTestCase: TestCase = {
 	id: "TC-001",
@@ -197,4 +227,106 @@ test("exportTestCases previews paths without writing files", async () => {
 	);
 	assert.equal(exportTestCasesOutputSchema.safeParse(output).success, true);
 	assert.equal(existsSync(join(repoPath, ".test-framework")), false);
+});
+
+test("server lists exactly the five V1 tools with JSON schemas", async () => {
+	const client = await connectInMemoryClient();
+	try {
+		const listed = await client.listTools();
+		assert.deepEqual(
+			listed.tools.map((tool) => tool.name).sort(),
+			expectedToolNames,
+		);
+		for (const tool of listed.tools) {
+			assert.equal(tool.inputSchema.type, "object");
+			assert.equal(tool.outputSchema?.type, "object");
+		}
+	} finally {
+		await client.close();
+	}
+});
+
+test("the five tools chain and return validated structured content", async () => {
+	const client = await connectInMemoryClient();
+	try {
+		const analyze = await client.callTool({
+			name: "analyze_feature",
+			arguments: {
+				featureRequest: "Add password reset",
+				repoPath: "/repo",
+				relevantFiles: ["src/auth/reset.ts"],
+			},
+		});
+		assert.notEqual(analyze.isError, true);
+		const analyzeStructured = analyzeFeatureOutputSchema.parse(
+			analyze.structuredContent,
+		);
+		assert.deepEqual(jsonTextOf(analyze), analyze.structuredContent);
+
+		const map = await client.callTool({
+			name: "map_feature",
+			arguments: {
+				normalizedPrd: analyzeStructured.normalizedPrd,
+				repoPath: "/repo",
+				relevantFiles: ["src/auth/reset.ts"],
+			},
+		});
+		assert.notEqual(map.isError, true);
+		const mapStructured = mapFeatureOutputSchema.parse(map.structuredContent);
+		assert.deepEqual(jsonTextOf(map), map.structuredContent);
+
+		const generate = await client.callTool({
+			name: "generate_test_cases",
+			arguments: {
+				normalizedPrd: analyzeStructured.normalizedPrd,
+				featureMap: mapStructured.featureMap,
+				acceptanceCriteria: mapStructured.acceptanceCriteria,
+			},
+		});
+		assert.notEqual(generate.isError, true);
+		const generateStructured = generateTestCasesOutputSchema.parse(
+			generate.structuredContent,
+		);
+		assert.deepEqual(jsonTextOf(generate), generate.structuredContent);
+
+		const review = await client.callTool({
+			name: "review_test_cases",
+			arguments: {
+				testCases: generateStructured.testCases,
+				acceptanceCriteria: mapStructured.acceptanceCriteria,
+			},
+		});
+		assert.notEqual(review.isError, true);
+		reviewTestCasesOutputSchema.parse(review.structuredContent);
+		assert.deepEqual(jsonTextOf(review), review.structuredContent);
+
+		const exported = await client.callTool({
+			name: "export_test_cases",
+			arguments: {
+				repoPath: "/repo",
+				testCases: generateStructured.testCases,
+			},
+		});
+		assert.notEqual(exported.isError, true);
+		exportTestCasesOutputSchema.parse(exported.structuredContent);
+		assert.deepEqual(jsonTextOf(exported), exported.structuredContent);
+	} finally {
+		await client.close();
+	}
+});
+
+test("invalid analyze_feature input is rejected before the handler runs", async () => {
+	const client = await connectInMemoryClient();
+	try {
+		const result = await client.callTool({
+			name: "analyze_feature",
+			arguments: { featureRequest: "", repoPath: "/repo" },
+		});
+		assert.equal(result.isError, true);
+		assert.equal(result.structuredContent, undefined);
+		const message = (result.content as Array<{ text?: string }>)[0]?.text ?? "";
+		assert.match(message, /validation/i);
+	} finally {
+		await client.close();
+	}
 });
