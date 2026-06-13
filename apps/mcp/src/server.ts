@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolHandlers } from "./handlers.js";
-import { createStubToolHandlers } from "./stub-handlers.js";
+import { createToolHandlers } from "./tool-handlers.js";
 import { registerPlannerTools } from "./tools.js";
 
 export const mcpServerManifest = {
@@ -9,7 +9,7 @@ export const mcpServerManifest = {
 } as const;
 
 export function createMcpServer(
-	handlers: ToolHandlers = createStubToolHandlers(),
+	handlers: ToolHandlers = createToolHandlers(),
 ): McpServer {
 	const server = new McpServer(mcpServerManifest);
 	registerPlannerTools(server, handlers);

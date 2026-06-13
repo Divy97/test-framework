@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
+import { mkdtemp, realpath, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -12,11 +13,30 @@ import {
 	exportTestCasesInputSchema,
 	exportTestCasesOutputSchema,
 	generateTestCasesOutputSchema,
+	mapFeatureInputSchema,
 	mapFeatureOutputSchema,
 	reviewTestCasesOutputSchema,
 } from "@test-framework/planner";
+import type { ToolHandlers } from "./handlers.js";
 import { createMcpServer } from "./server.js";
 import { createStubToolHandlers } from "./stub-handlers.js";
+import { createToolHandlers } from "./tool-handlers.js";
+
+const samplePrd = {
+	featureSummary: "Add password reset",
+	userRoles: [],
+	goals: ["Add password reset"],
+	inScopeBehavior: ["Add password reset"],
+	outOfScopeBehavior: [],
+	businessRules: [],
+	uiStates: [],
+	dataRules: [],
+	apiContracts: [],
+	authPermissionRules: [],
+	edgeCases: [],
+	openQuestions: [],
+	sourceReferences: [],
+};
 
 const expectedToolNames = [
 	"analyze_feature",
@@ -26,8 +46,10 @@ const expectedToolNames = [
 	"review_test_cases",
 ];
 
-async function connectInMemoryClient(): Promise<Client> {
-	const server = createMcpServer();
+async function connectInMemoryClient(
+	handlers: ToolHandlers = createStubToolHandlers(),
+): Promise<Client> {
+	const server = createMcpServer(handlers);
 	const [clientTransport, serverTransport] =
 		InMemoryTransport.createLinkedPair();
 	await server.connect(serverTransport);
@@ -156,6 +178,7 @@ test("mapFeature emits one feature, one criterion, empty repo scan", async () =>
 		normalizedPrd: analysis.normalizedPrd,
 		repoPath: "/repo",
 		relevantFiles: ["src/auth/reset.ts"],
+		scanOptions: {},
 	});
 
 	assert.equal(output.featureMap.length, 1);
@@ -176,6 +199,7 @@ test("generateTestCases emits TC-001 derived from the first criterion", async ()
 		normalizedPrd: analysis.normalizedPrd,
 		repoPath: "/repo",
 		relevantFiles: [],
+		scanOptions: {},
 	});
 	const output = await handlers.generateTestCases({
 		normalizedPrd: analysis.normalizedPrd,
@@ -327,6 +351,106 @@ test("invalid analyze_feature input is rejected before the handler runs", async 
 		assert.equal(result.structuredContent, undefined);
 		const message = (result.content as Array<{ text?: string }>)[0]?.text ?? "";
 		assert.match(message, /validation/i);
+	} finally {
+		await client.close();
+	}
+});
+
+test("mapFeatureInputSchema accepts omitted and bounded scan options", () => {
+	assert.equal(
+		mapFeatureInputSchema.safeParse({
+			normalizedPrd: samplePrd,
+			repoPath: "/repo",
+		}).success,
+		true,
+	);
+	assert.equal(
+		mapFeatureInputSchema.safeParse({
+			normalizedPrd: samplePrd,
+			repoPath: "/repo",
+			scanOptions: { maxDepth: 5, honorGitignore: false },
+		}).success,
+		true,
+	);
+});
+
+test("mapFeatureInputSchema rejects scan options above the hard caps", () => {
+	assert.equal(
+		mapFeatureInputSchema.safeParse({
+			normalizedPrd: samplePrd,
+			repoPath: "/repo",
+			scanOptions: { maxDepth: 999 },
+		}).success,
+		false,
+	);
+	assert.equal(
+		mapFeatureInputSchema.safeParse({
+			normalizedPrd: samplePrd,
+			repoPath: "/repo",
+			scanOptions: { maxFileBytes: 99_999_999 },
+		}).success,
+		false,
+	);
+});
+
+test("default map_feature runs a real scan over a temporary repository", async () => {
+	const root = await realpath(await mkdtemp(join(tmpdir(), "mcp-scan-")));
+	await writeFile(
+		join(root, "package.json"),
+		'{"dependencies":{"next":"15.0.0","react":"19.0.0"}}',
+	);
+	const client = await connectInMemoryClient(createToolHandlers());
+	try {
+		const result = await client.callTool({
+			name: "map_feature",
+			arguments: {
+				normalizedPrd: samplePrd,
+				repoPath: root,
+				relevantFiles: [],
+			},
+		});
+		assert.notEqual(result.isError, true);
+		const structured = mapFeatureOutputSchema.parse(result.structuredContent);
+		assert.equal(structured.repoScan.framework, "next");
+		assert.ok(structured.repoScan.frameworks.some((f) => f.name === "next"));
+	} finally {
+		await client.close();
+	}
+});
+
+test("the four non-scan default handlers keep deterministic stub behavior", async () => {
+	const client = await connectInMemoryClient(createToolHandlers());
+	try {
+		const analyze = await client.callTool({
+			name: "analyze_feature",
+			arguments: { featureRequest: "Add password reset", repoPath: "/repo" },
+		});
+		assert.notEqual(analyze.isError, true);
+		const structured = analyzeFeatureOutputSchema.parse(
+			analyze.structuredContent,
+		);
+		assert.equal(structured.normalizedPrd.featureSummary, "Add password reset");
+	} finally {
+		await client.close();
+	}
+});
+
+test("default map_feature reports a fatal error for a missing root", async () => {
+	const root = await realpath(await mkdtemp(join(tmpdir(), "mcp-missing-")));
+	const client = await connectInMemoryClient(createToolHandlers());
+	try {
+		const result = await client.callTool({
+			name: "map_feature",
+			arguments: {
+				normalizedPrd: samplePrd,
+				repoPath: join(root, "nope"),
+				relevantFiles: [],
+			},
+		});
+		assert.equal(result.isError, true);
+		assert.equal(result.structuredContent, undefined);
+		const message = (result.content as Array<{ text?: string }>)[0]?.text ?? "";
+		assert.match(message, /scan root/i);
 	} finally {
 		await client.close();
 	}

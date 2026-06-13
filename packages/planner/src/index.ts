@@ -5,7 +5,10 @@ import {
 	reviewFindingSchema,
 	testCaseSchema,
 } from "@test-framework/core";
-import { repoScanSummarySchema } from "@test-framework/repo-scan";
+import {
+	repoScanOptionsSchema,
+	repoScanSummarySchema,
+} from "@test-framework/repo-scan";
 import { z } from "zod";
 
 export const analyzeFeatureInputSchema = z.object({
@@ -22,6 +25,7 @@ export const mapFeatureInputSchema = z.object({
 	normalizedPrd: normalizedPrdSchema,
 	repoPath: z.string().min(1),
 	relevantFiles: z.array(z.string().min(1)).default([]),
+	scanOptions: repoScanOptionsSchema.partial().default({}),
 });
 
 export const mapFeatureOutputSchema = z.object({

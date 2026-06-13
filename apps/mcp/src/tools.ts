@@ -36,6 +36,9 @@ const readOnlyAnnotations: ToolAnnotations = {
 const stubNotice =
 	"Implementation is a deterministic, input-derived stub: no model, repository scan, network, or filesystem access.";
 
+const mapFeatureNotice =
+	"Performs a real, read-only, bounded local repository scan: symlinks are never followed and secrets, dependencies, build output, generated, and binary files are excluded. Feature-map and acceptance-criteria reasoning remain deterministic stubs.";
+
 async function runTool<T>(
 	operation: () => Promise<T>,
 ): Promise<CallToolResult> {
@@ -67,7 +70,7 @@ export function registerPlannerTools(
 		"map_feature",
 		{
 			title: "Map Feature",
-			description: `Map a normalized PRD to features, acceptance criteria, and a repo scan. ${stubNotice}`,
+			description: `Map a normalized PRD to features, acceptance criteria, and a repo scan. ${mapFeatureNotice}`,
 			inputSchema: mapFeatureInputSchema,
 			outputSchema: mapFeatureOutputSchema,
 			annotations: readOnlyAnnotations,

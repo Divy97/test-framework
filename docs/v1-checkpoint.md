@@ -49,7 +49,7 @@ All five tools validate input and output with Zod and return structured MCP cont
 | Accept PRD/spec/free-form document text | Partial | `featureRequest` string accepted | Add source documents, source type, metadata, and limits |
 | Accept target URL and API docs | Pending | No contract or handler support | Add optional URL, OpenAPI/Postman/free-form API inputs |
 | Accept branch/diff and existing tests | Pending | `repoPath` and `relevantFiles` only | Add git context and discovered existing-test references |
-| Scan local repository safely | Partial | Scan result schema exists | Implement walker, ignore policy, limits, classification, evidence excerpts |
+| Scan local repository safely | Done | `scanRepository` in `packages/repo-scan` does bounded, confined, secret-safe traversal, detection, and classification; wired into `map_feature` | Optionally add source excerpts and broaden the deterministic registry |
 | Normalize requirements into PRD | Partial | Output schema and placeholder mapping exist | Add model-backed reasoning, source attribution, ambiguity handling |
 | Extract feature map | Partial | Output schema and one placeholder item exist | Derive real features, flows, routes, files, APIs, dependencies, risks |
 | Extract acceptance criteria | Partial | Output schema and one assumed criterion exist | Generate specific, testable, evidence-linked criteria |
@@ -104,18 +104,18 @@ All five tools validate input and output with Zod and return structured MCP cont
 
 ### `packages/repo-scan`
 
-Current: schema and manifest only.
+Current: complete safe scanner. `scanRepository` validates and canonicalizes the
+root, traverses without following symlinks, enforces hard secret/dependency/
+build/generated/binary exclusions before `.gitignore`, bounds depth/entries/
+files/bytes/evidence, detects frameworks and package managers (with monorepo and
+conflict handling), and classifies the nine evidence categories with repo-relative
+paths and deterministic reasons. Returns partial results with truncation metadata
+when soft limits are reached.
 
-Missing:
+Remaining (optional, not required for this milestone):
 
-- Root validation and path confinement.
-- Ignore rules for secrets, dependencies, build output, and generated files.
-- File count and byte limits.
-- Symlink policy.
-- Framework/package-manager detection.
-- Route, component, API, DB, test, auth, validation, flag, and integration discovery.
-- Evidence excerpts and reasons.
-- Deterministic fixtures across supported repo shapes.
+- Source excerpts (intentionally excluded for now to limit secret/context risk).
+- Broader framework/language registry coverage.
 
 ### `packages/planner`
 
@@ -147,11 +147,12 @@ Missing:
 
 ### `apps/mcp`
 
-Current: correct protocol adapter over stub handlers.
+Current: correct protocol adapter. Default handlers compose the real repository
+scanner into `map_feature`; the other four tools remain deterministic stubs.
 
 Missing:
 
-- Composition with repo scanner, provider, planner, and artifact writer.
+- Composition with provider, planner reasoning, and artifact writer.
 - Actionable error codes/messages for provider, scan, parse, and write failures.
 - Progress reporting for longer calls.
 - MCP roots integration or explicit root selection policy.
@@ -173,20 +174,25 @@ Exit criteria:
 - Every PR runs the same gates used locally.
 - A failing test, typecheck, build, format, or commit message blocks merge.
 
-### 2. Safe Repository Scanner
+### 2. Safe Repository Scanner — Done
 
-Goal: produce bounded, trustworthy implementation context without an LLM.
+Completed in `packages/repo-scan` and wired into `map_feature`:
 
-- Define scan options and exclusion policy.
-- Implement safe traversal and file classification.
-- Detect framework, package manager, routes, components, APIs, DB, tests, auth, validation, flags, and integrations.
-- Include evidence paths, reasons, and bounded excerpts.
-- Add fixtures for Next.js/Hono monorepo, single-app repo, empty repo, ignored secrets, large files, and symlinks.
+- Scan options and immutable exclusion policy defined and bounded by Zod hard caps.
+- Safe, confined, non-following traversal and file classification implemented.
+- Framework, package manager, routes, components, APIs, DB, tests, auth, validation, flags, and integrations detected with paths and reasons (no excerpts in this milestone).
+- Discovery is layout-agnostic: conventional directory names are signals, not requirements. Content/package signals (exported HTTP verbs, ORM declarations, JSX, auth-library imports, imported test runners) classify evidence from arbitrary nested directories.
+- Fixtures cover the Next.js/Hono monorepo, single-app repo, and an unconventional arbitrary-nested layout (no `src`/`app`/`routes`/`components`/workspace metadata); runtime tests cover empty repo, ignored secrets, large/binary files, symlinks, directory loops, conflicting lockfiles, and malformed manifests.
 
-Exit criteria:
+Exit criteria met:
 
-- `map_feature` can receive a real `RepoScanSummary`.
+- `map_feature` returns a real `RepoScanSummary` from the default handlers.
 - Scanner never reads excluded secrets/build output and respects configured limits.
+- Detection works for flat, monorepo, single-app, and unconventional nested layouts.
+
+Known limitation: directory traversal canonical-revalidates each directory before reading it, which narrows but does not fully eliminate a parent-component symlink TOCTOU (Node exposes no fd-relative `readdir`/directory `O_NOFOLLOW`); the residual race is a documented platform limitation.
+
+Verification: `packages/repo-scan` 107 tests and `apps/mcp` 20 tests pass; repository-wide `pnpm test`, `pnpm check-types`, `pnpm build`, and `pnpm check` (Biome) are green.
 
 ### 3. Project Context and Ingestion
 
