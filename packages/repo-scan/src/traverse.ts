@@ -6,6 +6,7 @@ import {
 	type ScanFileSystem,
 } from "./filesystem.js";
 import { GitignoreStack } from "./gitignore.js";
+import { isPathInsideRoot } from "./path-safety.js";
 import { evaluateDirectory, evaluateFile } from "./policy.js";
 
 export interface TraverseOptions {
@@ -88,6 +89,30 @@ export async function traverseRepository(
 			break;
 		}
 
+		// Revalidate the dequeued directory's canonical location before reading
+		// it. A directory entry is only checked once, at enqueue time; if it is
+		// swapped for an external symlink afterwards, `readdir` would follow it
+		// (O_NOFOLLOW only guards the final file component). Resolving the real
+		// path here and re-confining closes that parent-component TOCTOU. The
+		// root is already canonical, so it needs no recheck.
+		if (dir.relPath !== "") {
+			let realDir: string;
+			try {
+				realDir = await fs.realpath(dir.absolutePath);
+			} catch {
+				stats.unreadablePaths += 1;
+				warnings.push(`Skipped unreadable directory: ${dir.relPath}`);
+				continue;
+			}
+			if (!isPathInsideRoot(options.canonicalRoot, realDir)) {
+				stats.skippedSymlinks += 1;
+				warnings.push(
+					`Skipped directory resolving outside the scan root: ${dir.relPath}`,
+				);
+				continue;
+			}
+		}
+
 		let entries: Awaited<ReturnType<ScanFileSystem["readdir"]>>;
 		try {
 			entries = await fs.readdir(dir.absolutePath);
@@ -106,13 +131,23 @@ export async function traverseRepository(
 				(entry) => entry.isFile() && entry.name === ".gitignore",
 			);
 			if (hasGitignore) {
-				await loadGitignore(
-					fs,
-					options.canonicalRoot,
-					dir,
-					ignoreStack,
-					warnings,
-				);
+				const remaining = options.maxTotalReadBytes - stats.bytesRead;
+				if (remaining <= 0) {
+					readBudgetExhausted = true;
+				} else {
+					const loaded = await loadGitignore(
+						fs,
+						options.canonicalRoot,
+						dir,
+						ignoreStack,
+						warnings,
+						Math.min(GITIGNORE_MAX_BYTES, remaining),
+					);
+					stats.bytesRead += loaded.bytesRead;
+					if (loaded.truncated) {
+						readBudgetExhausted = true;
+					}
+				}
 			}
 		}
 
@@ -280,20 +315,22 @@ async function loadGitignore(
 	dir: PendingDirectory,
 	ignoreStack: GitignoreStack,
 	warnings: string[],
-): Promise<void> {
+	byteBudget: number,
+): Promise<{ bytesRead: number; truncated: boolean }> {
 	const gitignorePath = join(dir.absolutePath, ".gitignore");
 	const read = await readBoundedTextFile({
 		canonicalRoot,
 		absolutePath: gitignorePath,
 		maxFileBytes: GITIGNORE_MAX_BYTES,
-		remainingTotalBytes: GITIGNORE_MAX_BYTES,
+		remainingTotalBytes: byteBudget,
 		fs,
 	});
 	if (read.ok) {
 		ignoreStack.add(dir.relPath, read.text);
-	} else {
-		warnings.push(
-			`Skipped unreadable .gitignore: ${dir.relPath === "" ? "." : dir.relPath}`,
-		);
+		return { bytesRead: read.bytesRead, truncated: read.truncatedRead };
 	}
+	warnings.push(
+		`Skipped unreadable .gitignore: ${dir.relPath === "" ? "." : dir.relPath}`,
+	);
+	return { bytesRead: 0, truncated: false };
 }

@@ -270,6 +270,49 @@ test("an empty repository yields null technologies and empty evidence", async ()
 	assert.equal(summary.stats.bytesRead, 0);
 });
 
+test("package signals do not leak across monorepo packages", async () => {
+	const root = await tempRoot();
+	await writeFile(join(root, "package.json"), "{}");
+	await mkdir(join(root, "pkg-a"), { recursive: true });
+	await writeFile(
+		join(root, "pkg-a", "package.json"),
+		'{"dependencies":{"react":"19.0.0"}}',
+	);
+	await writeFile(
+		join(root, "pkg-a", "RealCard.tsx"),
+		"export const RealCard = () => null;",
+	);
+	await mkdir(join(root, "pkg-b"), { recursive: true });
+	await writeFile(join(root, "pkg-b", "package.json"), "{}");
+	await writeFile(
+		join(root, "pkg-b", "NotAComponent.tsx"),
+		"export const NotAComponent = () => null;",
+	);
+
+	const summary = await scanRepository({
+		rootPath: root,
+		relevantFiles: [],
+		options: {},
+	});
+	const components = summary.components.map((ref) => ref.path);
+	assert.equal(components.includes("pkg-a/RealCard.tsx"), true);
+	assert.equal(components.includes("pkg-b/NotAComponent.tsx"), false);
+});
+
+test("evidence-cap truncation sets truncated and warns", async () => {
+	const root = await tempRoot();
+	await writeFile(join(root, "a.test.ts"), "test('a', () => {});");
+	await writeFile(join(root, "b.test.ts"), "test('b', () => {});");
+	const summary = await scanRepository({
+		rootPath: root,
+		relevantFiles: [],
+		options: { maxEvidencePerCategory: 1 },
+	});
+	assert.equal(summary.existingTests.length, 1);
+	assert.equal(summary.truncated, true);
+	assert.ok(summary.warnings.some((w) => /truncated/i.test(w)));
+});
+
 test("a missing root is a fatal typed error", async () => {
 	const root = await tempRoot();
 	await assert.rejects(

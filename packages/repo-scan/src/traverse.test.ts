@@ -41,6 +41,50 @@ function spyOpen(): { fs: ScanFileSystem; opened: string[] } {
 	};
 }
 
+test("counts .gitignore bytes against the read budget", async () => {
+	const root = await tempRoot();
+	const content = "node_modules\n".repeat(8);
+	const size = Buffer.byteLength(content);
+	await writeFile(join(root, ".gitignore"), content);
+
+	const full = await traverseRepository(defaults(root));
+	assert.equal(full.stats.bytesRead, size);
+
+	const tiny = await traverseRepository({
+		...defaults(root),
+		maxTotalReadBytes: 5,
+	});
+	assert.ok(tiny.stats.bytesRead <= 5, `bytesRead ${tiny.stats.bytesRead}`);
+	assert.equal(tiny.truncated, true);
+	assert.equal(tiny.stopReason, "max-total-read-bytes");
+});
+
+test("revalidates a dequeued directory and skips canonical escapes", async () => {
+	const root = await tempRoot();
+	await mkdir(join(root, "sub"));
+	await writeFile(join(root, "sub", "inside.ts"), "x");
+	const readdirCalls: string[] = [];
+	const fs: ScanFileSystem = {
+		realpath: (p) =>
+			p.endsWith(`${join("", "sub")}`) || p.endsWith("/sub")
+				? Promise.resolve("/outside/sub")
+				: nodeFileSystem.realpath(p),
+		lstat: (p) => nodeFileSystem.lstat(p),
+		readdir: (p) => {
+			readdirCalls.push(p);
+			return nodeFileSystem.readdir(p);
+		},
+		open: (p, flags) => nodeFileSystem.open(p, flags),
+	};
+	const result = await traverseRepository({ ...defaults(root), fs });
+	assert.equal(
+		result.files.some((file) => file.path === "sub/inside.ts"),
+		false,
+	);
+	assert.ok(readdirCalls.every((p) => !p.endsWith("/sub")));
+	assert.ok(result.stats.skippedSymlinks >= 1);
+});
+
 test("returns considered files in stable lexicographic order", async () => {
 	const root = await tempRoot();
 	await mkdir(join(root, "src"));

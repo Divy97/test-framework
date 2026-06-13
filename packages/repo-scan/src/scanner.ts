@@ -64,12 +64,6 @@ export async function scanRepository(
 
 	const manifests = parseManifests(traversal.files);
 	const rootManifest = manifests.find((m) => m.path === "package.json");
-	const packageSignals = new Set<string>();
-	for (const manifest of manifests) {
-		for (const name of manifest.dependencyNames) {
-			packageSignals.add(name);
-		}
-	}
 
 	const frameworks = detectFrameworks(
 		manifests,
@@ -80,11 +74,7 @@ export async function scanRepository(
 		traversal.lockfiles,
 	);
 
-	const categories = collectCategories(
-		traversal.files,
-		packageSignals,
-		manifests,
-	);
+	const categories = collectCategories(traversal.files, manifests);
 
 	const hintOrder = new Map<string, number>();
 	for (const [index, path] of hintResolution.hints.entries()) {
@@ -109,9 +99,11 @@ export async function scanRepository(
 		externalIntegrations: [],
 	};
 
+	let evidenceTruncated = false;
 	for (const key of CATEGORY_KEYS) {
 		const references = orderReferences(categories[key], hintOrder);
 		if (references.length > options.maxEvidencePerCategory) {
+			evidenceTruncated = true;
 			warnings.push(
 				`Evidence for ${key} truncated to ${options.maxEvidencePerCategory} entries.`,
 			);
@@ -133,7 +125,7 @@ export async function scanRepository(
 		validationSchemas: evidence.validationSchemas,
 		featureFlags: evidence.featureFlags,
 		externalIntegrations: evidence.externalIntegrations,
-		truncated: traversal.truncated,
+		truncated: traversal.truncated || evidenceTruncated,
 		stopReason: traversal.stopReason,
 		warnings,
 		stats: traversal.stats,
@@ -167,7 +159,6 @@ function parseManifests(
 
 function collectCategories(
 	files: readonly TraversedFile[],
-	packageSignals: Set<string>,
 	manifests: readonly ManifestSource[],
 ): Record<CategoryKey, Map<string, string>> {
 	const categories: Record<CategoryKey, Map<string, string>> = {
@@ -186,7 +177,7 @@ function collectCategories(
 		const matches = classifyFile({
 			path: file.path,
 			text: file.text,
-			packageSignals,
+			packageSignals: signalsForFile(file.path, manifests),
 		});
 		for (const match of matches) {
 			const bucket = categories[match.category];
@@ -212,6 +203,38 @@ function collectCategories(
 	}
 
 	return categories;
+}
+
+/** Repo-relative directory of a manifest path (`""` for the root manifest). */
+function manifestDirOf(manifestPath: string): string {
+	const slash = manifestPath.lastIndexOf("/");
+	return slash === -1 ? "" : manifestPath.slice(0, slash);
+}
+
+/**
+ * Package signals visible to a file: dependencies from the root manifest plus
+ * every ancestor package's manifest. Sibling packages' dependencies are
+ * excluded so that, for example, React in one workspace does not make an
+ * unrelated package's PascalCase `.tsx` look like a component.
+ */
+function signalsForFile(
+	filePath: string,
+	manifests: readonly ManifestSource[],
+): Set<string> {
+	const slash = filePath.lastIndexOf("/");
+	const fileDir = slash === -1 ? "" : filePath.slice(0, slash);
+	const signals = new Set<string>();
+	for (const manifest of manifests) {
+		const dir = manifestDirOf(manifest.path);
+		const applies =
+			dir === "" || fileDir === dir || fileDir.startsWith(`${dir}/`);
+		if (applies) {
+			for (const name of manifest.dependencyNames) {
+				signals.add(name);
+			}
+		}
+	}
+	return signals;
 }
 
 function orderReferences(
