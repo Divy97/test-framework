@@ -1,0 +1,56 @@
+{
+	"name": "test-framework",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"check-types": "turbo check-types",
+		"commitlint": "commitlint --from origin/main --to HEAD",
+		"commit": "cz",
+		"dev:web": "turbo -F web dev",
+		"dev:server": "turbo -F server dev",
+		"db:push": "turbo -F @test-framework/db db:push",
+		"db:studio": "turbo -F @test-framework/db db:studio",
+		"db:generate": "turbo -F @test-framework/db db:generate",
+		"db:migrate": "turbo -F @test-framework/db db:migrate",
+		"db:start": "turbo -F @test-framework/db db:start",
+		"db:watch": "turbo -F @test-framework/db db:watch",
+		"db:stop": "turbo -F @test-framework/db db:stop",
+		"db:down": "turbo -F @test-framework/db db:down",
+		"check": "biome check --write .",
+		"prepare": "husky"
+	},
+	"packageManager": "pnpm@10.24.0",
+	"dependencies": {
+		"dotenv": "catalog:",
+		"zod": "catalog:",
+		"@test-framework/env": "workspace:*"
+	},
+	"devDependencies": {
+		"typescript": "catalog:",
+		"@types/node": "^22.13.14",
+		"@test-framework/config": "workspace:*",
+		"turbo": "^2.9.16",
+		"@biomejs/biome": "^2.4.16",
+		"@commitlint/cli": "^20.1.0",
+		"commitizen": "^4.3.1",
+		"cz-customizable": "^7.5.1",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.0.7"
+	},
+	"config": {
+		"commitizen": {
+			"path": "cz-customizable"
+		}
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+			"biome check --write ."
+		]
+	}
+}
