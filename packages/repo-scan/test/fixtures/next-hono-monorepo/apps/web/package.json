@@ -1,0 +1,13 @@
+{
+	"name": "web",
+	"private": true,
+	"dependencies": {
+		"next": "15.0.0",
+		"react": "19.0.0",
+		"react-dom": "19.0.0",
+		"drizzle-orm": "0.45.0",
+		"zod": "4.0.0",
+		"stripe": "17.0.0",
+		"posthog-node": "4.0.0"
+	}
+}

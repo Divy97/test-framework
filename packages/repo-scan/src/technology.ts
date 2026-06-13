@@ -133,7 +133,13 @@ export function detectFrameworks(
 ): RepoTechnologyDetection[] {
 	const detections: RepoTechnologyDetection[] = [];
 	const seen = new Set<string>();
-	const configSet = new Set(configFiles.map((file) => basenameOf(file)));
+	const configByBasename = new Map<string, string>();
+	for (const file of configFiles) {
+		const base = basenameOf(file);
+		if (!configByBasename.has(base)) {
+			configByBasename.set(base, file);
+		}
+	}
 
 	for (const entry of FRAMEWORKS) {
 		if (seen.has(entry.name)) {
@@ -156,11 +162,13 @@ export function detectFrameworks(
 		if (seen.has(entry.name)) {
 			continue;
 		}
-		const config = entry.configFiles.find((file) => configSet.has(file));
-		if (config) {
+		const configBasename = entry.configFiles.find((file) =>
+			configByBasename.has(file),
+		);
+		if (configBasename) {
 			detections.push({
 				name: entry.name,
-				path: config,
+				path: configByBasename.get(configBasename) ?? configBasename,
 				reason: `${entry.name} config file`,
 			});
 			seen.add(entry.name);
