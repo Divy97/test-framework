@@ -172,12 +172,14 @@ Completed in `.github/workflows/ci.yml` and `.github/dependabot.yml`:
 - Generated/build artifacts (`node_modules`, `dist`, `.turbo`) are git-ignored, so default repository searches skip them.
 - Dependency update policy defined via Dependabot (weekly grouped npm + github-actions PRs).
 
+Scope decision: Biome runs repo-wide (lint/format has no env dependency). Build, typecheck, and test are scoped to the V1 surface (`apps/mcp` + `packages/*`) via `*:ci` scripts. The `apps/web` and `apps/api` scaffolds are deferred out of V1 and require env CI does not hold, so building them would only test dead scaffolds. When those surfaces become real, widen the `--filter` in `build:ci`/`test:ci`/`check-types:ci`.
+
 Exit criteria met:
 
-- Every PR runs the same gates used locally (`pnpm check:ci`, `check-types`, `build`, `test`, `commitlint`).
+- Every PR runs the same checks used locally (`pnpm check:ci`, `check-types:ci`, `build:ci`, `test:ci`, `commitlint`).
 - A failing lint, typecheck, build, test, or commit-message check blocks merge.
 
-Verification: all five gates pass locally at this baseline (Biome exit 0, typecheck 7/7 tasks, build 3/3, test 127/127, commitlint accepts the gitmoji format).
+Verification: both jobs are green on GitHub runners for PR #7 — `verify` (Biome, typecheck 6/6, build 1/1 `mcp`, test 127/127) and `commitlint`. The same `*:ci` scripts run locally.
 
 ### 2. Safe Repository Scanner — Done
 
