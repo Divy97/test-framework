@@ -1,11 +1,13 @@
-import { plannerManifest } from "@test-framework/planner";
-import { repoScanManifest } from "@test-framework/repo-scan";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createMcpServer } from "./server.js";
 
-const startupSummary = {
-	app: "mcp",
-	status: "placeholder",
-	plannerVersion: plannerManifest.version,
-	repoScanVersion: repoScanManifest.version,
-};
+async function main(): Promise<void> {
+	const server = createMcpServer();
+	const transport = new StdioServerTransport();
+	await server.connect(transport);
+}
 
-console.log(JSON.stringify(startupSummary, null, 2));
+main().catch((error: unknown) => {
+	console.error(error);
+	process.exitCode = 1;
+});

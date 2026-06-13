@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import type { TestCase } from "@test-framework/core";
 import {
@@ -326,6 +327,27 @@ test("invalid analyze_feature input is rejected before the handler runs", async 
 		assert.equal(result.structuredContent, undefined);
 		const message = (result.content as Array<{ text?: string }>)[0]?.text ?? "";
 		assert.match(message, /validation/i);
+	} finally {
+		await client.close();
+	}
+});
+
+test("built stdio server completes the MCP handshake", async () => {
+	const transport = new StdioClientTransport({
+		command: process.execPath,
+		args: [join(process.cwd(), "dist/index.js")],
+		cwd: process.cwd(),
+		stderr: "pipe",
+	});
+	const client = new Client({ name: "stdio-test", version: "0.1.0" });
+
+	try {
+		await client.connect(transport);
+		const listed = await client.listTools();
+		assert.deepEqual(
+			listed.tools.map((tool) => tool.name).sort(),
+			expectedToolNames,
+		);
 	} finally {
 		await client.close();
 	}
