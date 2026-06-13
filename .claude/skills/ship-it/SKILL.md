@@ -1,6 +1,6 @@
 ---
 name: ship-it
-description: Ship current work the Raft-Labs way — branch off development, atomic gitmoji commits validated by commitlint, and small focused PR(s) against development with the Asana link. Use when the user says ship it, commit and PR, or points here to commit/raise PRs.
+description: Ship current work for this repo — branch off protected branches, atomic gitmoji commits validated by commitlint, and small focused PR(s) against main. Use when the user says ship it, commit and PR, or points here to commit/raise PRs.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, AskUserQuestion
 ---
@@ -13,9 +13,8 @@ Take the current uncommitted work and ship it: branch (if needed) → atomic con
 
 1. **Never commit to a protected branch.** Protected = `main`, `master`, `develop`, `development`, `staging`, `production`. If on one, branch first.
 2. **Never mention Claude / AI / Codex / co-author.** No `Co-Authored-By`, no attribution footer, nothing — in commits or PR bodies.
-3. **Always raise a PR.** Even a one-line change gets a PR. Never leave work only pushed to a branch without a PR, and never push straight to `development`.
+3. **Always raise a PR.** Even a one-line change gets a PR. Never leave work only pushed to a branch without a PR, and never push straight to `main`.
 4. **Prefer multiple small PRs over one big PR.** Split independent concerns into separate branches/PRs.
-5. **Always put the Asana task link in the PR body** when one is available. If unknown, ask before opening the PR.
 
 ## Step 1 — Inspect
 
@@ -29,9 +28,9 @@ Understand what changed before grouping anything.
 
 ## Step 2 — Branch
 
-- If on a protected branch (Hard rule 1), create one off `development`:
+- If on a protected branch (Hard rule 1), create one off the current default branch:
   ```bash
-  git checkout development && git pull   # only if safe / asked; otherwise branch off current dev
+  git checkout main && git pull   # only if safe / asked; otherwise branch off current HEAD
   git checkout -b <type>/<kebab-slug>
   ```
 - Name pattern (validate-branch-name): `^(feature|fix|hotfix|bugfix|release|chore|docs|refactor|test|ci)/[a-z0-9._-]+$`. Pick the prefix matching the dominant change; slug is lowercase kebab.
@@ -41,7 +40,7 @@ Understand what changed before grouping anything.
 
 - Group changes **feature-wise or file-wise** into small, atomic commits, ordered so the tree builds at every commit (e.g. shared lib → consumer → frontend → follow-up fix).
 - One concern per commit. One reviewable theme per PR.
-- If the working tree contains **independent concerns**, prefer **separate branches → separate PRs** (each off `development`) over bundling. Use a stacked branch only when a later change genuinely depends on an unmerged earlier one.
+- If the working tree contains **independent concerns**, prefer **separate branches → separate PRs** (each off `main`) over bundling. Use a stacked branch only when a later change genuinely depends on an unmerged earlier one.
 - State the planned commits (and any PR split) briefly before executing.
 
 ## Step 4 — Resolve valid scopes
@@ -89,23 +88,18 @@ npx commitlint --from <base-sha-or-HEAD~N> --to HEAD; echo "EXIT=$?"
 
 If non-zero, amend the offending message and re-check.
 
-## Step 7 — Asana link
-
-- If the user already gave an Asana task URL/GID, use it.
-- If not, **ask once** (use AskUserQuestion or a direct question): "Asana task link for this PR?" Accept "none" to proceed without (then note `Asana: none` in the body).
-
-## Step 8 — Push + open PR(s)
+## Step 7 — Push + open PR(s)
 
 ```bash
 git push -u origin <branch>                 # origin = git@github.com:Raft-Labs/brux-dental.git
-gh pr create --base development --head <branch> \
+gh pr create --base main --head <branch> \
   --title ":sparkles: feat: <concise title>" \
   --body-file <body.md>
 ```
 
-PR title follows the same gitmoji-conventional format. PR body is **concise** (what / why / verification + the **Asana link**), not a wall of text. For a multi-PR split, repeat per branch.
+PR title follows the same gitmoji-conventional format. PR body is **concise** (what / why / verification), not a wall of text. For a multi-PR split, repeat per branch.
 
-## Step 9 — Report
+## Step 8 — Report
 
 List each PR URL and what it contains. If work was split, say how.
 
@@ -116,5 +110,4 @@ List each PR URL and what it contains. If work was split, say how.
 - [ ] `:emoji: type(scope): lowercase subject`, scope in enum, ≤100 chars
 - [ ] No Claude / co-author anywhere
 - [ ] `npx commitlint` exit 0
-- [ ] PR raised (always), base `development`, split into multiple if independent
-- [ ] Asana link in PR body (or asked + `none`)
+- [ ] PR raised (always), base `main`, split into multiple if independent
