@@ -47,6 +47,7 @@ test("reads a small UTF-8 text file within budget", async () => {
 	if (result.ok) {
 		assert.match(result.text, /export const x/);
 		assert.equal(result.bytesRead, 20);
+		assert.equal(result.truncatedRead, false);
 	}
 });
 
@@ -159,6 +160,7 @@ test("reads at most the remaining total budget for a permitted file", async () =
 	if (result.ok) {
 		assert.equal(result.bytesRead, 4);
 		assert.equal(result.text, "abcd");
+		assert.equal(result.truncatedRead, true);
 	}
 });
 

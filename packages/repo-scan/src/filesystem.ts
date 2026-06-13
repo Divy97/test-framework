@@ -38,7 +38,7 @@ export interface BoundedReadOptions {
 }
 
 export type BoundedReadResult =
-	| { ok: true; text: string; bytesRead: number }
+	| { ok: true; text: string; bytesRead: number; truncatedRead: boolean }
 	| {
 			ok: false;
 			reason:
@@ -105,7 +105,12 @@ export async function readBoundedTextFile(
 
 		const toRead = Math.min(postStat.size, maxFileBytes, remainingTotalBytes);
 		if (toRead <= 0) {
-			return { ok: true, text: "", bytesRead: 0 };
+			return {
+				ok: true,
+				text: "",
+				bytesRead: 0,
+				truncatedRead: postStat.size > 0,
+			};
 		}
 
 		const buffer = Buffer.alloc(toRead);
@@ -114,7 +119,12 @@ export async function readBoundedTextFile(
 		if (slice.includes(0)) {
 			return { ok: false, reason: "binary" };
 		}
-		return { ok: true, text: slice.toString("utf8"), bytesRead };
+		return {
+			ok: true,
+			text: slice.toString("utf8"),
+			bytesRead,
+			truncatedRead: bytesRead < postStat.size,
+		};
 	} catch {
 		return { ok: false, reason: "unreadable" };
 	} finally {
