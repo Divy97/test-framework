@@ -16,7 +16,7 @@
 		"@test-framework/api": "workspace:*",
 		"@test-framework/db": "workspace:*",
 		"hono": "catalog:",
-		"@hono/node-server": "^1.14.4",
+		"@hono/node-server": "^2.0.4",
 		"@trpc/server": "catalog:",
 		"@hono/trpc-server": "^0.4.0"
 	},
