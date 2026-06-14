@@ -22,7 +22,6 @@ packages/
   artifacts/  local artifact paths and persistence helpers
   config/     shared TypeScript config
   core/       product schemas and domain types
-  env/        runtime env validation
   planner/    planning contracts over core + repo scan
   repo-scan   repo scan contracts
 ```

@@ -9,9 +9,6 @@ catalogs:
     '@modelcontextprotocol/sdk':
       specifier: 1.29.0
       version: 1.29.0
-    dotenv:
-      specifier: ^17.2.2
-      version: 17.4.2
     typescript:
       specifier: ^6
       version: 6.0.3
@@ -22,16 +19,6 @@ catalogs:
 importers:
 
   .:
-    dependencies:
-      '@test-framework/env':
-        specifier: workspace:*
-        version: link:packages/env
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.4.2
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.4.16
@@ -75,21 +62,12 @@ importers:
       '@test-framework/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@test-framework/env':
-        specifier: workspace:*
-        version: link:../../packages/env
       '@test-framework/planner':
         specifier: workspace:*
         version: link:../../packages/planner
       '@test-framework/repo-scan':
         specifier: workspace:*
         version: link:../../packages/repo-scan
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.4.2
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
     devDependencies:
       '@test-framework/config':
         specifier: workspace:*
@@ -137,31 +115,6 @@ importers:
       '@test-framework/config':
         specifier: workspace:*
         version: link:../config
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-
-  packages/env:
-    dependencies:
-      '@t3-oss/env-core':
-        specifier: ^0.13.1
-        version: 0.13.11(typescript@6.0.3)(zod@4.4.3)
-      '@t3-oss/env-nextjs':
-        specifier: ^0.13.1
-        version: 0.13.11(typescript@6.0.3)(zod@4.4.3)
-      dotenv:
-        specifier: 'catalog:'
-        version: 17.4.2
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@test-framework/config':
-        specifier: workspace:*
-        version: link:../config
-      '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -787,40 +740,6 @@ packages:
     resolution: {integrity: sha512-KxXvfapcixpz6rVEB6HPjOUZT22yN6v0vI0urQSk1L8MlEWPDFCZkhw2xmkyoTGYeFw7tWTZd7e3lVzRZRN/EA==}
     engines: {node: '>=18'}
 
-  '@t3-oss/env-core@0.13.11':
-    resolution: {integrity: sha512-sM7GYY+KL7H/Hl0BE0inWfk3nRHZOLhmVn7sHGxaZt9FAR6KqREXAE+6TqKfiavfXmpRxO/OZ2QgKRd+oiBYRQ==}
-    peerDependencies:
-      arktype: ^2.1.0
-      typescript: '>=5.0.0'
-      valibot: ^1.0.0-beta.7 || ^1.0.0
-      zod: ^3.24.0 || ^4.0.0
-    peerDependenciesMeta:
-      arktype:
-        optional: true
-      typescript:
-        optional: true
-      valibot:
-        optional: true
-      zod:
-        optional: true
-
-  '@t3-oss/env-nextjs@0.13.11':
-    resolution: {integrity: sha512-NC+3j7YWgpzdFu1t5y/8wqibTK0lm5RS4bjXA1n8uwik3wIR4iZM4Fa+U2BaMa5k3Qk8RZiYhoAIX0WogmGkzg==}
-    peerDependencies:
-      arktype: ^2.1.0
-      typescript: '>=5.0.0'
-      valibot: ^1.0.0-beta.7 || ^1.0.0
-      zod: ^3.24.0 || ^4.0.0
-    peerDependenciesMeta:
-      arktype:
-        optional: true
-      typescript:
-        optional: true
-      valibot:
-        optional: true
-      zod:
-        optional: true
-
   '@turbo/darwin-64@2.9.18':
     resolution: {integrity: sha512-9f27peFu16ur8c0v9nUFUEyBnbKuuFsUTjHFWfmwGfzySBXbHwzU44QhZon6Mznz0cHsIr3984NQj/bVrnGSRw==}
     cpu: [x64]
@@ -1157,10 +1076,6 @@ packages:
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
-
-  dotenv@17.4.2:
-    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
-    engines: {node: '>=12'}
 
   dts-resolver@3.0.0:
     resolution: {integrity: sha512-1T1f+z+4tl9XD+m+0HBgWoL/nm0bOIffyWaUuUSBlFg/86IWvfx+wjNaO/ybU0AJzG9/Mi5hBUgGV6zCmWEN7Q==}
@@ -2626,18 +2541,6 @@ snapshots:
 
   '@simple-libs/stream-utils@1.2.0': {}
 
-  '@t3-oss/env-core@0.13.11(typescript@6.0.3)(zod@4.4.3)':
-    optionalDependencies:
-      typescript: 6.0.3
-      zod: 4.4.3
-
-  '@t3-oss/env-nextjs@0.13.11(typescript@6.0.3)(zod@4.4.3)':
-    dependencies:
-      '@t3-oss/env-core': 0.13.11(typescript@6.0.3)(zod@4.4.3)
-    optionalDependencies:
-      typescript: 6.0.3
-      zod: 4.4.3
-
   '@turbo/darwin-64@2.9.18':
     optional: true
 
@@ -2962,8 +2865,6 @@ snapshots:
   dot-prop@5.3.0:
     dependencies:
       is-obj: 2.0.0
-
-  dotenv@17.4.2: {}
 
   dts-resolver@3.0.0: {}
 

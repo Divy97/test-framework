@@ -22,11 +22,6 @@
 		"prepare": "husky"
 	},
 	"packageManager": "pnpm@10.24.0",
-	"dependencies": {
-		"dotenv": "catalog:",
-		"zod": "catalog:",
-		"@test-framework/env": "workspace:*"
-	},
 	"devDependencies": {
 		"typescript": "catalog:",
 		"@types/node": "^25.9.3",
