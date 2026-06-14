@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"typescript": "catalog:",
-		"@types/node": "^22.13.14",
+		"@types/node": "^25.9.3",
 		"@test-framework/config": "workspace:*"
 	},
 	"scripts": {

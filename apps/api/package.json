@@ -25,6 +25,6 @@
 		"tsdown": "^0.22.2",
 		"@test-framework/config": "workspace:*",
 		"tsx": "^4.19.2",
-		"@types/node": "^22.13.14"
+		"@types/node": "^25.9.3"
 	}
 }
