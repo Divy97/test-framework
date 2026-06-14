@@ -1,11 +1,12 @@
 # test-framework
 
-Local-first QA testcase agent.
+Local-first verification intelligence product. Current code is foundation work;
+the accepted V1 is a BYOK verification planning engine.
 
 Current focus:
-- `apps/mcp` will become the V1 product entry
-- `apps/api` stays available for later hosted flows
-- `apps/web` is optional review UI groundwork
+- `apps/mcp` is the first adapter
+- the QA engine will own model reasoning, test graph, validation, and artifacts
+- V1 produces execution-ready plans; execution starts in V2
 
 ## Workspace
 
@@ -38,9 +39,12 @@ pnpm dev:mcp
 pnpm db:start
 ```
 
-## MCP Server
+## Current MCP Implementation
 
-`apps/mcp` runs a local stdio MCP server exposing the V1 planner tools.
+`apps/mcp` currently runs a local stdio MCP server exposing the legacy five-stage
+stub surface. This documents code that exists today, not the accepted target
+surface. The migration target is coarse `create_test_plan`, `refine_test_plan`,
+and `get_test_plan` operations backed by the QA engine.
 
 Build the server:
 
@@ -64,7 +68,7 @@ Register it with a local MCP client, replacing the path with your checked-out re
 }
 ```
 
-Tools:
+Current legacy tools:
 
 - `analyze_feature`
 - `map_feature`
@@ -110,4 +114,6 @@ The scan returns paths and reasons only — no file contents or excerpts. The de
 
 - V1 scope is in [docs/v1-mvp.md](/Users/divy/Developer/personal/test-framework/docs/v1-mvp.md)
 - V1 progress and next milestones are in [docs/v1-checkpoint.md](/Users/divy/Developer/personal/test-framework/docs/v1-checkpoint.md)
+- accepted architecture is in [docs/superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md](/Users/divy/Developer/personal/test-framework/docs/superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md)
+- durable decisions and rejected paths are in [docs/adr](/Users/divy/Developer/personal/test-framework/docs/adr)
 - product baseline is in [docs/product-baseline.md](/Users/divy/Developer/personal/test-framework/docs/product-baseline.md)

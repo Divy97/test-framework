@@ -1,5 +1,9 @@
 # AI Test Automation Product Baseline
 
+> Research baseline, not canonical architecture. See
+> [Verification Intelligence Architecture](superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md)
+> and [V1 MVP](v1-mvp.md) for accepted decisions.
+
 Researched: 2026-06-06
 
 ## Goal
