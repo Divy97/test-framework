@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { renderTestGraphMarkdown as renderFromBarrel } from "../index.js";
+import { createStableId } from "./ids.js";
 import { renderTestGraphMarkdown } from "./markdown.js";
 import {
 	buildValidTestGraph,
 	loadJsonFixture,
 	loadTextFixture,
+	testGraphIds,
 } from "./test-helpers.js";
 
 const FIXTURE = "valid/ui-api-integration.json";
@@ -15,6 +17,18 @@ function firstRequirement() {
 	if (requirement === undefined)
 		throw new Error("builder lost its requirement");
 	return requirement;
+}
+
+function firstTestCase() {
+	const testCase = buildValidTestGraph().testCases[0];
+	if (testCase === undefined) throw new Error("builder lost its test case");
+	return testCase;
+}
+
+function firstStep() {
+	const step = buildValidTestGraph().steps[0];
+	if (step === undefined) throw new Error("builder lost its step");
+	return step;
 }
 
 test("markdown matches the golden fixture", async () => {
@@ -64,6 +78,82 @@ test("multiline prose stays on a single readable line", () => {
 		}),
 	);
 	assert.match(markdown, /Statement: first line second line/);
+});
+
+test("inline code cannot break its Markdown line", () => {
+	const markdown = renderTestGraphMarkdown(
+		buildValidTestGraph({
+			testCases: [
+				{
+					...firstTestCase(),
+					target: { kind: "ui", selector: "button`\n# injected" },
+				},
+			],
+		}),
+	);
+	const targetLine = markdown
+		.split("\n")
+		.find((line) => line.startsWith("- Target:"));
+	assert.match(targetLine ?? "", /button` # injected/);
+	assert.doesNotMatch(markdown, /^# injected$/m);
+});
+
+test("markdown retains request headers, invoke input, and required data state", () => {
+	const base = buildValidTestGraph();
+	const dataId = createStableId("dataRequirement", base.planId, "account");
+	const requestMarkdown = renderTestGraphMarkdown(
+		buildValidTestGraph({
+			dataRequirements: [
+				{
+					id: dataId,
+					name: "Account",
+					description: "Existing account state.",
+					kind: "account",
+					provisioning: "existing",
+					sensitivity: "internal",
+					provenance: firstRequirement().provenance,
+					requiredState: { enabled: true },
+				},
+			],
+			testCases: [
+				{
+					...firstTestCase(),
+					consumesDataRequirementIds: [dataId],
+				},
+			],
+			steps: [
+				{
+					...firstStep(),
+					action: {
+						kind: "request",
+						method: "POST",
+						path: "/login",
+						headers: { "X-Trace": "trace-1" },
+						body: { email: "user@example.com" },
+					},
+				},
+			],
+		}),
+	);
+	assert.match(requestMarkdown, /headers .*X-Trace.*trace-1/);
+	assert.match(requestMarkdown, /Required state: .*enabled.*true/);
+
+	const invokeMarkdown = renderTestGraphMarkdown(
+		buildValidTestGraph({
+			steps: [
+				{
+					...firstStep(),
+					action: {
+						kind: "invoke",
+						system: "billing",
+						operation: "charge",
+						input: { accountId: testGraphIds.caseId },
+					},
+				},
+			],
+		}),
+	);
+	assert.match(invokeMarkdown, /input .*accountId/);
 });
 
 test("the renderer does not mutate its input", async () => {

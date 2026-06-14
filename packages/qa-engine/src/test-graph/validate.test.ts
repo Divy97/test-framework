@@ -288,6 +288,31 @@ test("a case cannot depend on itself", () => {
 	assert.deepEqual(codesOf(graph), ["DEPENDENCY_SELF_REFERENCE"]);
 });
 
+test("a case cannot produce data it also consumes", () => {
+	const dataId = createStableId("dataRequirement", planId, "self data");
+	const graph = buildValidTestGraph({
+		dataRequirements: [
+			{
+				id: dataId,
+				name: "Self data",
+				description: "Produced and consumed by the same case.",
+				kind: "record",
+				provisioning: "case-produced",
+				sensitivity: "none",
+				provenance: { kind: "explicit", evidenceIds: [evidenceId] },
+			},
+		],
+		testCases: [
+			{
+				...at(base.testCases, 0),
+				consumesDataRequirementIds: [dataId],
+				producesDataRequirementIds: [dataId],
+			},
+		],
+	});
+	assert.deepEqual(codesOf(graph), ["DEPENDENCY_SELF_REFERENCE"]);
+});
+
 test("feature parent cycles are flagged", () => {
 	const graph = buildValidTestGraph({
 		features: [
@@ -431,6 +456,67 @@ test("a complete plan cannot retain a blocking question", () => {
 		],
 	});
 	assert.deepEqual(codesOf(graph), ["COMPLETE_PLAN_BLOCKED"]);
+});
+
+test("a complete plan cannot retain case blocker messages", () => {
+	const graph = buildValidTestGraph({
+		testCases: [
+			{
+				...at(base.testCases, 0),
+				automation: { readiness: "ready", blockers: ["Missing auth fixture."] },
+			},
+		],
+	});
+	assert.deepEqual(codesOf(graph), ["COMPLETE_PLAN_BLOCKED"]);
+});
+
+test("blocked entity refs resolve plan and project roots", () => {
+	const graph = buildValidTestGraph({
+		openQuestions: [
+			{
+				id: createStableId("openQuestion", planId, "root refs"),
+				question: "Can root aggregates be referenced?",
+				status: "open",
+				blocking: false,
+				provenance: { kind: "explicit", evidenceIds: [evidenceId] },
+				blockedEntityRefs: [
+					{ kind: "plan", id: planId },
+					{ kind: "project", id: projectId },
+				],
+			},
+		],
+	});
+	assert.deepEqual(codesOf(graph), []);
+});
+
+test("duplicate blocked entity refs are flagged", () => {
+	const graph = buildValidTestGraph({
+		openQuestions: [
+			{
+				id: createStableId("openQuestion", planId, "duplicate refs"),
+				question: "Is the same case listed twice?",
+				status: "open",
+				blocking: false,
+				provenance: { kind: "explicit", evidenceIds: [evidenceId] },
+				blockedEntityRefs: [
+					{ kind: "testCase", id: testGraphIds.caseId },
+					{ kind: "testCase", id: testGraphIds.caseId },
+				],
+			},
+		],
+	});
+	assert.deepEqual(codesOf(graph), ["DUPLICATE_REFERENCE"]);
+});
+
+test("scalar dangling references use the field path", () => {
+	const missingSourceId = createStableId("source", planId, "missing source");
+	const graph = buildValidTestGraph({
+		evidence: [{ ...at(base.evidence, 0), sourceId: missingSourceId }],
+	});
+	const result = validateTestGraph(graph);
+	assert.equal(result.valid, false);
+	if (result.valid) return;
+	assert.equal(at(result.findings, 0).path, "/evidence/0/sourceId");
 });
 
 test("plan and generation status must agree", () => {

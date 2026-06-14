@@ -49,6 +49,7 @@
 ## Data Requirements
 - `data_a5a38e34f231a939b9e8` — Test account — kind account — provisioning case-produced — sensitivity pii — Provenance: explicit; evidence `ev_8e16d5f3e13a0c1de422`
   - Description: A registered account used to exercise login.
+  - Required state: `{"active":true}`
 
 ## Test Cases
 
@@ -81,7 +82,7 @@
 - Instructions: Delete the provisioned account after login verification.
 
 #### Steps
-1. `step_5131de74033dd133ed51` — Create a registered account through the accounts API. — Action: request `POST` `/api/accounts` body `{"email":"qa@example.com","password":"Sup3r-Secret"}` — Provenance: explicit; evidence `ev_630a97715b4310967410`
+1. `step_5131de74033dd133ed51` — Create a registered account through the accounts API. — Action: request `POST` `/api/accounts` headers `{"content-type":"application/json"}` body `{"email":"qa@example.com","password":"Sup3r-Secret"}` — Provenance: explicit; evidence `ev_630a97715b4310967410`
 
 #### Assertions
 - `assert_45a18463aa751b98a61b` — statusCode — expected `201` — subject create account response status — observation api `POST` `/api/accounts` — step `step_5131de74033dd133ed51` — Provenance: explicit; evidence `ev_630a97715b4310967410`
@@ -141,7 +142,7 @@
 - Depends on: `case_5a89b2e0ae0300aa841b`
 - Consumes: `data_a5a38e34f231a939b9e8`
 - Produces: None
-- Automation: readiness partial — Blockers: Needs rate-limit fixture.
+- Automation: readiness ready — Blockers: None
 
 #### Preconditions
 - A registered account exists.

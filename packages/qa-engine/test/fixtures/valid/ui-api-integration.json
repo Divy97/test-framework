@@ -363,10 +363,8 @@
 				"afterCaseIds": []
 			},
 			"automation": {
-				"readiness": "partial",
-				"blockers": [
-					"Needs rate-limit fixture."
-				]
+				"readiness": "ready",
+				"blockers": []
 			}
 		}
 	],

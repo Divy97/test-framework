@@ -102,6 +102,25 @@ test("registry preserves ids and links it is not asked to change", () => {
 	assert.deepEqual(result.links, ["link-1", "link-2"]);
 });
 
+test("registry snapshots and freezes its version order", () => {
+	const versions = ["test/v0", "test/v1"];
+	const registry = createMigrationRegistry(versions, [
+		fakeMigration("test/v0", "test/v1"),
+	]);
+	versions.push("test/v2");
+
+	const result = registry.migrate({
+		schemaVersion: "test/v0",
+		id: "stable-id",
+		links: [],
+		trail: [],
+	}) as FakeGraph;
+	assert.equal(result.schemaVersion, "test/v1");
+	assert.deepEqual(registry.versions, ["test/v0", "test/v1"]);
+	assert.equal(Object.isFrozen(registry.versions), true);
+	assert.throws(() => (registry.versions as string[]).push("test/v9"));
+});
+
 test("a skipped-edge migration is rejected at construction", () => {
 	assert.throws(
 		() =>

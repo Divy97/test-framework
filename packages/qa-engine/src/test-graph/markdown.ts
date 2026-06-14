@@ -29,11 +29,19 @@ function escapeInline(value: string): string {
 }
 
 function code(value: string): string {
-	return `\`${value}\``;
+	const normalized = value.replace(/[\r\n]+/g, " ");
+	const longestRun = Math.max(
+		0,
+		...(normalized.match(/`+/g) ?? []).map((run) => run.length),
+	);
+	const delimiter = "`".repeat(longestRun + 1);
+	return longestRun === 0
+		? `${delimiter}${normalized}${delimiter}`
+		: `${delimiter} ${normalized} ${delimiter}`;
 }
 
 function json(value: JsonValue): string {
-	return `\`${JSON.stringify(value)}\``;
+	return code(JSON.stringify(value));
 }
 
 function codeList(ids: readonly string[]): string {
@@ -90,10 +98,12 @@ function actionSummary(action: Action): string {
 			}`;
 		case "request":
 			return `request ${code(action.method)} ${code(action.path)}${
-				action.body !== undefined ? ` body ${json(action.body)}` : ""
-			}`;
+				action.headers !== undefined ? ` headers ${json(action.headers)}` : ""
+			}${action.body !== undefined ? ` body ${json(action.body)}` : ""}`;
 		case "invoke":
-			return `invoke ${code(action.system)}.${code(action.operation)}`;
+			return `invoke ${code(action.system)}.${code(action.operation)}${
+				action.input !== undefined ? ` input ${json(action.input)}` : ""
+			}`;
 		case "wait":
 			return `wait for ${escapeInline(action.condition)}${
 				action.timeoutMs !== undefined ? ` (${action.timeoutMs}ms)` : ""
@@ -333,6 +343,9 @@ export function renderTestGraphMarkdown(input: unknown): string {
 				`- ${code(data.id)} — ${escapeInline(data.name)} — kind ${data.kind} — provisioning ${data.provisioning} — sensitivity ${data.sensitivity} — Provenance: ${provenanceLine(data.provenance)}`,
 			);
 			lines.push(`  - Description: ${escapeInline(data.description)}`);
+			lines.push(
+				`  - Required state: ${data.requiredState === undefined ? "None" : json(data.requiredState)}`,
+			);
 		}
 	}
 	lines.push("");

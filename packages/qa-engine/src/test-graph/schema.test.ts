@@ -333,6 +333,23 @@ test("matches accepts only valid regex flags without duplicates", () => {
 		}).success,
 		false,
 	);
+	assert.equal(
+		assertionSchema.safeParse({
+			...baseAssertion,
+			matcher: "matches",
+			pattern: "[",
+		}).success,
+		false,
+	);
+	assert.equal(
+		assertionSchema.safeParse({
+			...baseAssertion,
+			matcher: "matches",
+			pattern: "^ok$",
+			flags: "uv",
+		}).success,
+		false,
+	);
 });
 
 test("conformsToSchema requires a schemaRef string", () => {

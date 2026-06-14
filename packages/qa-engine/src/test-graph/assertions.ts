@@ -42,7 +42,7 @@ const finiteNumberSchema = z.number();
  * shape; presence matchers carry no `expected` at all. Arbitrary matcher
  * strings are intentionally impossible in V1.
  */
-export const assertionSchema = z.discriminatedUnion("matcher", [
+const assertionUnionSchema = z.discriminatedUnion("matcher", [
 	z
 		.object({
 			...assertionBaseShape,
@@ -142,4 +142,19 @@ export const assertionSchema = z.discriminatedUnion("matcher", [
 		})
 		.strict(),
 ]);
+
+export const assertionSchema = assertionUnionSchema.superRefine(
+	(assertion, ctx) => {
+		if (assertion.matcher !== "matches") return;
+		try {
+			new RegExp(assertion.pattern, assertion.flags);
+		} catch {
+			ctx.addIssue({
+				code: "custom",
+				path: ["pattern"],
+				message: "pattern and flags must form a valid regular expression.",
+			});
+		}
+	},
+);
 export type Assertion = z.infer<typeof assertionSchema>;

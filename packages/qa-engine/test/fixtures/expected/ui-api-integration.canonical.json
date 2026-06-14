@@ -696,10 +696,8 @@
 				"role": "registered-user"
 			},
 			"automation": {
-				"blockers": [
-					"Needs rate-limit fixture."
-				],
-				"readiness": "partial"
+				"blockers": [],
+				"readiness": "ready"
 			},
 			"cleanup": {
 				"afterCaseIds": [],

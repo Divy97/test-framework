@@ -60,15 +60,16 @@ export function createMigrationRegistry(
 	versions: readonly string[],
 	migrations: readonly Migration[],
 ): MigrationRegistry {
-	if (versions.length === 0) {
+	const versionOrder = [...versions];
+	if (versionOrder.length === 0) {
 		throw new Error("A migration registry needs at least one version.");
 	}
-	if (new Set(versions).size !== versions.length) {
+	if (new Set(versionOrder).size !== versionOrder.length) {
 		throw new Error("Migration versions must be unique.");
 	}
 
 	const indexByVersion = new Map(
-		versions.map((value, index) => [value, index]),
+		versionOrder.map((value, index) => [value, index]),
 	);
 	const migrationByPair = new Map<string, Migration>();
 
@@ -92,8 +93,8 @@ export function createMigrationRegistry(
 		migrationByPair.set(key, migration);
 	}
 
-	for (let i = 0; i < versions.length - 1; i++) {
-		const key = `${versions[i]}->${versions[i + 1]}`;
+	for (let i = 0; i < versionOrder.length - 1; i++) {
+		const key = `${versionOrder[i]}->${versionOrder[i + 1]}`;
 		if (!migrationByPair.has(key)) {
 			throw new Error(`Missing migration for adjacent pair ${key}.`);
 		}
@@ -108,9 +109,9 @@ export function createMigrationRegistry(
 		}
 
 		let current = structuredClone(input);
-		for (let i = startIndex; i < versions.length - 1; i++) {
-			const from = versions[i] as string;
-			const to = versions[i + 1] as string;
+		for (let i = startIndex; i < versionOrder.length - 1; i++) {
+			const from = versionOrder[i] as string;
+			const to = versionOrder[i + 1] as string;
 			const migration = migrationByPair.get(`${from}->${to}`) as Migration;
 			try {
 				const migrated = migration.migrate(structuredClone(current));
@@ -127,7 +128,7 @@ export function createMigrationRegistry(
 		return current;
 	}
 
-	return Object.freeze({ versions: [...versions], migrate });
+	return Object.freeze({ versions: Object.freeze(versionOrder), migrate });
 }
 
 /**

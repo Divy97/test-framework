@@ -171,6 +171,8 @@ function buildIndex(
 	}
 
 	index.allIds.set(graph.generation.id, "generation");
+	index.allIds.set(graph.planId, "plan");
+	index.allIds.set(graph.projectId, "project");
 	return index;
 }
 
@@ -217,6 +219,50 @@ function checkRefs(
 				),
 			);
 		}
+	});
+}
+
+function checkRef(
+	id: string,
+	target: Map<string, unknown>,
+	targetKind: GraphEntityKind,
+	path: ReadonlyArray<string | number>,
+	owner: EntityRef,
+	findings: TestGraphFinding[],
+): void {
+	if (target.has(id)) return;
+	findings.push(
+		makeFinding(
+			"DANGLING_REFERENCE",
+			jsonPath(path),
+			`References missing ${targetKind} ${id}.`,
+			owner,
+			[id],
+		),
+	);
+}
+
+function checkEntityRefDuplicates(
+	refs: readonly EntityRef[],
+	basePath: ReadonlyArray<string | number>,
+	owner: EntityRef,
+	findings: TestGraphFinding[],
+): void {
+	const seen = new Set<string>();
+	refs.forEach((ref, position) => {
+		const key = `${ref.kind}\u001f${ref.id}`;
+		if (seen.has(key)) {
+			findings.push(
+				makeFinding(
+					"DUPLICATE_REFERENCE",
+					jsonPath([...basePath, position]),
+					`Duplicate ${ref.kind} reference ${ref.id}.`,
+					owner,
+					[ref.id],
+				),
+			);
+		}
+		seen.add(key);
 	});
 }
 
@@ -380,7 +426,26 @@ function checkDependencyGraph(
 			.map((testCase) => testCase.id);
 		for (const producer of producers) {
 			for (const consumer of consumers) {
-				if (producer !== consumer) addEdge(producer, consumer);
+				if (producer === consumer) {
+					const casePosition = graph.testCases.findIndex(
+						(testCase) => testCase.id === producer,
+					);
+					findings.push(
+						makeFinding(
+							"DEPENDENCY_SELF_REFERENCE",
+							jsonPath([
+								"testCases",
+								casePosition,
+								"consumesDataRequirementIds",
+							]),
+							`Test case ${producer} cannot consume data ${data.id} that it produces.`,
+							{ kind: "testCase", id: producer },
+							[data.id],
+						),
+					);
+				} else {
+					addEdge(producer, consumer);
+				}
 			}
 		}
 	}
@@ -643,8 +708,8 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 
 	// Evidence -> Source.
 	graph.evidence.forEach((evidence, position) => {
-		checkRefs(
-			[evidence.sourceId],
+		checkRef(
+			evidence.sourceId,
 			index.sources,
 			"source",
 			["evidence", position, "sourceId"],
@@ -683,8 +748,8 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 	graph.features.forEach((feature, position) => {
 		const owner: EntityRef = { kind: "feature", id: feature.id };
 		if (feature.parentFeatureId !== undefined) {
-			checkRefs(
-				[feature.parentFeatureId],
+			checkRef(
+				feature.parentFeatureId,
 				index.features,
 				"feature",
 				["features", position, "parentFeatureId"],
@@ -723,8 +788,8 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 	// Steps.
 	graph.steps.forEach((step, position) => {
 		const owner: EntityRef = { kind: "step", id: step.id };
-		checkRefs(
-			[step.testCaseId],
+		checkRef(
+			step.testCaseId,
 			index.testCases,
 			"testCase",
 			["steps", position, "testCaseId"],
@@ -743,8 +808,8 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 	// Assertions.
 	graph.assertions.forEach((assertion, position) => {
 		const owner: EntityRef = { kind: "assertion", id: assertion.id };
-		checkRefs(
-			[assertion.testCaseId],
+		checkRef(
+			assertion.testCaseId,
 			index.testCases,
 			"testCase",
 			["assertions", position, "testCaseId"],
@@ -754,8 +819,8 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 		if (assertion.stepId !== undefined) {
 			const step = index.steps.get(assertion.stepId);
 			if (step === undefined) {
-				checkRefs(
-					[assertion.stepId],
+				checkRef(
+					assertion.stepId,
 					index.steps,
 					"step",
 					["assertions", position, "stepId"],
@@ -797,6 +862,12 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 	// Open questions.
 	graph.openQuestions.forEach((question, position) => {
 		const owner: EntityRef = { kind: "openQuestion", id: question.id };
+		checkEntityRefDuplicates(
+			question.blockedEntityRefs,
+			["openQuestions", position, "blockedEntityRefs"],
+			owner,
+			findings,
+		);
 		if (question.status === "answered" && question.answer === undefined) {
 			findings.push(
 				makeFinding(
@@ -878,7 +949,10 @@ function runInvariantPhase(graph: TestGraphV1): TestGraphFinding[] {
 			}
 		});
 		graph.testCases.forEach((testCase, position) => {
-			if (testCase.automation.readiness === "blocked") {
+			if (
+				testCase.automation.readiness === "blocked" ||
+				testCase.automation.blockers.length > 0
+			) {
 				findings.push(
 					makeFinding(
 						"COMPLETE_PLAN_BLOCKED",
