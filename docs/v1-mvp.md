@@ -1,249 +1,203 @@
-# V1 MVP: Developer QA Testcase Agent
+# V1 MVP: Verification Planning Engine
 
-Date: 2026-06-08
+Date: 2026-06-14
+Status: accepted
+Architecture: [Verification Intelligence Architecture](superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md)
 
 ## Position
 
-Developer-only local product, mostly used through MCP.
+V1 is a local, BYOK verification planning engine used first through MCP. It turns
+feature intent and repository evidence into a traceable, execution-ready test
+plan for engineers, QA, and coding agents.
 
-The product is not a QA management platform in V1. It is a local QA reasoning agent that turns feature context into high-quality, shareable test cases for humans and coding agents.
+V1 is not a hosted QA platform and does not execute tests. It is also not a thin
+Skill or host-model wrapper: we own the model workflow, methodology, schema,
+semantic review, deterministic validation, artifacts, and evaluation corpus.
 
-Primary job: reduce QA time after agent-built features by catching obvious missed behavior before or after implementation.
+## User Promise
 
-## Core Loop
+Given a feature request or spec plus a local repository, V1 produces a plan that:
 
-1. Developer or IDE agent finishes a feature.
-2. Developer asks MCP: generate QA cases for this feature.
-3. Product reads provided PRD/spec/free-form doc.
-4. Product scans project structure and relevant implementation.
-5. Product normalizes requirements and acceptance criteria.
-6. Product generates comprehensive editable test cases.
-7. Developer shares cases with team or gives them back to coding agent.
-8. Coding agent fixes misses or implements against generated cases.
+- identifies requirements, assumptions, unknowns, and risks;
+- connects requirements to source and code evidence;
+- proposes useful positive, negative, edge, security, regression, and integration
+  cases;
+- states machine-checkable targets, actions, data, and assertions;
+- is measurably better than using the same model with a raw prompt;
+- can become runnable tests in V2 without a domain-model rewrite.
 
-Execution, Playwright generation, cloud test runs, reports, and auto-patching are later versions.
+## Core Workflow
 
-## Long-Term Product Capabilities
+```mermaid
+flowchart LR
+    U["Feature request / PRD"] --> O["create_test_plan"]
+    R["Repo / diff / selected files"] --> O
+    O --> I["Ingest"]
+    I --> C["Contextualize"]
+    C --> Q["Model requirements + risks"]
+    Q --> P["Generate test graph"]
+    P --> S["Semantic review"]
+    S --> V["Deterministic validation"]
+    V -->|repairable| S
+    V --> A["plan.json + plan.md"]
+```
 
-1. Understand product requirements and goals.
-2. Scan project structure, features, and implementation.
-3. Create normalized PRD.
-4. Generate comprehensive test cases from PRD and code.
-5. Create executable Playwright scripts.
-6. Run tests in secure cloud environments.
-7. Deliver detailed reports with actionable insights.
-8. Let IDE use analysis to patch issues automatically.
+The stages are internal. MCP callers invoke coarse operations and never pass
+large intermediate objects between tools.
 
-## V1 Scope
+## Included
 
-### Included
+- MCP adapter for local coding-agent hosts.
+- `create_test_plan`, `refine_test_plan`, and `get_test_plan` operations.
+- BYOK provider configuration and explicit model selection.
+- Inputs from feature text, PRD/spec text, selected documents, repo path, relevant
+  files, git diff/branch context, existing tests, and user hints.
+- Safe bounded repository evidence collection.
+- Requirement normalization, feature/risk mapping, case generation, independent
+  semantic review, deterministic validation, and bounded repair.
+- Versioned test graph with stable IDs and source traceability.
+- Canonical JSON and generated Markdown artifacts.
+- Comparative eval suite and release threshold.
 
-- Create project/session from PRD, spec, free-form notes, target URL, and API docs.
-- Scan local repo structure and relevant files.
-- Extract feature map.
-- Extract acceptance criteria.
-- Normalize unclear feature docs into a clean PRD.
-- Generate editable test cases.
-- Export/share test cases as Markdown and JSON.
-- Optimize output for both QA teams and coding agents.
+## Excluded
 
-### Excluded
+- Released browser or API execution.
+- Playwright/Python test generation.
+- Cloud runtime, dashboard, database, schedules, billing, teams, or CI gates.
+- Production URL/API probing.
+- Automatic source-code patching.
+- Hosted model billing or model fine-tuning.
 
-- No Playwright generation.
-- No test execution.
-- No cloud environment.
-- No bug report artifacts.
-- No auto-patching.
-- No hosted dashboard required.
-- No model hosting.
+## BYOK
 
-## BYOK Model
+Users supply provider credentials locally. V1 owns the reasoning workflow but not
+model billing.
 
-Users provide their own model keys.
+Requirements:
 
-We manage:
+- keys come from environment variables or local secret references;
+- keys never enter prompts, logs, telemetry, or artifacts;
+- provider/model selection is explicit per project or invocation;
+- authentication, quota, transient, timeout, and invalid-output errors are
+  distinct;
+- retries and token/wall-clock budgets are bounded;
+- provider adapters normalize structured generation and usage metadata.
 
-- Local MCP tools.
-- Repo scanning.
-- Context packaging.
-- Prompt/task orchestration.
-- Testcase schema.
-- Optional later cloud browser/runtime infra.
+Initial support may ship one provider at a time, but the architecture supports
+multiple BYOK providers as a real product requirement.
 
-We do not manage:
-
-- User model billing.
-- Proprietary hosted model stack.
-- Model fine-tuning in V1.
-
-Provider config should be local and explicit:
-
-- `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.
-- Per-project model selection.
-- No key upload unless later cloud execution requires it and user explicitly opts in.
-
-## V1 Inputs
+## Inputs
 
 - Free-form feature request.
-- PRD/spec/markdown/document text.
-- Target URL, optional.
-- API docs/OpenAPI/Postman/free-form endpoint notes, optional.
-- Branch/diff/repo path.
-- Relevant files selected by IDE/MCP.
-- Existing test files, optional.
-- User hints: roles, flows, areas to ignore, risk level.
+- PRD/spec/Markdown/document text.
+- Optional target URL as planning context only.
+- Optional OpenAPI/Postman/free-form API documentation as planning context only.
+- Local repository root.
+- Branch, commit, or diff context.
+- Explicitly relevant files and existing tests.
+- User hints: roles, flows, risks, exclusions, and known constraints.
+- Existing plan plus feedback for refinement.
 
-## V1 Outputs
+## Test Graph Output
 
-### Normalized PRD
+### Requirements
 
-Structure:
+- Stable ID and statement.
+- Functional/security/state/integration/etc. kind.
+- Explicit, inferred, or assumption strength.
+- Priority and risk.
+- Source/evidence links.
+- Open questions and blockers.
 
-- Feature summary.
-- User roles.
-- Goals.
-- In-scope behavior.
-- Out-of-scope behavior.
-- Business rules.
-- UI states.
-- Data rules.
-- API/contracts.
-- Auth/permission rules.
-- Edge cases.
-- Open questions.
+### Features
 
-### Feature Map
-
-Structure:
-
-- Feature.
-- Sub-feature.
-- User flow.
-- Screens/routes.
-- Components/files.
-- APIs/data stores.
-- Dependencies.
-- Risk level.
-
-### Acceptance Criteria
-
-Each criterion should be:
-
-- Specific.
-- Testable.
-- Mapped to source requirement or code evidence.
-- Labeled as explicit, inferred, or assumption.
+- Feature and sub-feature.
+- User flow and actor.
+- Screens, routes, endpoints, data stores, and dependencies.
+- Requirement links and risk level.
 
 ### Test Cases
 
-Use the Asana reference pattern:
+- Stable ID, title, objective, type, priority, and risk rationale.
+- Covered requirement IDs and quality-category tags.
+- Actor/role and authentication state.
+- Structured target: UI, API, integration, or generic behavior.
+- Structured preconditions and reusable test-data requirements.
+- Ordered actions with target and input.
+- Typed assertions with subject, matcher, expected result, and observation point.
+- Postconditions and cleanup intent.
+- Evidence links.
+- Automation readiness and blockers.
 
-- Test ID.
-- Title.
-- Type: positive, negative, edge, security, regression, integration.
-- Priority.
-- Objective.
-- Preconditions.
-- Test data/accounts.
-- Steps.
-- Expected results.
-- Postconditions.
-- Related files/routes/APIs.
-- Evidence source: PRD, code, inferred.
-- Automation readiness: manual, Playwright-ready, API-ready, blocked.
+## Quality Bar
 
-## Testcase Generation Quality Bar
+Plans consider, when relevant:
 
-Generated cases must cover:
+- happy path and alternate valid paths;
+- missing, malformed, and boundary inputs;
+- roles, authorization, authentication, and information leakage;
+- state transitions, concurrency, retries, duplicate submission, and idempotency;
+- existing/new/stale/deleted data;
+- UI loading, empty, error, refresh, timeout, and navigation states;
+- API/UI/data consistency;
+- integration success, failure, timeout, and partial rollback;
+- observability of each assertion;
+- cleanup requirements and environment blockers.
 
-- Happy path.
-- Required validation.
-- Missing/invalid inputs.
-- Boundary values.
-- Permission/auth states.
-- State transitions.
-- Refresh/session timeout behavior.
-- Duplicate submits/idempotency.
-- Existing data vs new data.
-- Backend/UI consistency.
-- Error messages.
-- Empty/loading/error UI states.
-- Security leakage: unauthorized access, hidden fields, API response leakage.
-- Integration state variations.
-- Post-action navigation.
-- Rollback/partial failure.
+The engine must not create cases merely to satisfy every category. Relevance,
+risk, and evidence matter more than checklist volume.
 
-Asana reference pattern observed:
+## Artifacts
 
-- Parent groups by domain flow.
-- Subtasks split admin flow, user claiming flow, trial/billing flow.
-- Individual cases use preconditions, steps, expected results.
-- Strong edge cases include expired trial, zero credits, duplicate claim code, unauthorized reveal, stale/deleted records.
-- Test accounts are modeled as reusable states, not created ad hoc in each case.
+```text
+.test-framework/
+  project.json
+  plans/<plan-id>/
+    plan.json
+    plan.md
+    generation.json
+```
 
-## MCP Tools
+- `plan.json` is canonical.
+- `plan.md` is derived and regenerable.
+- `generation.json` records non-secret versions, fingerprints, usage, and warnings.
+- Writes are root-confined, atomic, version-checked, and schema-validated.
 
-V1 MCP should expose:
+## Evaluation and Release Gate
 
-- `analyze_feature`: input docs + repo context, output normalized PRD.
-- `map_feature`: output feature map and source links.
-- `generate_test_cases`: output Markdown/JSON cases.
-- `review_test_cases`: find gaps, duplicates, weak assertions.
-- `export_test_cases`: save/share generated cases.
+V1 differentiation depends on measured planning quality. Release requires:
 
-Later:
+- deterministic contract and safety tests passing;
+- representative generation fixtures across multiple product shapes;
+- same-model comparison against raw prompting and host-only generation;
+- expert-calibrated rubric covering requirement recall, unsupported claims,
+  traceability, risk coverage, duplicates, assertion quality, evidence accuracy,
+  and execution readiness;
+- a recorded threshold set before release evaluation;
+- no material regression in unsupported claims, latency, or failure rate.
 
-- `generate_playwright_tests`.
-- `run_tests_cloud`.
-- `analyze_failures`.
-- `suggest_patch`.
+## Execution Spike
 
-## Local Repo Scan
+Before substantial V1 polish, spend at most one day proving a hand-written API
+test can run against a local allowlisted fixture and produce a coherent failure
+bundle. This is research, not V1 product scope. It validates the V2 evidence path
+without importing execution complexity into V1.
 
-Scan should collect:
+## Definition of Done
 
-- Framework and package manager.
-- Routes/pages.
-- Components.
-- API handlers.
-- DB/schema/models.
-- Existing tests.
-- Auth/middleware.
-- Validation schemas.
-- Feature flags.
-- External integrations.
+V1 is done when:
 
-Do not scan secrets, build output, node_modules, or large generated files.
+1. A user configures a supported BYOK provider locally.
+2. One MCP operation creates a persisted plan from real spec and repo context.
+3. The engine performs internal semantic review and deterministic validation.
+4. The output is traceable, editable, execution-ready, and safe to commit.
+5. Refinement updates a plan without losing stable identities or provenance.
+6. Comparative evals beat the recorded raw-model baseline.
+7. Installation, configuration, errors, and limitations are documented.
 
-## V1 Data Files
+## Beyond V1
 
-Suggested local artifacts:
-
-- `.test-framework/project.json`
-- `.test-framework/normalized-prd.md`
-- `.test-framework/feature-map.json`
-- `.test-framework/test-cases.md`
-- `.test-framework/test-cases.json`
-
-## MVP Success Criteria
-
-Given a feature spec and local repo, V1 should produce testcase output that:
-
-- QA can use directly.
-- Agent can implement against.
-- Covers obvious misses beyond the user's written PRD.
-- Links cases back to source docs/code.
-- Separates explicit requirements from inferred assumptions.
-- Produces fewer duplicate/low-value cases than raw LLM output.
-
-## Product Principle
-
-V1 should be boring and useful:
-
-- No execution.
-- No dashboard first.
-- No platform complexity.
-- Strong local MCP workflow.
-- Strong testcase schema.
-- Strong repo-aware QA reasoning.
-
+- V2: generate portable UI/API tests, run locally, capture evidence, classify
+  failures, and rerun selected tests.
+- V3: managed cloud execution, durable history, schedules, CI/PR gates, teams,
+  billing, and dashboard workflows.
