@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { renderTestGraphMarkdown as renderFromBarrel } from "../index.js";
 import { renderTestGraphMarkdown } from "./markdown.js";
 import {
 	buildValidTestGraph,
@@ -75,4 +76,9 @@ test("the renderer does not mutate its input", async () => {
 test("rendering is deterministic across runs", async () => {
 	const input = await loadJsonFixture(FIXTURE);
 	assert.equal(renderTestGraphMarkdown(input), renderTestGraphMarkdown(input));
+});
+
+test("the public barrel re-exports the same renderer", async () => {
+	const input = await loadJsonFixture(FIXTURE);
+	assert.equal(renderFromBarrel(input), renderTestGraphMarkdown(input));
 });

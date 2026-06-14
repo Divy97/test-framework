@@ -45,6 +45,57 @@ test("valid fixtures produce zero findings", async () => {
 	}
 });
 
+// --- Fixture matrix -------------------------------------------------------
+
+const FIXTURE_MATRIX: ReadonlyArray<{
+	fixture: string;
+	valid: boolean;
+	requiredFinding?: string;
+}> = [
+	{ fixture: "valid/ui-api-integration.json", valid: true },
+	{ fixture: "valid/assumption-blocked.json", valid: true },
+	{
+		fixture: "invalid/dangling-links.json",
+		valid: false,
+		requiredFinding: "DANGLING_REFERENCE",
+	},
+	{
+		fixture: "invalid/duplicate-ids.json",
+		valid: false,
+		requiredFinding: "DUPLICATE_ID",
+	},
+	{
+		fixture: "invalid/dependency-cycle.json",
+		valid: false,
+		requiredFinding: "DEPENDENCY_CYCLE",
+	},
+	{
+		fixture: "invalid/malformed-assertions.json",
+		valid: false,
+		requiredFinding: "MALFORMED_ASSERTION",
+	},
+	{
+		fixture: "invalid/unsupported-state.json",
+		valid: false,
+		requiredFinding: "UNSUPPORTED_STATE",
+	},
+];
+
+test("every fixture validates as expected", async () => {
+	for (const entry of FIXTURE_MATRIX) {
+		const result = validateTestGraph(await loadJsonFixture(entry.fixture));
+		assert.equal(result.valid, entry.valid, entry.fixture);
+		if (!result.valid && entry.requiredFinding !== undefined) {
+			assert.ok(
+				result.findings.some(
+					(finding) => finding.code === entry.requiredFinding,
+				),
+				`${entry.fixture} should report ${entry.requiredFinding}`,
+			);
+		}
+	}
+});
+
 // --- Invalid fixture matrix ----------------------------------------------
 
 test("malformed assertion fixture yields MALFORMED_ASSERTION under /assertions", async () => {

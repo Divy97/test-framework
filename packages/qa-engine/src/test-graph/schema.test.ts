@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as publicApi from "../index.js";
 import { actionSchema } from "./actions.js";
 import { assertionSchema } from "./assertions.js";
 import { jsonValueSchema, provenanceSchema } from "./common.js";
@@ -437,4 +438,40 @@ test("project schema validates independently", () => {
 			.success,
 		false,
 	);
+});
+
+test("public barrel exposes the locked surface and hides test helpers", () => {
+	for (const name of [
+		"TEST_GRAPH_SCHEMA_VERSION",
+		"PROJECT_SCHEMA_VERSION",
+		"testGraphV1Schema",
+		"projectSchema",
+		"createStableId",
+		"requirementIdSchema",
+		"testGraphFindingSchema",
+		"compareFindings",
+		"sortFindings",
+		"TestGraphValidationError",
+		"validateTestGraph",
+		"parseTestGraph",
+		"validatePlanRevisionTransition",
+		"canonicalizeTestGraph",
+		"serializeTestGraph",
+		"migrateTestGraph",
+		"createMigrationRegistry",
+		"TestGraphMigrationError",
+		"renderTestGraphMarkdown",
+		"qaEngineManifest",
+	]) {
+		assert.ok(name in publicApi, `expected public export ${name}`);
+	}
+
+	for (const name of [
+		"buildValidTestGraph",
+		"loadJsonFixture",
+		"loadTextFixture",
+		"testGraphIds",
+	]) {
+		assert.ok(!(name in publicApi), `test helper ${name} must stay private`);
+	}
 });
