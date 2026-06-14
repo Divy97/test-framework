@@ -33,6 +33,12 @@ MCP, CLI, CI, web, and cloud are adapters or deployment surfaces, not the produc
   cancellation, and errors.
 - **Execution Bundle**: future V2 record containing a test run's request/response,
   logs, traces, screenshots, timings, assertions, and findings.
+- **Plan Revision**: immutable version of one Test Plan; retains its `planId` and
+  advances `planVersion` when plan content changes.
+- **Provenance**: visible classification of a graph claim as explicit, inferred,
+  or assumption, with evidence or rationale required by that classification.
+- **Data Requirement**: named state or resource a Test Case consumes or produces,
+  including provisioning and cleanup expectations.
 
 ## Invariants
 
