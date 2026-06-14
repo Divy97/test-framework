@@ -34,8 +34,7 @@ jobs:
 
       # Biome runs repo-wide: lint/format has no env dependency and should
       # apply everywhere. Build/typecheck/test are scoped to the V1 surface
-      # (apps/mcp + packages/*) via the *:ci scripts; the apps/web and apps/api
-      # scaffolds are deferred out of V1 and require env that CI does not hold.
+      # (apps/mcp + packages/*) via the *:ci scripts.
       - name: Biome (lint + format)
         run: pnpm check:ci
 
