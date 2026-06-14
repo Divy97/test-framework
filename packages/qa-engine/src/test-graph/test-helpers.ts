@@ -8,13 +8,16 @@ import { TEST_GRAPH_SCHEMA_VERSION } from "./version.js";
  * Test-only fixture loader. Resolves paths relative to `test/fixtures/` so test
  * files do not hardcode brittle relative paths. Not part of the public API.
  */
-export async function loadJsonFixture(relativePath: string): Promise<unknown> {
+export async function loadTextFixture(relativePath: string): Promise<string> {
 	const fileUrl = new URL(
 		`../../test/fixtures/${relativePath}`,
 		import.meta.url,
 	);
-	const raw = await readFile(fileURLToPath(fileUrl), "utf8");
-	return JSON.parse(raw) as unknown;
+	return readFile(fileURLToPath(fileUrl), "utf8");
+}
+
+export async function loadJsonFixture(relativePath: string): Promise<unknown> {
+	return JSON.parse(await loadTextFixture(relativePath)) as unknown;
 }
 
 const PROJECT_ID = createStableId("project", "test-framework", "demo");

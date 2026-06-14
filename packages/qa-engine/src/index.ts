@@ -1,5 +1,6 @@
 export * from "./test-graph/actions.js";
 export * from "./test-graph/assertions.js";
+export * from "./test-graph/canonical-json.js";
 export * from "./test-graph/common.js";
 export * from "./test-graph/findings.js";
 export * from "./test-graph/ids.js";
