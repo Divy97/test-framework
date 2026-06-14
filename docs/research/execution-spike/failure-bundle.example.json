@@ -1,0 +1,81 @@
+{
+	"schemaVersion": "execution-failure-bundle/v0",
+	"runId": "run-security-failure",
+	"testId": "api-users-sensitive-fields",
+	"createdAt": "2026-06-14T15:57:47.903Z",
+	"target": {
+		"origin": "http://127.0.0.1:56579",
+		"method": "POST",
+		"path": "/users"
+	},
+	"classification": "unclassified",
+	"runStatus": "completed",
+	"testStatus": "failed",
+	"failureKind": "assertion",
+	"durationMs": 44,
+	"process": {
+		"exitCode": 1,
+		"signal": null,
+		"timedOut": false,
+		"stdout": "child: assertion failed\n",
+		"stderr": "authorization=Bearer [REDACTED] token=[REDACTED]\n",
+		"stdoutTruncated": false,
+		"stderrTruncated": false
+	},
+	"request": {
+		"method": "POST",
+		"url": "http://127.0.0.1:56579/users",
+		"headers": {
+			"authorization": "[REDACTED]",
+			"content-type": "application/json"
+		},
+		"body": {
+			"email": "[REDACTED]",
+			"password": "[REDACTED]"
+		}
+	},
+	"response": {
+		"status": 201,
+		"headers": {
+			"connection": "keep-alive",
+			"content-type": "application/json",
+			"date": "Sun, 14 Jun 2026 15:57:47 GMT",
+			"keep-alive": "timeout=5",
+			"transfer-encoding": "chunked"
+		},
+		"body": {
+			"id": "usr_123",
+			"email": "[REDACTED]",
+			"role": "admin",
+			"internalToken": "[REDACTED]"
+		}
+	},
+	"assertion": {
+		"subject": "response.body.role",
+		"matcher": "absent",
+		"expected": "field absent",
+		"actual": "admin",
+		"message": "sensitive role field must not be exposed"
+	},
+	"redaction": {
+		"applied": true,
+		"replacement": "[REDACTED]",
+		"redactedPaths": [
+			"process.stderr",
+			"request.body.email",
+			"request.body.password",
+			"request.headers.authorization",
+			"response.body.email",
+			"response.body.internalToken"
+		]
+	},
+	"truncation": {
+		"applied": false,
+		"limitBytes": 65536,
+		"truncatedPaths": []
+	},
+	"cleanup": {
+		"rawResultDeleted": true,
+		"tempDirectoryDeleted": true
+	}
+}
