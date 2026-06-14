@@ -4,7 +4,17 @@ import { actionSchema } from "./actions.js";
 import { assertionSchema } from "./assertions.js";
 import { jsonValueSchema, provenanceSchema } from "./common.js";
 import { createStableId } from "./ids.js";
+import { projectSchema, testGraphV1Schema } from "./schema.js";
 import { targetSchema } from "./targets.js";
+import {
+	buildValidTestGraph,
+	loadJsonFixture,
+	testGraphIds,
+} from "./test-helpers.js";
+import {
+	PROJECT_SCHEMA_VERSION,
+	TEST_GRAPH_SCHEMA_VERSION,
+} from "./version.js";
 
 const evidenceId = createStableId("evidence", "plan_a", "login spec");
 const testCaseId = createStableId("testCase", "plan_a", "login succeeds");
@@ -37,10 +47,7 @@ test("json values accept null, scalars, arrays, and objects", () => {
 
 test("json values reject undefined, functions, NaN, and infinity", () => {
 	assert.equal(jsonValueSchema.safeParse(undefined).success, false);
-	assert.equal(
-		jsonValueSchema.safeParse(() => null).success,
-		false,
-	);
+	assert.equal(jsonValueSchema.safeParse(() => null).success, false);
 	assert.equal(jsonValueSchema.safeParse(Number.NaN).success, false);
 	assert.equal(
 		jsonValueSchema.safeParse(Number.POSITIVE_INFINITY).success,
@@ -341,6 +348,93 @@ test("conformsToSchema requires a schemaRef string", () => {
 			...baseAssertion,
 			matcher: "conformsToSchema",
 		}).success,
+		false,
+	);
+});
+
+test("valid representative graph parses", async () => {
+	const input = await loadJsonFixture("valid/ui-api-integration.json");
+	const graph = testGraphV1Schema.parse(input);
+	assert.equal(graph.schemaVersion, TEST_GRAPH_SCHEMA_VERSION);
+	assert.equal(graph.testCases.length, 3);
+});
+
+test("assumption/blocked graph parses", async () => {
+	const input = await loadJsonFixture("valid/assumption-blocked.json");
+	const graph = testGraphV1Schema.parse(input);
+	assert.equal(graph.status, "incomplete");
+	assert.equal(graph.testCases[0]?.automation.readiness, "blocked");
+});
+
+test("the built valid graph parses structurally", () => {
+	assert.equal(
+		testGraphV1Schema.safeParse(buildValidTestGraph()).success,
+		true,
+	);
+});
+
+test("aggregate rejects unknown top-level fields", () => {
+	const graph = { ...buildValidTestGraph(), surprise: true };
+	assert.equal(testGraphV1Schema.safeParse(graph).success, false);
+});
+
+test("aggregate enforces the project id prefix", () => {
+	const graph = { ...buildValidTestGraph(), projectId: testGraphIds.planId };
+	assert.equal(testGraphV1Schema.safeParse(graph).success, false);
+});
+
+test("planVersion must be a positive integer", () => {
+	assert.equal(
+		testGraphV1Schema.safeParse(buildValidTestGraph({ planVersion: 0 }))
+			.success,
+		false,
+	);
+	assert.equal(
+		testGraphV1Schema.safeParse(buildValidTestGraph({ planVersion: 1.5 }))
+			.success,
+		false,
+	);
+});
+
+test("timestamps must be RFC3339 with offset or Z", () => {
+	assert.equal(
+		testGraphV1Schema.safeParse(
+			buildValidTestGraph({ createdAt: "2026-06-14" }),
+		).success,
+		false,
+	);
+	assert.equal(
+		testGraphV1Schema.safeParse(
+			buildValidTestGraph({ updatedAt: "2026-06-14T10:00:00" }),
+		).success,
+		false,
+	);
+});
+
+test("steps require a positive integer order", () => {
+	const valid = buildValidTestGraph();
+	const firstStep = valid.steps[0];
+	if (firstStep === undefined) {
+		throw new Error("fixture builder must provide at least one step");
+	}
+	const withZeroOrder = buildValidTestGraph({
+		steps: [{ ...firstStep, order: 0 }],
+	});
+	assert.equal(testGraphV1Schema.safeParse(withZeroOrder).success, false);
+});
+
+test("project schema validates independently", () => {
+	const project = {
+		schemaVersion: PROJECT_SCHEMA_VERSION,
+		projectId: testGraphIds.projectId,
+		name: "Demo",
+		createdAt: "2026-06-14T10:00:00.000Z",
+		updatedAt: "2026-06-14T10:00:00.000Z",
+	};
+	assert.equal(projectSchema.safeParse(project).success, true);
+	assert.equal(
+		projectSchema.safeParse({ ...project, projectId: testGraphIds.planId })
+			.success,
 		false,
 	);
 });

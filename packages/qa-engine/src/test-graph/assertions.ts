@@ -44,28 +44,60 @@ const finiteNumberSchema = z.number();
  */
 export const assertionSchema = z.discriminatedUnion("matcher", [
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("equals"), expected: jsonValueSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("equals"),
+			expected: jsonValueSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("notEquals"), expected: jsonValueSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("notEquals"),
+			expected: jsonValueSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("contains"), expected: jsonValueSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("contains"),
+			expected: jsonValueSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("notContains"), expected: jsonValueSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("notContains"),
+			expected: jsonValueSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("greaterThan"), expected: finiteNumberSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("greaterThan"),
+			expected: finiteNumberSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("greaterThanOrEqual"), expected: finiteNumberSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("greaterThanOrEqual"),
+			expected: finiteNumberSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("lessThan"), expected: finiteNumberSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("lessThan"),
+			expected: finiteNumberSchema,
+		})
 		.strict(),
 	z
-		.object({ ...assertionBaseShape, matcher: z.literal("lessThanOrEqual"), expected: finiteNumberSchema })
+		.object({
+			...assertionBaseShape,
+			matcher: z.literal("lessThanOrEqual"),
+			expected: finiteNumberSchema,
+		})
 		.strict(),
 	z
 		.object({
