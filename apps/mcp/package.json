@@ -12,11 +12,8 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "catalog:",
-		"dotenv": "catalog:",
-		"zod": "catalog:",
 		"@test-framework/artifacts": "workspace:*",
 		"@test-framework/core": "workspace:*",
-		"@test-framework/env": "workspace:*",
 		"@test-framework/planner": "workspace:*",
 		"@test-framework/repo-scan": "workspace:*"
 	},

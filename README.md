@@ -10,21 +10,20 @@ Current focus:
 
 ## Workspace
 
+The workspace is scoped to the V1 surface. Inactive cloud/UI scaffolds
+(`apps/web`, `apps/api`, `packages/{api,db,ui}`) were removed; they will return
+with V3 managed execution. Git history preserves them.
+
 ```text
 apps/
-  api/   hosted api shell for later product surfaces
   mcp/   local MCP entrypoint for V1
-  web/   optional review UI
 
 packages/
-  api/        shared tRPC router
   artifacts/  local artifact paths and persistence helpers
+  config/     shared TypeScript config
   core/       product schemas and domain types
-  db/         postgres + drizzle
-  env/        runtime env validation
   planner/    planning contracts over core + repo scan
   repo-scan   repo scan contracts
-  ui/         shared UI primitives
 ```
 
 ## Commands
@@ -33,10 +32,7 @@ packages/
 pnpm install
 pnpm check-types
 pnpm check
-pnpm dev:web
-pnpm dev:api
 pnpm dev:mcp
-pnpm db:start
 ```
 
 ## Current MCP Implementation

@@ -14,16 +14,6 @@
 		"commitlint": "commitlint --from origin/main --to HEAD",
 		"commit": "cz",
 		"dev:mcp": "turbo -F mcp dev",
-		"dev:web": "turbo -F web dev",
-		"dev:api": "turbo -F api dev",
-		"db:push": "turbo -F @test-framework/db db:push",
-		"db:studio": "turbo -F @test-framework/db db:studio",
-		"db:generate": "turbo -F @test-framework/db db:generate",
-		"db:migrate": "turbo -F @test-framework/db db:migrate",
-		"db:start": "turbo -F @test-framework/db db:start",
-		"db:watch": "turbo -F @test-framework/db db:watch",
-		"db:stop": "turbo -F @test-framework/db db:stop",
-		"db:down": "turbo -F @test-framework/db db:down",
 		"check": "biome check --write .",
 		"check:ci": "biome ci .",
 		"build:ci": "turbo build --filter=./apps/mcp --filter=./packages/*",
@@ -32,11 +22,6 @@
 		"prepare": "husky"
 	},
 	"packageManager": "pnpm@10.24.0",
-	"dependencies": {
-		"dotenv": "catalog:",
-		"zod": "catalog:",
-		"@test-framework/env": "workspace:*"
-	},
 	"devDependencies": {
 		"typescript": "catalog:",
 		"@types/node": "^25.9.3",
