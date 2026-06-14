@@ -4,6 +4,7 @@ export * from "./test-graph/canonical-json.js";
 export * from "./test-graph/common.js";
 export * from "./test-graph/findings.js";
 export * from "./test-graph/ids.js";
+export * from "./test-graph/migrations.js";
 export * from "./test-graph/schema.js";
 export * from "./test-graph/targets.js";
 export * from "./test-graph/validate.js";
