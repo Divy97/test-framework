@@ -5,6 +5,7 @@ import {
 	type Migration,
 	migrateTestGraph,
 	TestGraphMigrationError,
+	type VersionValidator,
 } from "./migrations.js";
 import { buildValidTestGraph, loadJsonFixture } from "./test-helpers.js";
 
@@ -38,6 +39,21 @@ function fakeMigration(from: string, to: string): Migration {
 }
 
 const FAKE_VERSIONS = ["test/v0", "test/v1", "test/v2"] as const;
+
+function fakeValidators(
+	versions: readonly string[] = FAKE_VERSIONS,
+): VersionValidator[] {
+	return versions.map((version) => ({
+		version,
+		validate(input) {
+			const graph = input as Partial<FakeGraph>;
+			if (graph.schemaVersion !== version || !Array.isArray(graph.trail)) {
+				throw new Error(`invalid ${version} input`);
+			}
+			return graph as FakeGraph;
+		},
+	}));
+}
 
 // --- Current-version entrypoint ------------------------------------------
 
@@ -73,10 +89,11 @@ test("missing version is rejected", () => {
 // --- Generic registry -----------------------------------------------------
 
 test("registry migrates adjacent versions in order", () => {
-	const registry = createMigrationRegistry(FAKE_VERSIONS, [
-		fakeMigration("test/v0", "test/v1"),
-		fakeMigration("test/v1", "test/v2"),
-	]);
+	const registry = createMigrationRegistry(
+		FAKE_VERSIONS,
+		[fakeMigration("test/v0", "test/v1"), fakeMigration("test/v1", "test/v2")],
+		fakeValidators(),
+	);
 	const result = registry.migrate({
 		schemaVersion: "test/v0",
 		id: "keep-me",
@@ -88,10 +105,11 @@ test("registry migrates adjacent versions in order", () => {
 });
 
 test("registry preserves ids and links it is not asked to change", () => {
-	const registry = createMigrationRegistry(FAKE_VERSIONS, [
-		fakeMigration("test/v0", "test/v1"),
-		fakeMigration("test/v1", "test/v2"),
-	]);
+	const registry = createMigrationRegistry(
+		FAKE_VERSIONS,
+		[fakeMigration("test/v0", "test/v1"), fakeMigration("test/v1", "test/v2")],
+		fakeValidators(),
+	);
 	const result = registry.migrate({
 		schemaVersion: "test/v0",
 		id: "stable-id",
@@ -104,9 +122,11 @@ test("registry preserves ids and links it is not asked to change", () => {
 
 test("registry snapshots and freezes its version order", () => {
 	const versions = ["test/v0", "test/v1"];
-	const registry = createMigrationRegistry(versions, [
-		fakeMigration("test/v0", "test/v1"),
-	]);
+	const registry = createMigrationRegistry(
+		versions,
+		[fakeMigration("test/v0", "test/v1")],
+		fakeValidators(versions),
+	);
 	versions.push("test/v2");
 
 	const result = registry.migrate({
@@ -124,10 +144,14 @@ test("registry snapshots and freezes its version order", () => {
 test("a skipped-edge migration is rejected at construction", () => {
 	assert.throws(
 		() =>
-			createMigrationRegistry(FAKE_VERSIONS, [
-				fakeMigration("test/v0", "test/v1"),
-				fakeMigration("test/v0", "test/v2"),
-			]),
+			createMigrationRegistry(
+				FAKE_VERSIONS,
+				[
+					fakeMigration("test/v0", "test/v1"),
+					fakeMigration("test/v0", "test/v2"),
+				],
+				fakeValidators(),
+			),
 		/not a forward adjacent step/,
 	);
 });
@@ -138,6 +162,7 @@ test("a downgrade migration is rejected at construction", () => {
 			createMigrationRegistry(
 				["test/v0", "test/v1"],
 				[fakeMigration("test/v1", "test/v0")],
+				fakeValidators(["test/v0", "test/v1"]),
 			),
 		/not a forward adjacent step/,
 	);
@@ -146,9 +171,11 @@ test("a downgrade migration is rejected at construction", () => {
 test("a missing adjacent migration is rejected at construction", () => {
 	assert.throws(
 		() =>
-			createMigrationRegistry(FAKE_VERSIONS, [
-				fakeMigration("test/v0", "test/v1"),
-			]),
+			createMigrationRegistry(
+				FAKE_VERSIONS,
+				[fakeMigration("test/v0", "test/v1")],
+				fakeValidators(),
+			),
 		/Missing migration/,
 	);
 });
@@ -170,7 +197,11 @@ test("output is validated at each hop and the failing hop is identified", () => 
 			return graph;
 		},
 	};
-	const registry = createMigrationRegistry(["test/v0", "test/v1"], [broken]);
+	const registry = createMigrationRegistry(
+		["test/v0", "test/v1"],
+		[broken],
+		fakeValidators(["test/v0", "test/v1"]),
+	);
 	assert.throws(
 		() =>
 			registry.migrate({
@@ -189,14 +220,33 @@ test("output is validated at each hop and the failing hop is identified", () => 
 });
 
 test("an unknown input version is rejected by the registry", () => {
-	const registry = createMigrationRegistry(FAKE_VERSIONS, [
-		fakeMigration("test/v0", "test/v1"),
-		fakeMigration("test/v1", "test/v2"),
-	]);
+	const registry = createMigrationRegistry(
+		FAKE_VERSIONS,
+		[fakeMigration("test/v0", "test/v1"), fakeMigration("test/v1", "test/v2")],
+		fakeValidators(),
+	);
 	assert.throws(
 		() => registry.migrate({ schemaVersion: "test/v9", trail: [] }),
 		(error: unknown) =>
 			error instanceof TestGraphMigrationError &&
 			error.code === "UNSUPPORTED_SCHEMA_VERSION",
 	);
+});
+
+test("registry validates every entry version before migration or return", () => {
+	const registry = createMigrationRegistry(
+		FAKE_VERSIONS,
+		[fakeMigration("test/v0", "test/v1"), fakeMigration("test/v1", "test/v2")],
+		fakeValidators(),
+	);
+
+	for (const version of ["test/v1", "test/v2"]) {
+		assert.throws(
+			() => registry.migrate({ schemaVersion: version }),
+			(error: unknown) =>
+				error instanceof TestGraphMigrationError &&
+				error.code === "SCHEMA_VALIDATION_FAILED" &&
+				error.version === version,
+		);
+	}
 });

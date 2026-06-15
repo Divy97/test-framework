@@ -4,6 +4,7 @@ import { detectSchemaVersion, TEST_GRAPH_SCHEMA_VERSION } from "./version.js";
 
 export type TestGraphMigrationErrorCode =
 	| "UNSUPPORTED_SCHEMA_VERSION"
+	| "SCHEMA_VALIDATION_FAILED"
 	| "MIGRATION_FAILED";
 
 function buildMessage(
@@ -13,6 +14,9 @@ function buildMessage(
 ): string {
 	if (code === "UNSUPPORTED_SCHEMA_VERSION") {
 		return `Unsupported schema version ${version === null ? "(missing)" : JSON.stringify(version)}.`;
+	}
+	if (code === "SCHEMA_VALIDATION_FAILED") {
+		return `Validation failed for schema version ${JSON.stringify(version)}.`;
 	}
 	return `Migration failed at hop ${hop?.from ?? "?"} -> ${hop?.to ?? "?"}.`;
 }
@@ -50,15 +54,22 @@ export type MigrationRegistry = {
 	migrate(input: unknown): unknown;
 };
 
+export type VersionValidator = {
+	version: string;
+	validate(input: unknown): unknown;
+};
+
 /**
  * Builds a frozen, adjacent-only migration registry. `versions` defines the
- * upgrade order; there must be exactly one migration per adjacent pair, each
- * declared strictly `versions[i] -> versions[i + 1]`. Skipped, duplicated, and
- * downgrade migrations are rejected at construction time.
+ * upgrade order; every version needs an input validator and there must be
+ * exactly one migration per adjacent pair, each declared strictly
+ * `versions[i] -> versions[i + 1]`. Invalid registry definitions are rejected
+ * at construction time.
  */
 export function createMigrationRegistry(
 	versions: readonly string[],
 	migrations: readonly Migration[],
+	validators: readonly VersionValidator[],
 ): MigrationRegistry {
 	const versionOrder = [...versions];
 	if (versionOrder.length === 0) {
@@ -72,6 +83,24 @@ export function createMigrationRegistry(
 		versionOrder.map((value, index) => [value, index]),
 	);
 	const migrationByPair = new Map<string, Migration>();
+	const validatorByVersion = new Map<string, VersionValidator>();
+
+	for (const validator of validators) {
+		if (!indexByVersion.has(validator.version)) {
+			throw new Error(
+				`Validator references unknown version ${validator.version}.`,
+			);
+		}
+		if (validatorByVersion.has(validator.version)) {
+			throw new Error(`Duplicate validator for ${validator.version}.`);
+		}
+		validatorByVersion.set(validator.version, validator);
+	}
+	for (const version of versionOrder) {
+		if (!validatorByVersion.has(version)) {
+			throw new Error(`Missing validator for version ${version}.`);
+		}
+	}
 
 	for (const migration of migrations) {
 		const fromIndex = indexByVersion.get(migration.from);
@@ -102,13 +131,29 @@ export function createMigrationRegistry(
 
 	function migrate(input: unknown): unknown {
 		const version = detectSchemaVersion(input);
-		const startIndex =
-			version === null ? undefined : indexByVersion.get(version);
+		if (version === null) {
+			throw new TestGraphMigrationError("UNSUPPORTED_SCHEMA_VERSION", version);
+		}
+		const startIndex = indexByVersion.get(version);
 		if (startIndex === undefined) {
 			throw new TestGraphMigrationError("UNSUPPORTED_SCHEMA_VERSION", version);
 		}
+		const validator = validatorByVersion.get(version);
+		if (validator === undefined) {
+			throw new Error(`Missing validator for version ${version}.`);
+		}
 
 		let current = structuredClone(input);
+		try {
+			current = validator.validate(current);
+		} catch (cause) {
+			throw new TestGraphMigrationError(
+				"SCHEMA_VALIDATION_FAILED",
+				version,
+				null,
+				cause,
+			);
+		}
 		for (let i = startIndex; i < versionOrder.length - 1; i++) {
 			const from = versionOrder[i] as string;
 			const to = versionOrder[i + 1] as string;
