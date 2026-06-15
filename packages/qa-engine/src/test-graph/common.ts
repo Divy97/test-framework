@@ -14,16 +14,64 @@ export type JsonValue =
 	| JsonValue[]
 	| { [key: string]: JsonValue };
 
-export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
-	z.union([
-		z.string(),
-		z.number(),
-		z.boolean(),
-		z.null(),
-		z.array(jsonValueSchema),
-		z.record(z.string(), jsonValueSchema),
-	]),
-);
+function isJsonValue(
+	value: unknown,
+	ancestors = new Set<object>(),
+): value is JsonValue {
+	if (
+		value === null ||
+		typeof value === "string" ||
+		typeof value === "boolean"
+	) {
+		return true;
+	}
+	if (typeof value === "number") return Number.isFinite(value);
+	if (typeof value !== "object" || ancestors.has(value)) return false;
+
+	const prototype = Object.getPrototypeOf(value) as unknown;
+	if (
+		!Array.isArray(value) &&
+		prototype !== Object.prototype &&
+		prototype !== null
+	) {
+		return false;
+	}
+
+	ancestors.add(value);
+	const valid = Array.isArray(value)
+		? Array.from({ length: value.length }, (_, index) => index).every(
+				(index) => index in value && isJsonValue(value[index], ancestors),
+			)
+		: Reflect.ownKeys(value).every(
+				(key) =>
+					typeof key === "string" &&
+					Object.prototype.propertyIsEnumerable.call(value, key) &&
+					isJsonValue((value as Record<string, unknown>)[key], ancestors),
+			);
+	ancestors.delete(value);
+	return valid;
+}
+
+function cloneJsonValue(value: JsonValue): JsonValue {
+	if (Array.isArray(value)) return value.map(cloneJsonValue);
+	if (value !== null && typeof value === "object") {
+		const clone: Record<string, JsonValue> = {};
+		for (const key of Object.keys(value)) {
+			Object.defineProperty(clone, key, {
+				value: cloneJsonValue(value[key] as JsonValue),
+				enumerable: true,
+				configurable: true,
+				writable: true,
+			});
+		}
+		return clone;
+	}
+	return value;
+}
+
+export const jsonValueSchema: z.ZodType<JsonValue> = z
+	.custom<JsonValue>(isJsonValue, { message: "Invalid JSON value." })
+	.transform(cloneJsonValue);
 
 /** RFC3339 timestamp; an explicit `Z` or numeric offset is required. */
 export const rfc3339Schema = z.iso.datetime({ offset: true });
