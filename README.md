@@ -22,7 +22,9 @@ packages/
   artifacts/  local artifact paths and persistence helpers
   config/     shared TypeScript config
   core/       product schemas and domain types
+  evals/      comparative eval harness, calibrated corpus, and baseline
   planner/    planning contracts over core + repo scan
+  qa-engine/  canonical test graph: schema, validation, serialization
   repo-scan   repo scan contracts
 ```
 
@@ -33,7 +35,19 @@ pnpm install
 pnpm check-types
 pnpm check
 pnpm dev:mcp
+pnpm eval          # score the committed corpus and compare to the baseline
+pnpm eval:update   # re-record the accepted baseline (review the diff)
 ```
+
+## Evaluation
+
+`packages/evals` is the comparative eval harness. `pnpm eval` scores every
+committed candidate (`raw-model`, `host-only`, `qa-engine`) over a small
+calibrated corpus against a hand-authored ground truth, using deterministic
+reference-based scoring — no live model calls. It emits a byte-stable
+`results.json` plus a Markdown report and fails on regression against the accepted
+baseline. See [ADR-0009](docs/adr/0009-reference-based-deterministic-eval.md) and
+the [plan](docs/superpowers/plans/2026-06-15-eval-harness-and-baseline.md).
 
 ## Current MCP Implementation
 

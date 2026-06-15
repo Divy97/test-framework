@@ -10,6 +10,10 @@ without new evidence:
 5. [Defer cloud; use modular monolith](0005-defer-cloud-use-modular-monolith.md)
 6. [Reject validator-only product](0006-reject-validator-only-product.md)
 7. [Adopt a versioned, deterministic Test Graph contract](0007-versioned-test-graph-contract.md)
+9. [Reference-based, annotation-driven deterministic evaluation](0009-reference-based-deterministic-eval.md)
+
+ADR 0008 (V2 dependency-aware execution and explicit healing) is reserved on the
+`docs/competitive-landscape` branch and lands when that branch merges.
 
 Canonical system design:
 [Verification Intelligence Architecture](../superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md).
