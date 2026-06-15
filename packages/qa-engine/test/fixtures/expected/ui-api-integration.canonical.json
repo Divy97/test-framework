@@ -1,0 +1,755 @@
+{
+	"assertions": [
+		{
+			"expected": 201,
+			"id": "assert_45a18463aa751b98a61b",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/accounts"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_5131de74033dd133ed51",
+			"subject": "create account response status",
+			"testCaseId": "case_5a89b2e0ae0300aa841b"
+		},
+		{
+			"id": "assert_2d610122a8790bf541af",
+			"matcher": "exists",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/accounts"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "created account id",
+			"testCaseId": "case_5a89b2e0ae0300aa841b"
+		},
+		{
+			"id": "assert_ea13d0b92548a5ca7815",
+			"matcher": "conformsToSchema",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/accounts"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"schemaRef": "account.response.schema.json",
+			"subject": "create account response body",
+			"testCaseId": "case_5a89b2e0ae0300aa841b"
+		},
+		{
+			"expected": "/dashboard",
+			"id": "assert_49541552db2130be6c21",
+			"matcher": "equals",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/dashboard"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_6b0ea8691e30231e9828",
+			"subject": "current route",
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"id": "assert_40e1824750a014ec79c7",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/dashboard",
+				"selector": "#welcome"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"subject": "welcome banner",
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"expected": "Welcome",
+			"id": "assert_4f66cafed8e626c71ca0",
+			"matcher": "contains",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/dashboard",
+				"selector": "#welcome"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_7bc71c8a0048a65ecb03"
+				],
+				"kind": "inferred"
+			},
+			"subject": "welcome banner text",
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"id": "assert_86943087b83b0721586a",
+			"matcher": "hidden",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/login",
+				"selector": "#login-error"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"subject": "login error banner",
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"expected": 401,
+			"id": "assert_6f1adc8191f65e0af34c",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_4a82cb1c12fe5bfe4fce",
+			"subject": "invalid login response status",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"expected": 4,
+			"id": "assert_5af5d83680079409d0b7",
+			"matcher": "lessThanOrEqual",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "remaining login attempts",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"id": "assert_5b8522310c09fcc05454",
+			"matcher": "notExists",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "response token field",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"expected": "password",
+			"id": "assert_6193cf6be93480ee371d",
+			"matcher": "notContains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "error message",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"flags": "i",
+			"id": "assert_759bd4b2d096143a40b8",
+			"matcher": "matches",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"pattern": "^AUTH_[A-Z_]+$",
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "error code",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"expected": 0,
+			"id": "assert_7cf0d534ad5554f9303f",
+			"matcher": "greaterThan",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "remaining login attempts",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"expected": 1,
+			"id": "assert_83565e2a9b71c8b7eea2",
+			"matcher": "count",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "error count",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		},
+		{
+			"expected": "OK",
+			"id": "assert_93cd272e60f8f457450a",
+			"matcher": "notEquals",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"subject": "error code",
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		}
+	],
+	"createdAt": "2026-06-14T10:00:00.000Z",
+	"dataRequirements": [
+		{
+			"description": "A registered account used to exercise login.",
+			"id": "data_a5a38e34f231a939b9e8",
+			"kind": "account",
+			"name": "Test account",
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "case-produced",
+			"requiredState": {
+				"active": true
+			},
+			"sensitivity": "pii"
+		}
+	],
+	"evidence": [
+		{
+			"claim": "POST /api/login returns 200 with a session token.",
+			"id": "ev_630a97715b4310967410",
+			"kind": "api-contract",
+			"sourceId": "src_d1ee76ef6c705a104a99"
+		},
+		{
+			"claim": "A login route exists at /login.",
+			"id": "ev_7bc71c8a0048a65ecb03",
+			"kind": "repository-signal",
+			"locator": {
+				"kind": "file",
+				"path": "src/app/login/page.tsx",
+				"startLine": 1
+			},
+			"sourceId": "src_39bed6ee5830863f2606"
+		},
+		{
+			"claim": "Registered users must log in with email and password.",
+			"id": "ev_8e16d5f3e13a0c1de422",
+			"kind": "statement",
+			"sourceId": "src_d1ee76ef6c705a104a99"
+		}
+	],
+	"features": [
+		{
+			"description": "Email and password authentication.",
+			"id": "feat_2b6f7b4d32997d8edac5",
+			"name": "Authentication",
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"requirementIds": [
+				"req_c9b990e64001246d3483",
+				"req_cbc2b6731e619d9bbf7c"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"kind": "ui",
+					"route": "/login"
+				},
+				{
+					"kind": "api",
+					"method": "POST",
+					"path": "/api/login"
+				}
+			]
+		},
+		{
+			"description": "Session lifecycle and expiry.",
+			"id": "feat_40072c05adef21acfd6d",
+			"name": "Session management",
+			"parentFeatureId": "feat_2b6f7b4d32997d8edac5",
+			"provenance": {
+				"evidenceIds": [
+					"ev_7bc71c8a0048a65ecb03"
+				],
+				"kind": "inferred"
+			},
+			"requirementIds": [
+				"req_b66060c132bbb2e4e00c"
+			],
+			"risk": "medium",
+			"targets": [
+				{
+					"description": "Session store",
+					"kind": "generic"
+				}
+			]
+		}
+	],
+	"generation": {
+		"generatedAt": "2026-06-14T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_9495025b7d8d0d0968d9",
+		"inputFingerprint": "sha256:demo-input",
+		"methodologyVersion": "1.0.0",
+		"repositoryRevision": "abc1234",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "1.0.0"
+	},
+	"openQuestions": [
+		{
+			"answer": "Minimum 12 characters with one symbol.",
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_3b53a10702d3c22b9786",
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"question": "Which password policy applies to login validation?",
+			"status": "answered"
+		}
+	],
+	"planId": "plan_0b90e147f1bb76ff5469",
+	"planVersion": 1,
+	"projectId": "prj_087178311dd0b5489bed",
+	"requirements": [
+		{
+			"id": "req_b66060c132bbb2e4e00c",
+			"kind": "non-functional",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [],
+				"kind": "assumption",
+				"rationale": "No explicit session policy was provided; assuming a 24h expiry."
+			},
+			"risk": "low",
+			"statement": "A session expires after 24 hours."
+		},
+		{
+			"id": "req_c9b990e64001246d3483",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_7bc71c8a0048a65ecb03"
+				],
+				"kind": "inferred"
+			},
+			"risk": "medium",
+			"statement": "The login form is served at /login."
+		},
+		{
+			"id": "req_cbc2b6731e619d9bbf7c",
+			"kind": "functional",
+			"openQuestionIds": [
+				"question_3b53a10702d3c22b9786"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "A registered user can log in with valid credentials."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_39bed6ee5830863f2606",
+			"kind": "repository",
+			"locator": "src/app/login",
+			"supplied": true,
+			"title": "Repository scan"
+		},
+		{
+			"id": "src_d1ee76ef6c705a104a99",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Login feature request"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"body": {
+					"email": "qa@example.com",
+					"password": "Sup3r-Secret"
+				},
+				"headers": {
+					"content-type": "application/json"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/api/accounts"
+			},
+			"description": "Create a registered account through the accounts API.",
+			"id": "step_5131de74033dd133ed51",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_5a89b2e0ae0300aa841b"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/login"
+			},
+			"description": "Open the login page.",
+			"id": "step_af4b627261faf0cc9d2d",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "submit",
+				"selector": "#login-form"
+			},
+			"description": "Fill and submit valid credentials.",
+			"id": "step_67951bd9baba2a72c406",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"action": {
+				"condition": "session cookie is set",
+				"kind": "wait",
+				"timeoutMs": 5000
+			},
+			"description": "Wait for the session to be established.",
+			"id": "step_6b0ea8691e30231e9828",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_7bc71c8a0048a65ecb03"
+				],
+				"kind": "inferred"
+			},
+			"testCaseId": "case_9098d44f9b85f0551574"
+		},
+		{
+			"action": {
+				"body": {
+					"email": "qa@example.com",
+					"password": "wrong"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"description": "Submit an invalid password.",
+			"id": "step_4a82cb1c12fe5bfe4fce",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_d5e4403aa46c9f598658"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "not-applicable",
+				"permissions": [
+					"accounts:write"
+				],
+				"role": "system"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [
+					"case_9098d44f9b85f0551574"
+				],
+				"dataRequirementIds": [
+					"data_a5a38e34f231a939b9e8"
+				],
+				"instructions": "Delete the provisioned account after login verification.",
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_2b6f7b4d32997d8edac5"
+			],
+			"id": "case_5a89b2e0ae0300aa841b",
+			"objective": "Create the account other login cases depend on.",
+			"postconditions": [
+				{
+					"description": "A registered account exists.",
+					"expectedState": {
+						"active": true
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "The accounts API is reachable."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [
+				"data_a5a38e34f231a939b9e8"
+			],
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_cbc2b6731e619d9bbf7c"
+			],
+			"risk": "medium",
+			"riskRationale": "Account setup gates downstream login verification.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/accounts"
+			},
+			"title": "Provision a registered test account",
+			"type": "integration"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "registered-user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_a5a38e34f231a939b9e8"
+			],
+			"dependsOnCaseIds": [
+				"case_5a89b2e0ae0300aa841b"
+			],
+			"featureIds": [
+				"feat_2b6f7b4d32997d8edac5"
+			],
+			"id": "case_9098d44f9b85f0551574",
+			"objective": "A registered user logs in and reaches the dashboard.",
+			"postconditions": [
+				{
+					"description": "The user is on the dashboard."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A registered account exists."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_8e16d5f3e13a0c1de422"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_c9b990e64001246d3483",
+				"req_cbc2b6731e619d9bbf7c"
+			],
+			"risk": "high",
+			"riskRationale": "Login is the primary entry point to the product.",
+			"target": {
+				"kind": "ui",
+				"route": "/login"
+			},
+			"title": "Login succeeds with valid credentials",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "registered-user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_a5a38e34f231a939b9e8"
+			],
+			"dependsOnCaseIds": [
+				"case_5a89b2e0ae0300aa841b"
+			],
+			"featureIds": [
+				"feat_2b6f7b4d32997d8edac5"
+			],
+			"id": "case_d5e4403aa46c9f598658",
+			"objective": "Login with a wrong password is denied.",
+			"postconditions": [
+				{
+					"description": "No session is established."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A registered account exists."
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_630a97715b4310967410"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_cbc2b6731e619d9bbf7c"
+			],
+			"risk": "medium",
+			"riskRationale": "Auth must fail closed to protect accounts.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/api/login"
+			},
+			"title": "Invalid credentials are rejected",
+			"type": "negative"
+		}
+	],
+	"title": "Checkout login plan",
+	"updatedAt": "2026-06-14T10:00:00.000Z"
+}

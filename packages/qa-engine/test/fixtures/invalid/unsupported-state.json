@@ -1,0 +1,176 @@
+{
+	"schemaVersion": "test-graph/v1",
+	"projectId": "prj_15072ce1245915e2132a",
+	"planId": "plan_a3dc9b9e0d01da2b88a1",
+	"planVersion": 1,
+	"title": "Demo plan",
+	"status": "archived",
+	"createdAt": "2026-06-14T10:00:00.000Z",
+	"updatedAt": "2026-06-14T10:00:00.000Z",
+	"generation": {
+		"id": "gen_08d704021d10ff2ef512",
+		"generatedAt": "2026-06-14T10:00:00.000Z",
+		"methodologyVersion": "1.0.0",
+		"workflowVersion": "1.0.0",
+		"inputFingerprint": "demo-fingerprint",
+		"generator": {
+			"kind": "manual"
+		},
+		"status": "complete",
+		"warnings": []
+	},
+	"sources": [
+		{
+			"id": "src_256793b501129b1d1a9a",
+			"kind": "feature-request",
+			"title": "Login feature request",
+			"supplied": true
+		}
+	],
+	"evidence": [
+		{
+			"id": "ev_4d5a7eca453863538a9a",
+			"sourceId": "src_256793b501129b1d1a9a",
+			"kind": "statement",
+			"claim": "Users must be able to log in with email and password."
+		}
+	],
+	"requirements": [
+		{
+			"id": "req_2b003a546cc337b2159a",
+			"statement": "A registered user can log in with valid credentials.",
+			"kind": "functional",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_4d5a7eca453863538a9a"
+				]
+			},
+			"priority": "p0",
+			"risk": "high",
+			"openQuestionIds": []
+		}
+	],
+	"features": [
+		{
+			"id": "feat_71f655134659ef0edb1f",
+			"name": "Authentication",
+			"description": "Email and password authentication.",
+			"requirementIds": [
+				"req_2b003a546cc337b2159a"
+			],
+			"targets": [
+				{
+					"kind": "ui",
+					"route": "/login"
+				}
+			],
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_4d5a7eca453863538a9a"
+				]
+			},
+			"risk": "high"
+		}
+	],
+	"testCases": [
+		{
+			"id": "case_638cc75f6fad1aeb5c0c",
+			"title": "Login succeeds with valid credentials",
+			"objective": "Verify a registered user can log in.",
+			"type": "positive",
+			"priority": "p0",
+			"risk": "high",
+			"riskRationale": "Authentication is the entry point to the product.",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_4d5a7eca453863538a9a"
+				]
+			},
+			"requirementIds": [
+				"req_2b003a546cc337b2159a"
+			],
+			"featureIds": [
+				"feat_71f655134659ef0edb1f"
+			],
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"actor": {
+				"role": "registered-user",
+				"authentication": "anonymous",
+				"permissions": []
+			},
+			"target": {
+				"kind": "ui",
+				"route": "/login"
+			},
+			"preconditions": [
+				{
+					"description": "A registered account exists."
+				}
+			],
+			"dependsOnCaseIds": [],
+			"consumesDataRequirementIds": [],
+			"producesDataRequirementIds": [],
+			"postconditions": [
+				{
+					"description": "User is on the dashboard."
+				}
+			],
+			"cleanup": {
+				"intent": "none",
+				"dataRequirementIds": [],
+				"afterCaseIds": []
+			},
+			"automation": {
+				"readiness": "ready",
+				"blockers": []
+			}
+		}
+	],
+	"steps": [
+		{
+			"id": "step_82f498a8934cf3702557",
+			"testCaseId": "case_638cc75f6fad1aeb5c0c",
+			"order": 1,
+			"description": "Submit valid credentials on the login form.",
+			"action": {
+				"kind": "interact",
+				"operation": "submit",
+				"selector": "#login-form"
+			},
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_4d5a7eca453863538a9a"
+				]
+			}
+		}
+	],
+	"assertions": [
+		{
+			"id": "assert_2a872e287aa962cb2747",
+			"testCaseId": "case_638cc75f6fad1aeb5c0c",
+			"stepId": "step_82f498a8934cf3702557",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_4d5a7eca453863538a9a"
+				]
+			},
+			"subject": "current route",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/dashboard"
+			},
+			"matcher": "equals",
+			"expected": "/dashboard"
+		}
+	],
+	"dataRequirements": [],
+	"openQuestions": []
+}

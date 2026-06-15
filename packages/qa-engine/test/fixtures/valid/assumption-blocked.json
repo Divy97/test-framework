@@ -1,0 +1,198 @@
+{
+	"schemaVersion": "test-graph/v1",
+	"projectId": "prj_79a9d66f1af546da61b5",
+	"planId": "plan_7e1ac41c46a7ff24888c",
+	"planVersion": 1,
+	"title": "SSO onboarding plan",
+	"status": "incomplete",
+	"createdAt": "2026-06-14T10:00:00.000Z",
+	"updatedAt": "2026-06-14T10:00:00.000Z",
+	"generation": {
+		"id": "gen_655c7ef853193e21248c",
+		"generatedAt": "2026-06-14T10:00:00.000Z",
+		"methodologyVersion": "1.0.0",
+		"workflowVersion": "1.0.0",
+		"inputFingerprint": "sha256:sso-input",
+		"generator": {
+			"kind": "manual"
+		},
+		"status": "incomplete",
+		"warnings": [
+			"Identity provider is unknown; plan is incomplete."
+		]
+	},
+	"sources": [
+		{
+			"id": "src_4259eb3377353b6e4356",
+			"kind": "feature-request",
+			"title": "SSO onboarding request",
+			"supplied": true
+		}
+	],
+	"evidence": [
+		{
+			"id": "ev_6b4a8f3bbed289c129a9",
+			"sourceId": "src_4259eb3377353b6e4356",
+			"kind": "statement",
+			"claim": "Enterprise users should sign in with single sign-on."
+		}
+	],
+	"requirements": [
+		{
+			"id": "req_dd694392a2b09c10147f",
+			"statement": "Users authenticate through an enterprise identity provider.",
+			"kind": "security",
+			"provenance": {
+				"kind": "assumption",
+				"evidenceIds": [],
+				"rationale": "The request implies SSO but no identity provider was named."
+			},
+			"priority": "p1",
+			"risk": "high",
+			"openQuestionIds": [
+				"question_60f0e094a76cf6761add"
+			]
+		}
+	],
+	"features": [
+		{
+			"id": "feat_3c82ece14de9931c7770",
+			"name": "Single sign-on",
+			"description": "Delegated authentication via an external identity provider.",
+			"requirementIds": [
+				"req_dd694392a2b09c10147f"
+			],
+			"targets": [
+				{
+					"kind": "generic",
+					"description": "Identity provider redirect"
+				}
+			],
+			"provenance": {
+				"kind": "assumption",
+				"evidenceIds": [],
+				"rationale": "The request implies SSO but no identity provider was named."
+			},
+			"risk": "high"
+		}
+	],
+	"dataRequirements": [],
+	"testCases": [
+		{
+			"id": "case_283b3a50e0dfcaf2e304",
+			"title": "SSO login redirects to the identity provider",
+			"objective": "Starting SSO sends the user to the configured IdP.",
+			"type": "integration",
+			"priority": "p1",
+			"risk": "high",
+			"riskRationale": "SSO is the only intended authentication path.",
+			"provenance": {
+				"kind": "assumption",
+				"evidenceIds": [],
+				"rationale": "The request implies SSO but no identity provider was named."
+			},
+			"requirementIds": [
+				"req_dd694392a2b09c10147f"
+			],
+			"featureIds": [
+				"feat_3c82ece14de9931c7770"
+			],
+			"qualityTags": [
+				"security"
+			],
+			"actor": {
+				"role": "enterprise-user",
+				"authentication": "anonymous",
+				"permissions": []
+			},
+			"target": {
+				"kind": "generic",
+				"description": "SSO start endpoint"
+			},
+			"preconditions": [
+				{
+					"description": "An identity provider is configured."
+				}
+			],
+			"dependsOnCaseIds": [],
+			"consumesDataRequirementIds": [],
+			"producesDataRequirementIds": [],
+			"postconditions": [
+				{
+					"description": "The user is at the identity provider."
+				}
+			],
+			"cleanup": {
+				"intent": "external",
+				"dataRequirementIds": [],
+				"afterCaseIds": [],
+				"instructions": "Identity provider session is cleared out of band."
+			},
+			"automation": {
+				"readiness": "blocked",
+				"blockers": [
+					"Identity provider is unknown."
+				]
+			}
+		}
+	],
+	"steps": [
+		{
+			"id": "step_686662013a47d466d411",
+			"testCaseId": "case_283b3a50e0dfcaf2e304",
+			"order": 1,
+			"description": "Trigger the SSO start flow.",
+			"action": {
+				"kind": "navigate",
+				"route": "/auth/sso/start"
+			},
+			"provenance": {
+				"kind": "assumption",
+				"evidenceIds": [],
+				"rationale": "The request implies SSO but no identity provider was named."
+			}
+		}
+	],
+	"assertions": [
+		{
+			"id": "assert_681217010f69558b8f0e",
+			"testCaseId": "case_283b3a50e0dfcaf2e304",
+			"stepId": "step_686662013a47d466d411",
+			"provenance": {
+				"kind": "assumption",
+				"evidenceIds": [],
+				"rationale": "The request implies SSO but no identity provider was named."
+			},
+			"subject": "redirect target",
+			"observationPoint": {
+				"kind": "generic",
+				"description": "Redirect location"
+			},
+			"matcher": "exists"
+		}
+	],
+	"openQuestions": [
+		{
+			"id": "question_60f0e094a76cf6761add",
+			"question": "Which identity provider should SSO integrate with?",
+			"status": "open",
+			"blocking": true,
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_6b4a8f3bbed289c129a9"
+				]
+			},
+			"blockedEntityRefs": [
+				{
+					"kind": "requirement",
+					"id": "req_dd694392a2b09c10147f"
+				},
+				{
+					"kind": "testCase",
+					"id": "case_283b3a50e0dfcaf2e304"
+				}
+			]
+		}
+	]
+}
