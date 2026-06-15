@@ -863,15 +863,22 @@ export type Migration<TFrom = unknown, TTo = unknown> = {
 	validate(input: unknown): TTo;
 };
 
+export type VersionValidator = {
+	version: string;
+	validate(input: unknown): unknown;
+};
+
 export function createMigrationRegistry(
 	versions: readonly string[],
 	migrations: readonly Migration[],
+	validators: readonly VersionValidator[],
 ): MigrationRegistry;
 ```
 
 Guarantees:
 
 - `versions` order defines adjacency.
+- Every accepted input version validates before migration or identity return.
 - Exactly one migration per non-current adjacent pair.
 - Migration receives deep-cloned input and must return new value.
 - Validate after each hop.
