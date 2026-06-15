@@ -1,0 +1,60 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "integration-failure",
+	"title": "Payment gateway timeout handling",
+	"category": "integration-failure",
+	"brief": "On payment gateway timeout the order is not confirmed and is rolled back; retries are bounded.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "document",
+			"title": "Payments spec",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:timeout-rollback",
+			"statement": "Gateway timeout rolls back the order.",
+			"kind": "constraint",
+			"expectedStrength": "explicit",
+			"priority": "p0",
+			"risk": "high",
+			"mustCover": true
+		},
+		{
+			"truthKey": "req:bounded-retry",
+			"statement": "Retries are bounded.",
+			"kind": "non-functional",
+			"expectedStrength": "inferred",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": false
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:timeout-rolls-back",
+			"title": "Timeout rolls back order",
+			"requirementKeys": [
+				"req:timeout-rollback"
+			],
+			"type": "negative",
+			"priority": "p0",
+			"risk": "high",
+			"expectedAssertionHint": "order is not confirmed after timeout"
+		},
+		{
+			"truthKey": "scn:retry-bounded",
+			"title": "Retries are bounded",
+			"requirementKeys": [
+				"req:bounded-retry"
+			],
+			"type": "edge",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "no more than N retries"
+		}
+	],
+	"forbiddenClaims": []
+}

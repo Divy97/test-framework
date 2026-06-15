@@ -1,0 +1,143 @@
+{
+	"schemaVersion": "test-graph/v1",
+	"projectId": "prj_21c936d0aa340f89fe9f",
+	"planId": "plan_fb93459abc71b9c2e0a1",
+	"planVersion": 1,
+	"title": "Idempotency plan",
+	"status": "draft",
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"updatedAt": "2026-06-15T10:00:00.000Z",
+	"generation": {
+		"id": "gen_c6fd7d72aade985745d2",
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"methodologyVersion": "0.1.0",
+		"workflowVersion": "0.1.0",
+		"inputFingerprint": "sha256:stateful-workflow-raw-model",
+		"generator": {
+			"kind": "model",
+			"provider": "anthropic",
+			"model": "claude-opus-4-8"
+		},
+		"status": "incomplete",
+		"warnings": []
+	},
+	"sources": [
+		{
+			"id": "src_d3cb501706e1c1ce4e7c",
+			"kind": "feature-request",
+			"title": "Feature spec",
+			"supplied": true
+		}
+	],
+	"evidence": [
+		{
+			"id": "ev_177e1a098dd651153b17",
+			"sourceId": "src_d3cb501706e1c1ce4e7c",
+			"kind": "statement",
+			"claim": "Orders can be submitted."
+		}
+	],
+	"requirements": [
+		{
+			"id": "req_3874e99bd6f10de1840f",
+			"statement": "Orders submit.",
+			"kind": "functional",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_177e1a098dd651153b17"
+				]
+			},
+			"priority": "p2",
+			"risk": "low",
+			"openQuestionIds": []
+		}
+	],
+	"features": [],
+	"dataRequirements": [],
+	"testCases": [
+		{
+			"id": "case_2afdcaaf34ce3a3600f4",
+			"title": "Submit an order",
+			"objective": "Order works.",
+			"type": "positive",
+			"priority": "p2",
+			"risk": "low",
+			"riskRationale": "Happy path.",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_177e1a098dd651153b17"
+				]
+			},
+			"requirementIds": [],
+			"featureIds": [],
+			"qualityTags": [],
+			"actor": {
+				"role": "user",
+				"authentication": "authenticated",
+				"permissions": []
+			},
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"preconditions": [],
+			"dependsOnCaseIds": [],
+			"consumesDataRequirementIds": [],
+			"producesDataRequirementIds": [],
+			"postconditions": [],
+			"cleanup": {
+				"intent": "none",
+				"dataRequirementIds": [],
+				"afterCaseIds": []
+			},
+			"automation": {
+				"readiness": "ready",
+				"blockers": []
+			}
+		}
+	],
+	"steps": [
+		{
+			"id": "step_1b5769597b5d6b19c0ed",
+			"testCaseId": "case_2afdcaaf34ce3a3600f4",
+			"order": 1,
+			"description": "Submit one order.",
+			"action": {
+				"kind": "request",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_177e1a098dd651153b17"
+				]
+			}
+		}
+	],
+	"assertions": [
+		{
+			"id": "assert_f32092eb007c1aee48d0",
+			"testCaseId": "case_2afdcaaf34ce3a3600f4",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_177e1a098dd651153b17"
+				]
+			},
+			"stepId": "step_1b5769597b5d6b19c0ed",
+			"subject": "status",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"matcher": "statusCode",
+			"expected": 201
+		}
+	],
+	"openQuestions": []
+}

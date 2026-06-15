@@ -1,0 +1,40 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "unsupported-assumptions",
+	"title": "CSV export",
+	"category": "unsupported-assumptions",
+	"brief": "Users can export their data as a CSV file.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "feature-request",
+			"title": "Export spec",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:export-csv",
+			"statement": "Users can export data as CSV.",
+			"kind": "functional",
+			"expectedStrength": "explicit",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:export-downloads-csv",
+			"title": "Export downloads a CSV",
+			"requirementKeys": [
+				"req:export-csv"
+			],
+			"type": "positive",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "response is a CSV attachment"
+		}
+	],
+	"forbiddenClaims": []
+}

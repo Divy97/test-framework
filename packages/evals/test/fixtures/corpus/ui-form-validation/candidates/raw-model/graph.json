@@ -1,0 +1,138 @@
+{
+	"schemaVersion": "test-graph/v1",
+	"projectId": "prj_7aea345837d6c05718fa",
+	"planId": "plan_5ccf16397acb229dd764",
+	"planVersion": 1,
+	"title": "Signup form plan",
+	"status": "draft",
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"updatedAt": "2026-06-15T10:00:00.000Z",
+	"generation": {
+		"id": "gen_ca1eccf338f5560a7f81",
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"methodologyVersion": "0.1.0",
+		"workflowVersion": "0.1.0",
+		"inputFingerprint": "sha256:ui-form-validation-raw-model",
+		"generator": {
+			"kind": "model",
+			"provider": "anthropic",
+			"model": "claude-opus-4-8"
+		},
+		"status": "incomplete",
+		"warnings": []
+	},
+	"sources": [
+		{
+			"id": "src_244483676861c8921173",
+			"kind": "feature-request",
+			"title": "Feature spec",
+			"supplied": true
+		}
+	],
+	"evidence": [
+		{
+			"id": "ev_388688343acd59711aee",
+			"sourceId": "src_244483676861c8921173",
+			"kind": "statement",
+			"claim": "Email is required."
+		}
+	],
+	"requirements": [
+		{
+			"id": "req_80f8acb3282ce73005a9",
+			"statement": "Email required.",
+			"kind": "functional",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_388688343acd59711aee"
+				]
+			},
+			"priority": "p1",
+			"risk": "medium",
+			"openQuestionIds": []
+		}
+	],
+	"features": [],
+	"dataRequirements": [],
+	"testCases": [
+		{
+			"id": "case_80a13d26b78d9e34dd3c",
+			"title": "Check the form",
+			"objective": "Make sure it works.",
+			"type": "positive",
+			"priority": "p2",
+			"risk": "low",
+			"riskRationale": "General.",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_388688343acd59711aee"
+				]
+			},
+			"requirementIds": [],
+			"featureIds": [],
+			"qualityTags": [],
+			"actor": {
+				"role": "user",
+				"authentication": "anonymous",
+				"permissions": []
+			},
+			"target": {
+				"kind": "generic",
+				"description": "the form"
+			},
+			"preconditions": [],
+			"dependsOnCaseIds": [],
+			"consumesDataRequirementIds": [],
+			"producesDataRequirementIds": [],
+			"postconditions": [],
+			"cleanup": {
+				"intent": "none",
+				"dataRequirementIds": [],
+				"afterCaseIds": []
+			},
+			"automation": {
+				"readiness": "ready",
+				"blockers": []
+			}
+		}
+	],
+	"steps": [
+		{
+			"id": "step_b5ceee34543b4f4ce557",
+			"testCaseId": "case_80a13d26b78d9e34dd3c",
+			"order": 1,
+			"description": "Open form.",
+			"action": {
+				"kind": "observe",
+				"subject": "form"
+			},
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_388688343acd59711aee"
+				]
+			}
+		}
+	],
+	"assertions": [
+		{
+			"id": "assert_af25dd1f972942090457",
+			"testCaseId": "case_80a13d26b78d9e34dd3c",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_388688343acd59711aee"
+				]
+			},
+			"subject": "page",
+			"observationPoint": {
+				"kind": "generic",
+				"description": "page"
+			},
+			"matcher": "exists"
+		}
+	],
+	"openQuestions": []
+}

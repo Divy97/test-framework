@@ -1,0 +1,23 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "integration-failure",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": true,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_08abbcbedc88ad586f75",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Only covers the happy path; ignores failure."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_5f262f32c93ddbeb35ce",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "No requirement; ignores timeout/rollback."
+		}
+	]
+}

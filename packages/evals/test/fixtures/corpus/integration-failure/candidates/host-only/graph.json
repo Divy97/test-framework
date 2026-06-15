@@ -1,0 +1,146 @@
+{
+	"assertions": [
+		{
+			"id": "assert_bf6986b0513c74ac5eae",
+			"matcher": "exists",
+			"observationPoint": {
+				"kind": "integration",
+				"operation": "charge",
+				"system": "payments"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_d903119b5ca916bc26df"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_027cd4cd9df2b8ebdd62",
+			"subject": "order rolled back",
+			"testCaseId": "case_7d64d6127536a707bc1e"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Timeout should roll back the order.",
+			"id": "ev_d903119b5ca916bc26df",
+			"kind": "statement",
+			"sourceId": "src_f4947427569af31ce1d9"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_9918270a222059ae60ff",
+		"inputFingerprint": "sha256:integration-failure-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_b0abb5dd4b0beaf67b0a",
+	"planVersion": 1,
+	"projectId": "prj_5ed3c634832cb2b7f524",
+	"requirements": [
+		{
+			"id": "req_64d9424a966f2051acb9",
+			"kind": "constraint",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_d903119b5ca916bc26df"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Timeout rolls back."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_f4947427569af31ce1d9",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "invoke",
+				"operation": "charge",
+				"system": "payments"
+			},
+			"description": "Timeout charge.",
+			"id": "step_027cd4cd9df2b8ebdd62",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_d903119b5ca916bc26df"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_7d64d6127536a707bc1e"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "not-applicable",
+				"permissions": [],
+				"role": "system"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_7d64d6127536a707bc1e",
+			"objective": "Check rollback.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_d903119b5ca916bc26df"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"reliability"
+			],
+			"requirementIds": [
+				"req_64d9424a966f2051acb9"
+			],
+			"risk": "high",
+			"riskRationale": "Money.",
+			"target": {
+				"kind": "integration",
+				"operation": "charge",
+				"system": "payments"
+			},
+			"title": "Timeout case",
+			"type": "negative"
+		}
+	],
+	"title": "Payment failure plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

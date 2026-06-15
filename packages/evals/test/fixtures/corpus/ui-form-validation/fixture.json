@@ -1,0 +1,60 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "ui-form-validation",
+	"title": "Signup form validation and submit state",
+	"category": "ui-form",
+	"brief": "A signup form validates email and disables submit until the form is valid.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "feature-request",
+			"title": "Feature spec",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:email-valid",
+			"statement": "Email is required and must be a valid address.",
+			"kind": "functional",
+			"expectedStrength": "explicit",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		},
+		{
+			"truthKey": "req:submit-gated",
+			"statement": "Submit is disabled until the form is valid.",
+			"kind": "ux",
+			"expectedStrength": "inferred",
+			"priority": "p2",
+			"risk": "low",
+			"mustCover": false
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:invalid-email-error",
+			"title": "Invalid email shows inline error",
+			"requirementKeys": [
+				"req:email-valid"
+			],
+			"type": "negative",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "inline error visible and submit blocked"
+		},
+		{
+			"truthKey": "scn:valid-enables-submit",
+			"title": "Valid form enables submit",
+			"requirementKeys": [
+				"req:submit-gated"
+			],
+			"type": "positive",
+			"priority": "p2",
+			"risk": "low",
+			"expectedAssertionHint": "submit becomes enabled"
+		}
+	],
+	"forbiddenClaims": []
+}

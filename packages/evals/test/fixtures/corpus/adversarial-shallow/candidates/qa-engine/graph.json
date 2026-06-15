@@ -1,0 +1,166 @@
+{
+	"assertions": [
+		{
+			"expected": "router",
+			"id": "assert_dc330410f528cafdcc7c",
+			"matcher": "contains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_04b37fd7151e10e157ef"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_bb411ed6592d4a61fa43",
+			"subject": "results[0].title",
+			"testCaseId": "case_94d733f3de2733cbdce4"
+		},
+		{
+			"expected": 0,
+			"id": "assert_e97882987e86e2425d59",
+			"matcher": "greaterThan",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_04b37fd7151e10e157ef"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_bb411ed6592d4a61fa43",
+			"subject": "results length",
+			"testCaseId": "case_94d733f3de2733cbdce4"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Search returns relevant results ranked by relevance.",
+			"id": "ev_04b37fd7151e10e157ef",
+			"kind": "statement",
+			"sourceId": "src_cee07490f9cf087b555b"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_b53b401a62d112868c9e",
+		"inputFingerprint": "sha256:adversarial-shallow-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_c353b7afdf03849cd020",
+	"planVersion": 1,
+	"projectId": "prj_09d8b7deae8cf9fee06a",
+	"requirements": [
+		{
+			"id": "req_f846626c7440eedcb1f8",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_04b37fd7151e10e157ef"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Search returns relevant results."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_cee07490f9cf087b555b",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/search?q=router"
+			},
+			"description": "Search for 'router'.",
+			"id": "step_bb411ed6592d4a61fa43",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_04b37fd7151e10e157ef"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_94d733f3de2733cbdce4"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_94d733f3de2733cbdce4",
+			"objective": "Verify relevant ranked results.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_04b37fd7151e10e157ef"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_f846626c7440eedcb1f8"
+			],
+			"risk": "medium",
+			"riskRationale": "Core feature.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/search"
+			},
+			"title": "Query returns ranked results",
+			"type": "positive"
+		}
+	],
+	"title": "Search plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

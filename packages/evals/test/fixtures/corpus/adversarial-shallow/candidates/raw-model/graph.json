@@ -1,0 +1,369 @@
+{
+	"assertions": [
+		{
+			"id": "assert_b31a2824dd2049a3bddc",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_9372b2ad9db1c8e7d01f",
+			"subject": "page",
+			"testCaseId": "case_5f5acbbe14e45a223147"
+		},
+		{
+			"id": "assert_5759af93b6500ed0fc1e",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_5b2d26d744e419460840",
+			"subject": "page",
+			"testCaseId": "case_5fc60b282a09db8616c8"
+		},
+		{
+			"id": "assert_54a575fed1ccbbe7a199",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_504249bf2fa96fdda3af",
+			"subject": "page",
+			"testCaseId": "case_650ee111147899f62a77"
+		},
+		{
+			"id": "assert_1da2458fcec21a45d137",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_fdce07d048988364e50d",
+			"subject": "page",
+			"testCaseId": "case_8ea1c1e3677b31a66d0e"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Search exists.",
+			"id": "ev_f0030d5e25967464ddc8",
+			"kind": "statement",
+			"sourceId": "src_cfaf79419b42cb30a79b"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_e2d8b905cde7faf1d454",
+		"inputFingerprint": "sha256:adversarial-shallow-raw-model",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_0e063fbf385683263b77",
+	"planVersion": 1,
+	"projectId": "prj_09d8b7deae8cf9fee06a",
+	"requirements": [
+		{
+			"id": "req_375e5d7df5a719eb71c5",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Search exists."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_cfaf79419b42cb30a79b",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/search"
+			},
+			"description": "Open the search page.",
+			"id": "step_9372b2ad9db1c8e7d01f",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_5f5acbbe14e45a223147"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/search"
+			},
+			"description": "Open the search page.",
+			"id": "step_5b2d26d744e419460840",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_5fc60b282a09db8616c8"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/search"
+			},
+			"description": "Open the search page.",
+			"id": "step_504249bf2fa96fdda3af",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_650ee111147899f62a77"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/search"
+			},
+			"description": "Open the search page.",
+			"id": "step_fdce07d048988364e50d",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_8ea1c1e3677b31a66d0e"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_5f5acbbe14e45a223147",
+			"objective": "Make sure search loads.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p2",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [],
+			"requirementIds": [
+				"req_375e5d7df5a719eb71c5"
+			],
+			"risk": "low",
+			"riskRationale": "Smoke check.",
+			"target": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"title": "Open search page (s2)",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_5fc60b282a09db8616c8",
+			"objective": "Make sure search loads.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p2",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [],
+			"requirementIds": [
+				"req_375e5d7df5a719eb71c5"
+			],
+			"risk": "low",
+			"riskRationale": "Smoke check.",
+			"target": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"title": "Open search page (s3)",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_650ee111147899f62a77",
+			"objective": "Make sure search loads.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p2",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [],
+			"requirementIds": [
+				"req_375e5d7df5a719eb71c5"
+			],
+			"risk": "low",
+			"riskRationale": "Smoke check.",
+			"target": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"title": "Open search page (s4)",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_8ea1c1e3677b31a66d0e",
+			"objective": "Make sure search loads.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p2",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_f0030d5e25967464ddc8"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [],
+			"requirementIds": [
+				"req_375e5d7df5a719eb71c5"
+			],
+			"risk": "low",
+			"riskRationale": "Smoke check.",
+			"target": {
+				"kind": "ui",
+				"route": "/search"
+			},
+			"title": "Open search page (s1)",
+			"type": "positive"
+		}
+	],
+	"title": "Search plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

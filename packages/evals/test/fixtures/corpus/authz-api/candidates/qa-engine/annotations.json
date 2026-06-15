@@ -1,0 +1,43 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "authz-api",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_b870f81aad855276bb6d",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:owner-only-delete"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"requirementId": "req_7ad8047803ba62ef68aa",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:list-scoped"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_e69065d1031ced309c19",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:non-owner-delete-403"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"caseId": "case_0f97f21478385433f872",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:list-only-own"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

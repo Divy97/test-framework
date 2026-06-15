@@ -1,0 +1,169 @@
+{
+	"assertions": [
+		{
+			"expected": 422,
+			"id": "assert_809a6c5457b3f18c9142",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/signup"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f91d9e547e3ecfa2644"
+				],
+				"kind": "assumption",
+				"rationale": "Stated assumption."
+			},
+			"stepId": "step_2be560d525d5fdb0e9da",
+			"subject": "response.status",
+			"testCaseId": "case_3faf76e072c2653ef50e"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Passwords must be strong; minimum length and lockout are unspecified.",
+			"id": "ev_6f91d9e547e3ecfa2644",
+			"kind": "statement",
+			"sourceId": "src_b5803491acb70ec5738c"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_9d12e7e16f09022f0ce3",
+		"inputFingerprint": "sha256:contradictory-spec-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_77c7c3f75e130c5e2e2c",
+	"planVersion": 1,
+	"projectId": "prj_c257df5b65f39f1acdc3",
+	"requirements": [
+		{
+			"id": "req_2946623f04dee97f21da",
+			"kind": "constraint",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f91d9e547e3ecfa2644"
+				],
+				"kind": "assumption",
+				"rationale": "Length unspecified; assuming 12 as a safe default."
+			},
+			"risk": "medium",
+			"statement": "Assume a minimum password length of 12."
+		},
+		{
+			"id": "req_62cf86e50c3043838423",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f91d9e547e3ecfa2644"
+				],
+				"kind": "assumption",
+				"rationale": "Lockout unspecified; assuming 5."
+			},
+			"risk": "low",
+			"statement": "Assume lockout after 5 attempts."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_b5803491acb70ec5738c",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"body": {
+					"password": "short123"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/signup"
+			},
+			"description": "Submit an 8-char password.",
+			"id": "step_2be560d525d5fdb0e9da",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f91d9e547e3ecfa2644"
+				],
+				"kind": "assumption",
+				"rationale": "Assumed minimum is 12."
+			},
+			"testCaseId": "case_3faf76e072c2653ef50e"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_3faf76e072c2653ef50e",
+			"objective": "Reject below assumed minimum.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f91d9e547e3ecfa2644"
+				],
+				"kind": "assumption",
+				"rationale": "Based on assumed minimum."
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_2946623f04dee97f21da"
+			],
+			"risk": "medium",
+			"riskRationale": "Weak passwords are risky.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/signup"
+			},
+			"title": "Short password rejected",
+			"type": "negative"
+		}
+	],
+	"title": "Password policy plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

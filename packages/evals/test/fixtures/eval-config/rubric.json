@@ -1,0 +1,16 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"riskWeight": { "low": 1, "medium": 2, "high": 3 },
+	"priorityWeight": { "p0": 4, "p1": 3, "p2": 2, "p3": 1 },
+	"dimensionWeights": {
+		"requirementRecall": 0.18,
+		"scenarioCoverage": 0.18,
+		"unsupportedClaims": 0.15,
+		"traceability": 0.12,
+		"assertionQuality": 0.12,
+		"executionReadiness": 0.1,
+		"evidenceCorrectness": 0.08,
+		"duplicateLowValue": 0.04,
+		"provenanceAccuracy": 0.03
+	}
+}
