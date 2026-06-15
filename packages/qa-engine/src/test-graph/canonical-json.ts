@@ -158,7 +158,12 @@ function deepSortKeys(value: unknown): unknown {
 		const source = value as Record<string, unknown>;
 		const sorted: Record<string, unknown> = {};
 		for (const key of Object.keys(source).sort(compareCodeUnits)) {
-			sorted[key] = deepSortKeys(source[key]);
+			Object.defineProperty(sorted, key, {
+				value: deepSortKeys(source[key]),
+				enumerable: true,
+				configurable: true,
+				writable: true,
+			});
 		}
 		return sorted;
 	}

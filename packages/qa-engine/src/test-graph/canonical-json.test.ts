@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { canonicalizeTestGraph, serializeTestGraph } from "./canonical-json.js";
-import type { Provenance } from "./common.js";
+import type { JsonValue, Provenance } from "./common.js";
 import { TestGraphValidationError } from "./findings.js";
 import { type TestGraphV1, testGraphV1Schema } from "./schema.js";
 import {
@@ -208,6 +208,23 @@ test("serialization does not mutate its input", async () => {
 	const frozen = JSON.stringify(input);
 	serializeTestGraph(input);
 	assert.equal(JSON.stringify(input), frozen);
+});
+
+test("canonical round-trip preserves __proto__ JSON keys", () => {
+	const input = buildValidTestGraph();
+	const requiredState = JSON.parse(
+		'{"__proto__":{"polluted":true},"value":"kept"}',
+	) as JsonValue;
+	const testCase = input.testCases[0];
+	const precondition = testCase?.preconditions[0];
+	if (precondition === undefined) throw new Error("builder lost precondition");
+	precondition.requiredState = requiredState;
+
+	const output = JSON.parse(serializeTestGraph(input)) as TestGraphV1;
+	const roundTripped = output.testCases[0]?.preconditions[0]?.requiredState;
+
+	assert.deepEqual(roundTripped, requiredState);
+	assert.equal(Object.hasOwn(roundTripped as object, "__proto__"), true);
 });
 
 test("output uses tab indentation and exactly one trailing newline", async () => {
