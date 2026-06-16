@@ -150,7 +150,7 @@ commit edits values without touching code.
       "title": "Task API spec",
       "supplied": true,
       "locators": [                 // optional; lets evidence-locator checks resolve
-        { "kind": "text", "anchor": "non-owners receive 403" }
+        { "kind": "text", "start": 120, "end": 142 }
       ]
     }
   ],
@@ -198,6 +198,9 @@ declared, so there is nothing to keep consistent.
   "arm": "qa-engine",
   "recordKind": "synthetic",        // or "recorded" once a real model produces it
   "expectValidationFailure": false, // true only for intentionally-broken arms
+  "sourceAnnotations": [
+    { "sourceId": "src_…", "sourceKey": "spec" }
+  ],
   "requirementAnnotations": [
     {
       "requirementId": "req_…",      // id present in graph.json
@@ -254,7 +257,8 @@ declared, so there is nothing to keep consistent.
   "evalSchemaVersion": "eval/v1",
   "maxUnsupportedRate": 0.15,     // > this => HF-UNSUPPORTED-RATE
   "minOverall": 0,                // 0 now; raised after calibration
-  "maxRegressionDelta": 0.0       // exact-match baseline this checkpoint
+  "maxRegressionDelta": 0.0,      // aggregate points, [0,100]
+  "maxUnsupportedRegressionDelta": 0.0 // unsupported fraction, [0,1]
 }
 ```
 
@@ -371,15 +375,17 @@ Deterministic; false positives are surfaced in `explain` and can be tuned in con
 - **Thresholds + rubric** are committed JSON validated by Zod. This checkpoint
   ships placeholders (`minOverall: 0`, exact-match baseline). The **calibration
   commit** — a separate, later change made after the first real run — records the
-  real `minOverall`, `maxUnsupportedRate`, and `maxRegressionDelta`, with a
-  rationale line in the PR. Per the architecture, thresholds are derived from the
-  first calibrated fixture set, not invented after seeing release results.
+  real `minOverall`, `maxUnsupportedRate`, `maxRegressionDelta`, and
+  `maxUnsupportedRegressionDelta`, with a rationale line in the PR. Per the
+  architecture, thresholds are derived from the first calibrated fixture set, not
+  invented after seeing release results.
 - **Baseline** = committed `test/fixtures/baseline/results.json` (+ `report.md`),
   keyed per `(fixtureId, arm)`. `pnpm eval` recomputes and diffs against it.
 - **Regression** (fails CI / non-zero exit) = for any `(fixture, arm)`: overall
   drops by more than `maxRegressionDelta`, **or** a new Hard-Fail appears that the
-  baseline did not record, **or** the unsupported rate rises. Baseline updates only
-  via `pnpm eval:update` in a PR that shows the diff and states why.
+  baseline did not record, **or** the unsupported score drops by more than
+  `maxUnsupportedRegressionDelta`. Baseline updates only via `pnpm eval:update` in
+  a PR that shows the diff and states why.
 
 ## The one command + determinism
 
