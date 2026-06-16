@@ -46,6 +46,24 @@ test("repeated runs are byte-identical", async () => {
 	assert.equal(first, second);
 });
 
+test("rubric fingerprint changes when scoring config changes", async () => {
+	const { rubric, thresholds } = await loadConfig();
+	const fixtures = await discoverCorpus(corpusDir);
+	const baseline = scoreCorpus(fixtures, rubric, thresholds).rubricFingerprint;
+	const changedRubric = scoreCorpus(
+		fixtures,
+		{ ...rubric, riskWeight: { ...rubric.riskWeight, high: 99 } },
+		thresholds,
+	).rubricFingerprint;
+	const changedThresholds = scoreCorpus(fixtures, rubric, {
+		...thresholds,
+		minOverall: 99,
+	}).rubricFingerprint;
+
+	assert.notEqual(changedRubric, baseline);
+	assert.notEqual(changedThresholds, baseline);
+});
+
 test("all eight required fixtures are present", async () => {
 	const fixtures = await discoverCorpus(corpusDir);
 	assert.equal(fixtures.length, 8);

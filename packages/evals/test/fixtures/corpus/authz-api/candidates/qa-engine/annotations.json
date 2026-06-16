@@ -4,6 +4,12 @@
 	"arm": "qa-engine",
 	"recordKind": "synthetic",
 	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_97b6819c012d23445ffb",
+			"sourceKey": "spec"
+		}
+	],
 	"requirementAnnotations": [
 		{
 			"requirementId": "req_b870f81aad855276bb6d",

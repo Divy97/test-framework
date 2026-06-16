@@ -50,6 +50,7 @@ export const thresholdsSchema = z
 		maxUnsupportedRate: z.number().min(0).max(1),
 		minOverall: z.number().min(0).max(100),
 		maxRegressionDelta: z.number().min(0),
+		maxUnsupportedRegressionDelta: z.number().min(0).max(1),
 	})
 	.strict();
 export type Thresholds = z.infer<typeof thresholdsSchema>;

@@ -38,6 +38,7 @@ export const THRESHOLDS: Thresholds = thresholdsSchema.parse({
 	maxUnsupportedRate: 0.15,
 	minOverall: 0,
 	maxRegressionDelta: 0,
+	maxUnsupportedRegressionDelta: 0,
 });
 
 /** A minimal one-requirement, one-scenario fixture for unit tests. */

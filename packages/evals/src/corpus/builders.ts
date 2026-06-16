@@ -2,6 +2,7 @@ import {
 	type Action,
 	type Assertion,
 	createStableId,
+	type EvidenceLocator,
 	type GenerationMetadata,
 	type PlanStatus,
 	type Priority,
@@ -42,6 +43,7 @@ type EvidenceDraft = {
 	sourceRef: string;
 	kind: TestGraphV1["evidence"][number]["kind"];
 	claim: string;
+	locator?: EvidenceLocator;
 };
 
 type RequirementDraft = ProvenanceDraft & {
@@ -204,6 +206,7 @@ export function compileGraph(draft: GraphDraft): {
 			sourceId: idOf("source", evidence.sourceRef),
 			kind: evidence.kind,
 			claim: evidence.claim,
+			...(evidence.locator !== undefined ? { locator: evidence.locator } : {}),
 		})),
 		requirements: draft.requirements.map((requirement) => ({
 			id: idOf("requirement", requirement.ref),
@@ -389,6 +392,10 @@ export function buildAnnotation(
 		arm: draft.arm as Arm,
 		recordKind: spec.recordKind,
 		expectValidationFailure: spec.expectValidationFailure,
+		sourceAnnotations: draft.sources.map((source) => ({
+			sourceId: idOf("source", source.ref),
+			sourceKey: source.ref,
+		})),
 		requirementAnnotations: spec.requirements.map((item) =>
 			entityAnnotation("requirement", "requirementId", item, idOf),
 		),

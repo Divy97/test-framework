@@ -86,10 +86,18 @@ test("thresholds schema bounds the unsupported rate", () => {
 		maxUnsupportedRate: 0.2,
 		minOverall: 0,
 		maxRegressionDelta: 0,
+		maxUnsupportedRegressionDelta: 0,
 	};
 	assert.equal(thresholdsSchema.safeParse(ok).success, true);
 	assert.equal(
 		thresholdsSchema.safeParse({ ...ok, maxUnsupportedRate: 2 }).success,
+		false,
+	);
+	assert.equal(
+		thresholdsSchema.safeParse({
+			...ok,
+			maxUnsupportedRegressionDelta: 2,
+		}).success,
 		false,
 	);
 });
@@ -101,6 +109,7 @@ test("annotation requires a reason for partial satisfaction", () => {
 		arm: "qa-engine",
 		recordKind: "synthetic",
 		expectValidationFailure: false,
+		sourceAnnotations: [],
 		requirementAnnotations: [
 			{
 				requirementId: "req_0000000000000000000a",

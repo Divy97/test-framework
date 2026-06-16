@@ -1,6 +1,7 @@
 import {
 	assertionIdSchema,
 	requirementIdSchema,
+	sourceIdSchema,
 	testCaseIdSchema,
 } from "@test-framework/qa-engine";
 import { z } from "zod";
@@ -111,6 +112,14 @@ export const assertionAnnotationSchema = z
 	.strict();
 export type AssertionAnnotation = z.infer<typeof assertionAnnotationSchema>;
 
+export const sourceAnnotationSchema = z
+	.object({
+		sourceId: sourceIdSchema,
+		sourceKey: z.string().min(1),
+	})
+	.strict();
+export type SourceAnnotation = z.infer<typeof sourceAnnotationSchema>;
+
 /**
  * The reviewed mapping from a Candidate's entities to Ground Truth. It is the only
  * human judgment scoring consumes; the join over it is fully deterministic.
@@ -122,6 +131,7 @@ export const annotationSchema = z
 		arm: armSchema,
 		recordKind: recordKindSchema,
 		expectValidationFailure: z.boolean(),
+		sourceAnnotations: z.array(sourceAnnotationSchema),
 		requirementAnnotations: z.array(requirementAnnotationSchema),
 		caseAnnotations: z.array(caseAnnotationSchema),
 		assertionAnnotations: z.array(assertionAnnotationSchema).optional(),

@@ -9,6 +9,33 @@ function citesEvidence(provenance: Provenance): boolean {
 	);
 }
 
+function citesSuppliedGroundTruth(
+	ctx: CandidateContext,
+	provenance: Provenance,
+): boolean {
+	const evidenceById = new Map(
+		ctx.graph.evidence.map((evidence) => [evidence.id, evidence]),
+	);
+	const suppliedByKey = new Map(
+		ctx.fixture.suppliedSources.map((source) => [source.sourceKey, source]),
+	);
+	const sameLocator = (left: unknown, right: unknown): boolean =>
+		JSON.stringify(left) === JSON.stringify(right);
+
+	return provenance.evidenceIds.every((evidenceId) => {
+		const evidence = evidenceById.get(evidenceId);
+		if (evidence === undefined) return false;
+		const sourceAnnotation = ctx.sourceAnnoById.get(evidence.sourceId);
+		if (sourceAnnotation === undefined) return false;
+		const suppliedSource = suppliedByKey.get(sourceAnnotation.sourceKey);
+		if (suppliedSource?.supplied !== true) return false;
+		if (suppliedSource.locators === undefined) return true;
+		return suppliedSource.locators.some((locator) =>
+			sameLocator(locator, evidence.locator),
+		);
+	});
+}
+
 /**
  * Evidence correctness: of all evidence-bearing claims (requirements, cases,
  * assertions), the fraction whose citation actually supports the claim. The
@@ -30,7 +57,9 @@ export function scoreEvidenceCorrectness(
 	): void => {
 		if (!citesEvidence(provenance)) return;
 		total += 1;
-		if (flag === false) {
+		if (!citesSuppliedGroundTruth(ctx, provenance)) {
+			explain.push(`evidence: ${id} citation is not in supplied ground truth`);
+		} else if (flag === false) {
 			explain.push(`evidence: ${id} citation does not support the claim`);
 		} else {
 			correct += 1;

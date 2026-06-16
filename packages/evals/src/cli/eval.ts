@@ -56,6 +56,7 @@ async function main(): Promise<number> {
 		result,
 		parseEvalResult(baseline),
 		thresholds.maxRegressionDelta,
+		thresholds.maxUnsupportedRegressionDelta,
 	);
 	process.stdout.write(reportText);
 	for (const note of report.notes) process.stdout.write(`${note}\n`);

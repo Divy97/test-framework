@@ -9,14 +9,21 @@ function sha256(text: string): string {
 	return `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`;
 }
 
+function sortKeys(value: unknown): unknown {
+	if (Array.isArray(value)) return value.map(sortKeys);
+	if (value !== null && typeof value === "object") {
+		return Object.fromEntries(
+			Object.entries(value)
+				.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+				.map(([key, child]) => [key, sortKeys(child)]),
+		);
+	}
+	return value;
+}
+
 /** Fingerprint of the rubric + thresholds so a config change shows in the result. */
 function rubricFingerprint(rubric: Rubric, thresholds: Thresholds): string {
-	return sha256(
-		JSON.stringify(
-			{ rubric, thresholds },
-			Object.keys({ rubric, thresholds }).sort(),
-		),
-	);
+	return sha256(JSON.stringify(sortKeys({ rubric, thresholds })));
 }
 
 /** Fingerprint of the raw committed corpus bytes, in deterministic order. */

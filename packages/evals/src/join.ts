@@ -4,6 +4,7 @@ import type {
 	AssertionAnnotation,
 	CaseAnnotation,
 	RequirementAnnotation,
+	SourceAnnotation,
 } from "./schema/annotation.js";
 import type { Fixture } from "./schema/fixture.js";
 import type { Rubric } from "./schema/rubric.js";
@@ -22,6 +23,7 @@ export type CandidateContext = {
 	graph: TestGraphV1;
 	annotation: Annotation;
 	rubric: Rubric;
+	sourceAnnoById: Map<string, SourceAnnotation>;
 	requirementAnnoById: Map<string, RequirementAnnotation>;
 	caseAnnoById: Map<string, CaseAnnotation>;
 	assertionAnnoById: Map<string, AssertionAnnotation>;
@@ -33,6 +35,10 @@ export function buildContext(
 	annotation: Annotation,
 	rubric: Rubric,
 ): CandidateContext {
+	const sourceAnnoById = new Map<string, SourceAnnotation>();
+	for (const item of annotation.sourceAnnotations) {
+		sourceAnnoById.set(item.sourceId, item);
+	}
 	const requirementAnnoById = new Map<string, RequirementAnnotation>();
 	for (const item of annotation.requirementAnnotations) {
 		requirementAnnoById.set(item.requirementId, item);
@@ -50,6 +56,7 @@ export function buildContext(
 		graph,
 		annotation,
 		rubric,
+		sourceAnnoById,
 		requirementAnnoById,
 		caseAnnoById,
 		assertionAnnoById,

@@ -4,6 +4,12 @@
 	"arm": "raw-model",
 	"recordKind": "synthetic",
 	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_cfaf79419b42cb30a79b",
+			"sourceKey": "spec"
+		}
+	],
 	"requirementAnnotations": [
 		{
 			"requirementId": "req_375e5d7df5a719eb71c5",

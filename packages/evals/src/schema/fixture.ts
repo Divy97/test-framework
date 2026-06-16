@@ -36,6 +36,35 @@ const suppliedSourceSchema = z
 		]),
 		title: z.string().min(1),
 		supplied: z.boolean(),
+		locators: z
+			.array(
+				z.discriminatedUnion("kind", [
+					z
+						.object({
+							kind: z.literal("text"),
+							start: z.number().int().nonnegative(),
+							end: z.number().int().nonnegative(),
+						})
+						.strict(),
+					z
+						.object({
+							kind: z.literal("file"),
+							path: z.string().min(1),
+							startLine: z.number().int().positive().optional(),
+							endLine: z.number().int().positive().optional(),
+						})
+						.strict(),
+					z.object({ kind: z.literal("url"), url: z.string().min(1) }).strict(),
+					z
+						.object({
+							kind: z.literal("symbol"),
+							path: z.string().min(1),
+							symbol: z.string().min(1),
+						})
+						.strict(),
+				]),
+			)
+			.optional(),
 	})
 	.strict();
 

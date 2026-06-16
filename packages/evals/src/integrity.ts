@@ -34,6 +34,14 @@ export function checkAnnotationIntegrity(
 	const scenarioKeys = new Set(
 		fixture.expectedScenarios.map((scenario) => scenario.truthKey),
 	);
+	const sourceKeys = new Set(
+		fixture.suppliedSources.map((source) => source.sourceKey),
+	);
+	for (const item of annotation.sourceAnnotations) {
+		if (!sourceKeys.has(item.sourceKey)) {
+			issues.push(`unknown supplied source key ${item.sourceKey}`);
+		}
+	}
 
 	for (const item of annotation.requirementAnnotations) {
 		if (item.verdict !== "maps") continue;
@@ -53,6 +61,13 @@ export function checkAnnotationIntegrity(
 	}
 
 	if (graph === null) return issues.sort();
+
+	matchExactlyOnce(
+		graph.sources.map((source) => source.id),
+		annotation.sourceAnnotations.map((item) => item.sourceId),
+		"source",
+		issues,
+	);
 
 	matchExactlyOnce(
 		graph.requirements.map((requirement) => requirement.id),

@@ -407,6 +407,47 @@ test("evidence correctness drops when a citation is flagged unsupported", () => 
 	assert.ok(scoreEvidenceCorrectness(ctx).score < 1);
 });
 
+test("evidence correctness rejects sources absent from ground truth", () => {
+	const draft = baseDraft({
+		sources: [
+			{ ref: "other", kind: "document", title: "Other", supplied: true },
+		],
+		evidence: [
+			{
+				ref: "e1",
+				sourceRef: "other",
+				kind: "statement",
+				claim: "Requirement A holds.",
+			},
+		],
+	});
+	const ctx = makeContext(baseFixture(), draft, baseAnno());
+
+	assert.equal(scoreEvidenceCorrectness(ctx).score, 0);
+});
+
+test("evidence correctness rejects locators outside ground truth", () => {
+	const fixture = baseFixture();
+	const source = fixture.suppliedSources[0];
+	if (source === undefined) throw new Error("missing source");
+	fixture.suppliedSources[0] = {
+		...source,
+		locators: [{ kind: "text", start: 0, end: 10 }],
+	};
+	const draft = baseDraft();
+	const evidence = draft.evidence[0];
+	if (evidence === undefined) throw new Error("missing evidence");
+	draft.evidence[0] = {
+		...evidence,
+		locator: { kind: "text", start: 20, end: 30 },
+	};
+
+	assert.equal(
+		scoreEvidenceCorrectness(makeContext(fixture, draft, baseAnno())).score,
+		0,
+	);
+});
+
 // --- Leakage --------------------------------------------------------------
 
 test("leakage detector matches real secret shapes and ignores clean text", () => {

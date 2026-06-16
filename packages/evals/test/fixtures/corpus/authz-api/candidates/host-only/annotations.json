@@ -4,6 +4,12 @@
 	"arm": "host-only",
 	"recordKind": "synthetic",
 	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_6e16c86cac1b684914d2",
+			"sourceKey": "spec"
+		}
+	],
 	"requirementAnnotations": [
 		{
 			"requirementId": "req_d9eef253a8c7eb1ca9db",

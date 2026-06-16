@@ -24,8 +24,8 @@ function indexCandidates(result: EvalResult): Map<string, CandidateResult> {
 
 /**
  * Compares an Eval Run to the accepted Baseline. A regression is: an aggregate drop
- * beyond `maxRegressionDelta`, a drop in the unsupported-claims dimension beyond it
- * (unsupported claims rose), a new Hard-Fail the Baseline did not record, or a
+ * beyond `maxRegressionDelta`, a drop in the unsupported-claims dimension beyond
+ * its fractional tolerance, a new Hard-Fail the Baseline did not record, or a
  * Baseline `(fixture, arm)` that is now missing. New candidates and rubric changes
  * are reported as notes, not regressions.
  */
@@ -33,6 +33,7 @@ export function compareToBaseline(
 	current: EvalResult,
 	baseline: EvalResult,
 	maxRegressionDelta: number,
+	maxUnsupportedRegressionDelta: number,
 ): RegressionReport {
 	const regressions: string[] = [];
 	const notes: string[] = [];
@@ -60,7 +61,7 @@ export function compareToBaseline(
 		}
 		if (
 			now.dimensions.unsupportedClaims <
-			base.dimensions.unsupportedClaims - maxRegressionDelta
+			base.dimensions.unsupportedClaims - maxUnsupportedRegressionDelta
 		) {
 			regressions.push(
 				`${name}: unsupported claims rose (${now.dimensions.unsupportedClaims} < ${base.dimensions.unsupportedClaims})`,
