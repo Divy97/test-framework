@@ -40,6 +40,30 @@ MCP, CLI, CI, web, and cloud are adapters or deployment surfaces, not the produc
 - **Data Requirement**: named state or resource a Test Case consumes or produces,
   including provisioning and cleanup expectations.
 
+## Evaluation Terms
+
+- **Candidate**: one recorded `test-graph/v1` graph under evaluation. Held to the
+  same output contract regardless of which arm produced it.
+- **Generation Arm**: the workflow that produced a Candidate — raw-model (single
+  prompt), host-only (host agent reasoning), or QA Engine. Arms differ only in
+  workflow, never in output schema.
+- **Ground Truth**: the hand-authored, source-backed set of expected requirements
+  and scenarios for one fixture, each carrying a stable Truth Key. The reference a
+  Candidate is scored against.
+- **Truth Key**: stable identifier for one expected requirement or scenario in a
+  fixture's Ground Truth (e.g. `req:reject-expired-token`).
+- **Annotation**: the committed, reviewed mapping from a Candidate's entities to
+  Truth Keys (or to `extra`). It is the only human judgment in scoring and lets the
+  harness score deterministically without a model.
+- **Rubric**: the weighted set of quality dimensions used to score a Candidate into
+  a [0,100] quality number.
+- **Hard-Fail**: a gating condition that fails a Candidate outright, reported
+  separately from and overriding the weighted Rubric score.
+- **Baseline**: an accepted, committed scored result for the corpus that later
+  Eval Runs are compared against.
+- **Regression**: a material change versus the accepted Baseline — a quality drop
+  beyond tolerance, a new Hard-Fail, or an unsupported-claim increase.
+
 ## Invariants
 
 - JSON Test Graph is canonical; Markdown is derived.
@@ -52,3 +76,7 @@ MCP, CLI, CI, web, and cloud are adapters or deployment surfaces, not the produc
 - Provider credentials never enter prompts, artifacts, or telemetry.
 - Cloud infrastructure is deferred until managed execution or collaboration needs
   it.
+- Comparative evaluation is deterministic and reference-based; a model judge never
+  gates CI and never enters the aggregate score.
+- Every Candidate is scored on the same `test-graph/v1` contract; its Generation
+  Arm is metadata, not a separate scoring path.

@@ -1,0 +1,147 @@
+{
+	"assertions": [
+		{
+			"expected": 200,
+			"id": "assert_1be4b3d99b4b9d118757",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_9090c8b92c266428d4e9"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_cb817a1d3beedc1b39e0",
+			"subject": "status",
+			"testCaseId": "case_256b1d8429277abca426"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Users can export data as CSV.",
+			"id": "ev_9090c8b92c266428d4e9",
+			"kind": "statement",
+			"sourceId": "src_83c5996a7579bfa82744"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_57d0886dc57ca9eaf760",
+		"inputFingerprint": "sha256:unsupported-assumptions-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_ab171328412e98991d34",
+	"planVersion": 1,
+	"projectId": "prj_04b60424d8be6accceed",
+	"requirements": [
+		{
+			"id": "req_d8d6c226309b4769c0a4",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_9090c8b92c266428d4e9"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Export as CSV."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_83c5996a7579bfa82744",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/export?format=csv"
+			},
+			"description": "Request export.",
+			"id": "step_cb817a1d3beedc1b39e0",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_9090c8b92c266428d4e9"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_256b1d8429277abca426"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_256b1d8429277abca426",
+			"objective": "Check export.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_9090c8b92c266428d4e9"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_d8d6c226309b4769c0a4"
+			],
+			"risk": "medium",
+			"riskRationale": "Core.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"title": "Export CSV",
+			"type": "positive"
+		}
+	],
+	"title": "Export plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

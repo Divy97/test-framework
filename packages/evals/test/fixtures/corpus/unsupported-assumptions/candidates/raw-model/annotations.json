@@ -1,0 +1,69 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "unsupported-assumptions",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_91d75bbe72b9a2af6c66",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_ac502f64c4507951da9b",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:export-csv"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"requirementId": "req_1203453ecaa8cae6fcfd",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "PDF export is not in the spec."
+		},
+		{
+			"requirementId": "req_fa25594f87928f6a3f24",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Emailing exports is not in the spec."
+		},
+		{
+			"requirementId": "req_a8232e5b593502cd1356",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Scheduling is not in the spec."
+		},
+		{
+			"requirementId": "req_c4e8a58a823d6390f643",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Encryption-at-rest is not in the spec."
+		},
+		{
+			"requirementId": "req_b9e341b3fe571078fc47",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "S3 upload is not in the spec."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_944474b18bbdf689b559",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:export-downloads-csv"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"caseId": "case_40039009e23b9e2c3f5a",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Tests an invented PDF feature."
+		}
+	]
+}

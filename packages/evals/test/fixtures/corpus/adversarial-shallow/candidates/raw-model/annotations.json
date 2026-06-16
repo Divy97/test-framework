@@ -1,0 +1,53 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "adversarial-shallow",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_cfaf79419b42cb30a79b",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_375e5d7df5a719eb71c5",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:search-results"
+			],
+			"satisfaction": "partial",
+			"reason": "Stated but only smoke-tested."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_8ea1c1e3677b31a66d0e",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:query-returns-ranked"
+			],
+			"satisfaction": "partial",
+			"reason": "Only checks the page renders."
+		},
+		{
+			"caseId": "case_5f5acbbe14e45a223147",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Duplicate smoke check, no new value."
+		},
+		{
+			"caseId": "case_5fc60b282a09db8616c8",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Duplicate smoke check, no new value."
+		},
+		{
+			"caseId": "case_650ee111147899f62a77",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Duplicate smoke check, no new value."
+		}
+	]
+}

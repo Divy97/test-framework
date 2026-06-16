@@ -1,0 +1,29 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "contradictory-spec",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": true,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_440302de590965ad57be",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_16a5b3ac20808b961704",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "No assumed value; not testable."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_f8e27ddaff67e28ef9bd",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "No requirement; vague."
+		}
+	]
+}

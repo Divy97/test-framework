@@ -1,0 +1,7 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"maxUnsupportedRate": 0.15,
+	"minOverall": 0,
+	"maxRegressionDelta": 0,
+	"maxUnsupportedRegressionDelta": 0
+}

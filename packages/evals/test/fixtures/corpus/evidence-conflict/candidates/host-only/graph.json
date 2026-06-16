@@ -1,0 +1,146 @@
+{
+	"assertions": [
+		{
+			"id": "assert_91a9d4101a8f6247f581",
+			"matcher": "exists",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/records/1"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_7f34667ca9759c0b7167"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_a2e1ee57801709896776",
+			"subject": "deletedAt set",
+			"testCaseId": "case_9d30abddce6f9c7e4e00"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Delete soft-deletes the record.",
+			"id": "ev_7f34667ca9759c0b7167",
+			"kind": "statement",
+			"sourceId": "src_10e0e541a4cfdf23d046"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_55ed5e7b4148c1b2f8de",
+		"inputFingerprint": "sha256:evidence-conflict-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_fa7224c6b197a404512d",
+	"planVersion": 1,
+	"projectId": "prj_b9553b0b51496498ec6c",
+	"requirements": [
+		{
+			"id": "req_c88de68f29dc0bcdf22a",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_7f34667ca9759c0b7167"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Delete soft-deletes."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_10e0e541a4cfdf23d046",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/records/1"
+			},
+			"description": "Delete record.",
+			"id": "step_a2e1ee57801709896776",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_7f34667ca9759c0b7167"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_9d30abddce6f9c7e4e00"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_9d30abddce6f9c7e4e00",
+			"objective": "Check soft delete.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_7f34667ca9759c0b7167"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity"
+			],
+			"requirementIds": [
+				"req_c88de68f29dc0bcdf22a"
+			],
+			"risk": "medium",
+			"riskRationale": "Intent.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/records/{id}"
+			},
+			"title": "Delete soft",
+			"type": "positive"
+		}
+	],
+	"title": "Soft delete plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

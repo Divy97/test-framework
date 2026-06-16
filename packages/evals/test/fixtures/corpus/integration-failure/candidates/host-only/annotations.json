@@ -1,0 +1,34 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "integration-failure",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_f4947427569af31ce1d9",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_64d9424a966f2051acb9",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:timeout-rollback"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_7d64d6127536a707bc1e",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:timeout-rolls-back"
+			],
+			"satisfaction": "partial",
+			"reason": "Presence-only assertion; no concrete status check."
+		}
+	]
+}

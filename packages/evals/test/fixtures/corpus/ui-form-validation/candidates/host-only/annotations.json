@@ -1,0 +1,34 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "ui-form-validation",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_d3aefa280f1bbad5e4d6",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_ea892eea1f71345f03c0",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:email-valid"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_7b4bdad2e241594795ee",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:invalid-email-error"
+			],
+			"satisfaction": "partial",
+			"reason": "No submit-blocked assertion."
+		}
+	]
+}

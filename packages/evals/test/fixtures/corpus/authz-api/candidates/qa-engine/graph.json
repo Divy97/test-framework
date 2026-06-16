@@ -1,0 +1,262 @@
+{
+	"assertions": [
+		{
+			"expected": "self",
+			"id": "assert_cb352fbd6b9e2b63d066",
+			"matcher": "equals",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "inferred"
+			},
+			"stepId": "step_818968033cb5542d233f",
+			"subject": "every task.ownerId",
+			"testCaseId": "case_0f97f21478385433f872"
+		},
+		{
+			"expected": 403,
+			"id": "assert_af1049d530eec257b986",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_f334f5d9932fa60b5476",
+			"subject": "response.status",
+			"testCaseId": "case_e69065d1031ced309c19"
+		},
+		{
+			"expected": 200,
+			"id": "assert_4a968b0a18ada430d353",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "explicit"
+			},
+			"subject": "task exists",
+			"testCaseId": "case_e69065d1031ced309c19"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Only owners delete tasks; list is scoped to the caller; no admin override.",
+			"id": "ev_9184d3ad765d0567ca79",
+			"kind": "statement",
+			"sourceId": "src_97b6819c012d23445ffb"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_5cc8c7bb14205dad5bbc",
+		"inputFingerprint": "sha256:authz-api-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_b82c0582a74ceacac448",
+	"planVersion": 1,
+	"projectId": "prj_813f94d0d9a3e50c0cb9",
+	"requirements": [
+		{
+			"id": "req_7ad8047803ba62ef68aa",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "inferred",
+				"rationale": "Implied by ownership."
+			},
+			"risk": "medium",
+			"statement": "List scoped to caller."
+		},
+		{
+			"id": "req_b870f81aad855276bb6d",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Only owner may delete."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_97b6819c012d23445ffb",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"description": "List tasks as the caller.",
+			"id": "step_818968033cb5542d233f",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "inferred"
+			},
+			"testCaseId": "case_0f97f21478385433f872"
+		},
+		{
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/42"
+			},
+			"description": "Delete a task owned by another user.",
+			"id": "step_f334f5d9932fa60b5476",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_e69065d1031ced309c19"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_0f97f21478385433f872",
+			"objective": "Scope list to caller.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "inferred"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_7ad8047803ba62ef68aa"
+			],
+			"risk": "medium",
+			"riskRationale": "Leakage risk.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "List returns only own tasks",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_e69065d1031ced309c19",
+			"objective": "Reject delete by a non-owner.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_9184d3ad765d0567ca79"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_b870f81aad855276bb6d"
+			],
+			"risk": "high",
+			"riskRationale": "Authz must fail closed.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Non-owner delete is 403",
+			"type": "security"
+		}
+	],
+	"title": "Task authz plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

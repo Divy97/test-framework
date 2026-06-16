@@ -1,0 +1,150 @@
+{
+	"assertions": [
+		{
+			"expected": 1,
+			"id": "assert_089216c95e8982931145",
+			"matcher": "count",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/orders"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_2b50c2326a9a26d3339c"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_a9fd90eda76ae7e0513f",
+			"subject": "order count",
+			"testCaseId": "case_36b804eb991bd050aab2"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Submitting twice should not duplicate.",
+			"id": "ev_2b50c2326a9a26d3339c",
+			"kind": "statement",
+			"sourceId": "src_8d08a26b6b9492f03905"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_e561b9879d9e9aa80ff0",
+		"inputFingerprint": "sha256:stateful-workflow-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_832eace5095757e52ede",
+	"planVersion": 1,
+	"projectId": "prj_21c936d0aa340f89fe9f",
+	"requirements": [
+		{
+			"id": "req_5211fdca37925bbfc775",
+			"kind": "business-rule",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_2b50c2326a9a26d3339c"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "No duplicate orders."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_8d08a26b6b9492f03905",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"body": {
+					"key": "K"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"description": "Submit twice.",
+			"id": "step_a9fd90eda76ae7e0513f",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_2b50c2326a9a26d3339c"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_36b804eb991bd050aab2"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_36b804eb991bd050aab2",
+			"objective": "Check dedupe.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_2b50c2326a9a26d3339c"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity"
+			],
+			"requirementIds": [
+				"req_5211fdca37925bbfc775"
+			],
+			"risk": "high",
+			"riskRationale": "Dedupe.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"title": "Submit twice",
+			"type": "negative"
+		}
+	],
+	"title": "Idempotency plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

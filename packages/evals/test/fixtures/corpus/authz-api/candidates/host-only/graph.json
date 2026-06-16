@@ -1,0 +1,147 @@
+{
+	"assertions": [
+		{
+			"expected": 403,
+			"id": "assert_9835c4b0dcdc0c119677",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_561d1e547264523d7778"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_06d96a99d13fe3ee99e0",
+			"subject": "response.status",
+			"testCaseId": "case_ccf7abfc4eb58da17113"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Only owners delete tasks.",
+			"id": "ev_561d1e547264523d7778",
+			"kind": "statement",
+			"sourceId": "src_6e16c86cac1b684914d2"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_218edbf7f8cb9ea21a15",
+		"inputFingerprint": "sha256:authz-api-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_f7a3ef513cc0512e0d4b",
+	"planVersion": 1,
+	"projectId": "prj_813f94d0d9a3e50c0cb9",
+	"requirements": [
+		{
+			"id": "req_d9eef253a8c7eb1ca9db",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_561d1e547264523d7778"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Only owner deletes."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_6e16c86cac1b684914d2",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/42"
+			},
+			"description": "Delete other's task.",
+			"id": "step_06d96a99d13fe3ee99e0",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_561d1e547264523d7778"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_ccf7abfc4eb58da17113"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_ccf7abfc4eb58da17113",
+			"objective": "Check authz.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_561d1e547264523d7778"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_d9eef253a8c7eb1ca9db"
+			],
+			"risk": "high",
+			"riskRationale": "Authz.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Non-owner delete",
+			"type": "security"
+		}
+	],
+	"title": "Task authz plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

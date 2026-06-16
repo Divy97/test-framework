@@ -94,15 +94,26 @@ identity, provenance, or execution-relevant information.
 
 ### 4. Eval Harness and Baseline
 
-Status: pending and release-critical.
+Status: harness complete; release thresholds pending calibration.
 
-- Build representative feature/repository fixtures.
-- Define expert-calibrated weighted rubric.
-- Capture raw same-model and host-only baselines.
-- Add deterministic validation and adversarial fixtures.
-- Record release thresholds before final model-workflow tuning.
+Implemented in `packages/evals` as a reference-based, deterministic harness
+([ADR-0009](adr/0009-reference-based-deterministic-eval.md),
+[plan](superpowers/plans/2026-06-15-eval-harness-and-baseline.md)):
 
-Exit criteria: one command produces comparable, versioned eval results.
+- 8 calibrated fixtures (UI form, authz API, stateful/idempotent, integration
+  failure, contradictory spec, evidence conflict, adversarial shallow, unsupported
+  assumptions), each with raw-model / host-only / qa-engine arms.
+- Weighted rubric over nine quality dimensions plus separate Hard-Fail gates.
+- `validateTestGraph` reused for deterministic Test Graph validation in scoring.
+- `pnpm eval` produces a byte-stable `results.json` + Markdown report and compares
+  to an accepted baseline; baseline committed under `test/fixtures/baseline`.
+
+Remaining before release (workstream #9): replace hand-authored synthetic tiers
+with real recorded raw-model/host-only baselines, and record real release
+thresholds (the calibration commit) before any prompt tuning.
+
+Exit criteria: one command produces comparable, versioned eval results. **Met** —
+`pnpm eval` is deterministic, byte-stable, and gates on regression.
 
 ### 5. BYOK Provider Seam
 

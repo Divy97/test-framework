@@ -1,0 +1,150 @@
+{
+	"assertions": [
+		{
+			"expected": 422,
+			"id": "assert_6a109ae9ec12d3d0c7e4",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/signup"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_d6300acb8c752175f066"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_aa37936566015caae1dc",
+			"subject": "response.status",
+			"testCaseId": "case_60604a964f4bc1fd1392"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Passwords must be strong.",
+			"id": "ev_d6300acb8c752175f066",
+			"kind": "statement",
+			"sourceId": "src_fa84eec18963867d0ac6"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_4ff1acfdfaebd356ae40",
+		"inputFingerprint": "sha256:contradictory-spec-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_c5787b24dc2cf04ae06b",
+	"planVersion": 1,
+	"projectId": "prj_c257df5b65f39f1acdc3",
+	"requirements": [
+		{
+			"id": "req_9fb575ec872a5eeda253",
+			"kind": "constraint",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_d6300acb8c752175f066"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Minimum length is 12."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_fa84eec18963867d0ac6",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"body": {
+					"password": "short123"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/signup"
+			},
+			"description": "Submit short password.",
+			"id": "step_aa37936566015caae1dc",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_d6300acb8c752175f066"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_60604a964f4bc1fd1392"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_60604a964f4bc1fd1392",
+			"objective": "Reject short.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_d6300acb8c752175f066"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_9fb575ec872a5eeda253"
+			],
+			"risk": "medium",
+			"riskRationale": "Weak password.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/signup"
+			},
+			"title": "Short password",
+			"type": "negative"
+		}
+	],
+	"title": "Password policy plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

@@ -1,0 +1,138 @@
+{
+	"schemaVersion": "test-graph/v1",
+	"projectId": "prj_5ed3c634832cb2b7f524",
+	"planId": "plan_0aa050626f7cb12c5853",
+	"planVersion": 1,
+	"title": "Payment failure plan",
+	"status": "draft",
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"updatedAt": "2026-06-15T10:00:00.000Z",
+	"generation": {
+		"id": "gen_eeacb239f7aa8538dcb7",
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"methodologyVersion": "0.1.0",
+		"workflowVersion": "0.1.0",
+		"inputFingerprint": "sha256:integration-failure-raw-model",
+		"generator": {
+			"kind": "model",
+			"provider": "anthropic",
+			"model": "claude-opus-4-8"
+		},
+		"status": "incomplete",
+		"warnings": []
+	},
+	"sources": [
+		{
+			"id": "src_e90a94feb432b27b193c",
+			"kind": "feature-request",
+			"title": "Feature spec",
+			"supplied": true
+		}
+	],
+	"evidence": [
+		{
+			"id": "ev_33360dac2ece09b2eb0e",
+			"sourceId": "src_e90a94feb432b27b193c",
+			"kind": "statement",
+			"claim": "Payments work."
+		}
+	],
+	"requirements": [
+		{
+			"id": "req_08abbcbedc88ad586f75",
+			"statement": "Payment succeeds.",
+			"kind": "functional",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_33360dac2ece09b2eb0e"
+				]
+			},
+			"priority": "p1",
+			"risk": "low",
+			"openQuestionIds": []
+		}
+	],
+	"features": [],
+	"dataRequirements": [],
+	"testCases": [
+		{
+			"id": "case_5f262f32c93ddbeb35ce",
+			"title": "Payment succeeds",
+			"objective": "Charge works.",
+			"type": "positive",
+			"priority": "p2",
+			"risk": "low",
+			"riskRationale": "Happy path.",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_33360dac2ece09b2eb0e"
+				]
+			},
+			"requirementIds": [],
+			"featureIds": [],
+			"qualityTags": [],
+			"actor": {
+				"role": "system",
+				"authentication": "not-applicable",
+				"permissions": []
+			},
+			"target": {
+				"kind": "generic",
+				"description": "payment"
+			},
+			"preconditions": [],
+			"dependsOnCaseIds": [],
+			"consumesDataRequirementIds": [],
+			"producesDataRequirementIds": [],
+			"postconditions": [],
+			"cleanup": {
+				"intent": "none",
+				"dataRequirementIds": [],
+				"afterCaseIds": []
+			},
+			"automation": {
+				"readiness": "ready",
+				"blockers": []
+			}
+		}
+	],
+	"steps": [
+		{
+			"id": "step_2ed8f73f6eff96f7ae81",
+			"testCaseId": "case_5f262f32c93ddbeb35ce",
+			"order": 1,
+			"description": "Charge a card.",
+			"action": {
+				"kind": "observe",
+				"subject": "payment"
+			},
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_33360dac2ece09b2eb0e"
+				]
+			}
+		}
+	],
+	"assertions": [
+		{
+			"id": "assert_316e5f114e9c4e9f1e05",
+			"testCaseId": "case_5f262f32c93ddbeb35ce",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_33360dac2ece09b2eb0e"
+				]
+			},
+			"subject": "charged",
+			"observationPoint": {
+				"kind": "generic",
+				"description": "payment"
+			},
+			"matcher": "exists"
+		}
+	],
+	"openQuestions": []
+}

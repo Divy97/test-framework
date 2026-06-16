@@ -1,0 +1,159 @@
+{
+	"assertions": [
+		{
+			"id": "assert_1b41fd8a16982b47411f",
+			"matcher": "exists",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/records/1"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_10e092f4348620299dff"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_cfaa6ffd2d95ccafb233",
+			"subject": "record.deletedAt",
+			"testCaseId": "case_0efda3b372c1613605a7"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Deleting a record soft-deletes it.",
+			"id": "ev_10e092f4348620299dff",
+			"kind": "statement",
+			"sourceId": "src_7de74ccaa6c1d530f3e0"
+		},
+		{
+			"claim": "delete() currently issues a hard DELETE.",
+			"id": "ev_e9353ac802b94bc72ab8",
+			"kind": "repository-signal",
+			"sourceId": "src_84ed3200bc49068da8ec"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_923a572d677c210b3bb6",
+		"inputFingerprint": "sha256:evidence-conflict-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_f4806e7affc4c63cf587",
+	"planVersion": 1,
+	"projectId": "prj_b9553b0b51496498ec6c",
+	"requirements": [
+		{
+			"id": "req_17e6ddd6a0f81a71a01f",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_10e092f4348620299dff"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Delete soft-deletes the record."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_7de74ccaa6c1d530f3e0",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Delete spec"
+		},
+		{
+			"id": "src_84ed3200bc49068da8ec",
+			"kind": "repository",
+			"supplied": true,
+			"title": "Repository scan"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/records/1"
+			},
+			"description": "Delete a record.",
+			"id": "step_cfaa6ffd2d95ccafb233",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_10e092f4348620299dff"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_0efda3b372c1613605a7"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_0efda3b372c1613605a7",
+			"objective": "Verify soft delete despite repo hard-delete.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_10e092f4348620299dff",
+					"ev_e9353ac802b94bc72ab8"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity"
+			],
+			"requirementIds": [
+				"req_17e6ddd6a0f81a71a01f"
+			],
+			"risk": "medium",
+			"riskRationale": "Repo conflicts with intent.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/records/{id}"
+			},
+			"title": "Delete is soft",
+			"type": "positive"
+		}
+	],
+	"title": "Soft delete plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

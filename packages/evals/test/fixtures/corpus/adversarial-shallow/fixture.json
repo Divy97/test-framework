@@ -1,0 +1,40 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "adversarial-shallow",
+	"title": "Search returns relevant results",
+	"category": "adversarial-shallow",
+	"brief": "A search box returns results ranked by relevance for a query.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "feature-request",
+			"title": "Search spec",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:search-results",
+			"statement": "Search returns relevant results for a query.",
+			"kind": "functional",
+			"expectedStrength": "explicit",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:query-returns-ranked",
+			"title": "Query returns ranked results",
+			"requirementKeys": [
+				"req:search-results"
+			],
+			"type": "positive",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "results contain the query term, ranked"
+		}
+	],
+	"forbiddenClaims": []
+}

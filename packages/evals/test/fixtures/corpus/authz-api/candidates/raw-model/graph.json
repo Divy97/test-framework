@@ -1,0 +1,143 @@
+{
+	"schemaVersion": "test-graph/v1",
+	"projectId": "prj_813f94d0d9a3e50c0cb9",
+	"planId": "plan_519f2f7e604eae0585f7",
+	"planVersion": 1,
+	"title": "Task authz plan",
+	"status": "draft",
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"updatedAt": "2026-06-15T10:00:00.000Z",
+	"generation": {
+		"id": "gen_acb01c2ca8e042b2d1e8",
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"methodologyVersion": "0.1.0",
+		"workflowVersion": "0.1.0",
+		"inputFingerprint": "sha256:authz-api-raw-model",
+		"generator": {
+			"kind": "model",
+			"provider": "anthropic",
+			"model": "claude-opus-4-8"
+		},
+		"status": "incomplete",
+		"warnings": []
+	},
+	"sources": [
+		{
+			"id": "src_dc9a958334cc61753c60",
+			"kind": "feature-request",
+			"title": "Feature spec",
+			"supplied": true
+		}
+	],
+	"evidence": [
+		{
+			"id": "ev_58c71de3cbe46d3821c2",
+			"sourceId": "src_dc9a958334cc61753c60",
+			"kind": "statement",
+			"claim": "Tasks can be deleted."
+		}
+	],
+	"requirements": [
+		{
+			"id": "req_61a38d77478120f56556",
+			"statement": "Tasks can be deleted.",
+			"kind": "functional",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_58c71de3cbe46d3821c2"
+				]
+			},
+			"priority": "p1",
+			"risk": "low",
+			"openQuestionIds": []
+		}
+	],
+	"features": [],
+	"dataRequirements": [],
+	"testCases": [
+		{
+			"id": "case_ca6deb75b48a9c00e291",
+			"title": "Delete a task",
+			"objective": "Delete works.",
+			"type": "positive",
+			"priority": "p2",
+			"risk": "low",
+			"riskRationale": "Happy path.",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_58c71de3cbe46d3821c2"
+				]
+			},
+			"requirementIds": [],
+			"featureIds": [],
+			"qualityTags": [],
+			"actor": {
+				"role": "user",
+				"authentication": "authenticated",
+				"permissions": []
+			},
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"preconditions": [],
+			"dependsOnCaseIds": [],
+			"consumesDataRequirementIds": [],
+			"producesDataRequirementIds": [],
+			"postconditions": [],
+			"cleanup": {
+				"intent": "none",
+				"dataRequirementIds": [],
+				"afterCaseIds": []
+			},
+			"automation": {
+				"readiness": "ready",
+				"blockers": []
+			}
+		}
+	],
+	"steps": [
+		{
+			"id": "step_5979ae600f02b76400f7",
+			"testCaseId": "case_ca6deb75b48a9c00e291",
+			"order": 1,
+			"description": "Delete a task.",
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/1"
+			},
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_58c71de3cbe46d3821c2"
+				]
+			}
+		}
+	],
+	"assertions": [
+		{
+			"id": "assert_e5801a28e9670a373ad2",
+			"testCaseId": "case_ca6deb75b48a9c00e291",
+			"provenance": {
+				"kind": "explicit",
+				"evidenceIds": [
+					"ev_58c71de3cbe46d3821c2"
+				]
+			},
+			"stepId": "step_5979ae600f02b76400f7",
+			"subject": "status",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"matcher": "statusCode",
+			"expected": 200
+		}
+	],
+	"openQuestions": []
+}

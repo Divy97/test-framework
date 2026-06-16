@@ -1,0 +1,33 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "contradictory-spec",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_fa84eec18963867d0ac6",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_9fb575ec872a5eeda253",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:password-min"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_60604a964f4bc1fd1392",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:short-password-rejected"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

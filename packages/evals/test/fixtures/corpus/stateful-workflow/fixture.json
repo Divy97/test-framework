@@ -1,0 +1,60 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "stateful-workflow",
+	"title": "Idempotent order submission",
+	"category": "stateful-workflow",
+	"brief": "Submitting an order twice with the same idempotency key must create at most one order; retries after timeout are safe.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "feature-request",
+			"title": "Order spec",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:idempotent-submit",
+			"statement": "Duplicate submit creates at most one order.",
+			"kind": "business-rule",
+			"expectedStrength": "explicit",
+			"priority": "p0",
+			"risk": "high",
+			"mustCover": true
+		},
+		{
+			"truthKey": "req:retry-safe",
+			"statement": "Retry after timeout does not duplicate.",
+			"kind": "constraint",
+			"expectedStrength": "inferred",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:duplicate-submit-once",
+			"title": "Duplicate submit creates one order",
+			"requirementKeys": [
+				"req:idempotent-submit"
+			],
+			"type": "negative",
+			"priority": "p0",
+			"risk": "high",
+			"expectedAssertionHint": "order count is exactly 1"
+		},
+		{
+			"truthKey": "scn:retry-after-timeout",
+			"title": "Retry after timeout is safe",
+			"requirementKeys": [
+				"req:retry-safe"
+			],
+			"type": "edge",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "second attempt does not create a new order"
+		}
+	],
+	"forbiddenClaims": []
+}

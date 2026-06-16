@@ -1,0 +1,33 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "adversarial-shallow",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_cee07490f9cf087b555b",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_f846626c7440eedcb1f8",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:search-results"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_94d733f3de2733cbdce4",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:query-returns-ranked"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

@@ -1,0 +1,29 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "evidence-conflict",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_50cf37a49ac2fba30976",
+			"sourceKey": "repo"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_9015c49c75fb6ddb0910",
+			"verdict": "extra",
+			"classification": "contradicts-truth",
+			"reason": "Asserts hard delete; contradicts the soft-delete intent."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_c5b8d4dfc015095ad22b",
+			"verdict": "extra",
+			"classification": "contradicts-truth",
+			"reason": "Verifies hard delete, which the spec forbids."
+		}
+	]
+}

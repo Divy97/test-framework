@@ -1,0 +1,33 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "authz-api",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_6e16c86cac1b684914d2",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_d9eef253a8c7eb1ca9db",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:owner-only-delete"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_ccf7abfc4eb58da17113",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:non-owner-delete-403"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

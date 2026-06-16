@@ -1,0 +1,33 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "stateful-workflow",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_8d08a26b6b9492f03905",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_5211fdca37925bbfc775",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:idempotent-submit"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_36b804eb991bd050aab2",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:duplicate-submit-once"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

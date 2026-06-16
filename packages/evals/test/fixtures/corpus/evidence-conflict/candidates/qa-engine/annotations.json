@@ -1,0 +1,37 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "evidence-conflict",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_7de74ccaa6c1d530f3e0",
+			"sourceKey": "spec"
+		},
+		{
+			"sourceId": "src_84ed3200bc49068da8ec",
+			"sourceKey": "repo"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_17e6ddd6a0f81a71a01f",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:soft-delete"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_0efda3b372c1613605a7",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:delete-is-soft"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

@@ -1,0 +1,29 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "authz-api",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": true,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_dc9a958334cc61753c60",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_61a38d77478120f56556",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Ignores ownership entirely."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_ca6deb75b48a9c00e291",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "No requirement; ignores authz."
+		}
+	]
+}

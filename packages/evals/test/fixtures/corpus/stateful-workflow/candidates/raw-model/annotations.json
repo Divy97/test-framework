@@ -1,0 +1,29 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "stateful-workflow",
+	"arm": "raw-model",
+	"recordKind": "synthetic",
+	"expectValidationFailure": true,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_d3cb501706e1c1ce4e7c",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_3874e99bd6f10de1840f",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Ignores idempotency."
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_2afdcaaf34ce3a3600f4",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "No requirement; no idempotency."
+		}
+	]
+}

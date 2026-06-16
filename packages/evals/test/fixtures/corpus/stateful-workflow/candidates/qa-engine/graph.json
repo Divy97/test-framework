@@ -1,0 +1,270 @@
+{
+	"assertions": [
+		{
+			"expected": 1,
+			"id": "assert_579ff7b8e7d9d9e151cb",
+			"matcher": "count",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/orders"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "inferred"
+			},
+			"stepId": "step_666e0764458327ebb1dc",
+			"subject": "orders with key K",
+			"testCaseId": "case_5346ab30cc1d3067bed5"
+		},
+		{
+			"expected": 1,
+			"id": "assert_b36d2ee1ceb84e6d6c95",
+			"matcher": "count",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/orders"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_711e35a870534a3dab8d",
+			"subject": "orders with key K",
+			"testCaseId": "case_714fb4f5bcf913d04580"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Duplicate submit with same key creates one order; retries are safe.",
+			"id": "ev_bbb06b4f28633e4c2a71",
+			"kind": "statement",
+			"sourceId": "src_b7d5e1a11a16982c95bb"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_e72d6c40309c7d3a39bc",
+		"inputFingerprint": "sha256:stateful-workflow-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_121ffc928c250701c22e",
+	"planVersion": 1,
+	"projectId": "prj_21c936d0aa340f89fe9f",
+	"requirements": [
+		{
+			"id": "req_030018621a868ea5b129",
+			"kind": "constraint",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "inferred",
+				"rationale": "Network retries imply idempotency."
+			},
+			"risk": "medium",
+			"statement": "Retry after timeout is safe."
+		},
+		{
+			"id": "req_66f9fc1090b1e04c1cf6",
+			"kind": "business-rule",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Duplicate submit creates one order."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_b7d5e1a11a16982c95bb",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"body": {
+					"key": "K"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"description": "Retry the timed-out submit.",
+			"id": "step_666e0764458327ebb1dc",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "inferred"
+			},
+			"testCaseId": "case_5346ab30cc1d3067bed5"
+		},
+		{
+			"action": {
+				"body": {
+					"key": "K"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"description": "Submit order with key K.",
+			"id": "step_804cce972dd77111e3cf",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_714fb4f5bcf913d04580"
+		},
+		{
+			"action": {
+				"body": {
+					"key": "K"
+				},
+				"kind": "request",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"description": "Submit again with key K.",
+			"id": "step_711e35a870534a3dab8d",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_714fb4f5bcf913d04580"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_5346ab30cc1d3067bed5",
+			"objective": "Verify retry does not duplicate.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "inferred"
+			},
+			"qualityTags": [
+				"reliability"
+			],
+			"requirementIds": [
+				"req_030018621a868ea5b129"
+			],
+			"risk": "medium",
+			"riskRationale": "Timeouts cause retries.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"title": "Retry after timeout is safe",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_714fb4f5bcf913d04580",
+			"objective": "Verify idempotency key dedupes.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_bbb06b4f28633e4c2a71"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity"
+			],
+			"requirementIds": [
+				"req_66f9fc1090b1e04c1cf6"
+			],
+			"risk": "high",
+			"riskRationale": "Double charge risk.",
+			"target": {
+				"kind": "api",
+				"method": "POST",
+				"path": "/orders"
+			},
+			"title": "Submit twice creates one order",
+			"type": "negative"
+		}
+	],
+	"title": "Idempotency plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

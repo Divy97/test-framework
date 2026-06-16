@@ -1,0 +1,49 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "contradictory-spec",
+	"title": "Underspecified password policy",
+	"category": "contradictory-spec",
+	"brief": "The spec requires a strong password but never states the minimum length or lockout policy.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "document",
+			"title": "Auth spec (incomplete)",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:password-min",
+			"statement": "A minimum password length applies (value unspecified).",
+			"kind": "constraint",
+			"expectedStrength": "assumption",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		},
+		{
+			"truthKey": "req:lockout",
+			"statement": "An account lockout policy applies (value unspecified).",
+			"kind": "security",
+			"expectedStrength": "assumption",
+			"priority": "p2",
+			"risk": "low",
+			"mustCover": false
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:short-password-rejected",
+			"title": "Short password rejected under assumed minimum",
+			"requirementKeys": [
+				"req:password-min"
+			],
+			"type": "negative",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "password below assumed minimum is rejected"
+		}
+	],
+	"forbiddenClaims": []
+}

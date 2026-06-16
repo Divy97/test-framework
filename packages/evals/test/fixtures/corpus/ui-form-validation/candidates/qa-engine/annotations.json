@@ -1,0 +1,49 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "ui-form-validation",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"sourceAnnotations": [
+		{
+			"sourceId": "src_c886a2a81fd5d575b3d1",
+			"sourceKey": "spec"
+		}
+	],
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_4b469a80feb66a6f62d6",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:email-valid"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"requirementId": "req_e4cafcac43eb98a86458",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:submit-gated"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_389ca34a260ca9ab6a2f",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:invalid-email-error"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"caseId": "case_7b378c6ec27d504ae7cc",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:valid-enables-submit"
+			],
+			"satisfaction": "full"
+		}
+	]
+}
