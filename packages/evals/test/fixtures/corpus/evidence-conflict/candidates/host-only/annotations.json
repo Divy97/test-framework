@@ -1,0 +1,28 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "evidence-conflict",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_c88de68f29dc0bcdf22a",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:soft-delete"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_9d30abddce6f9c7e4e00",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:delete-is-soft"
+			],
+			"satisfaction": "partial",
+			"reason": "Presence-only check; weak observation."
+		}
+	]
+}

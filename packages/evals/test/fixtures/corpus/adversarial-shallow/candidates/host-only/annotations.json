@@ -1,0 +1,28 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "adversarial-shallow",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_651d0cd696e387b8654c",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:search-results"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_ba36bc69a8e338192fcb",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:query-returns-ranked"
+			],
+			"satisfaction": "partial",
+			"reason": "Checks count only, not relevance/ranking."
+		}
+	]
+}

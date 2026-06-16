@@ -1,0 +1,65 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "authz-api",
+	"title": "Owner-only task deletion API",
+	"category": "authz-api",
+	"brief": "Only a task owner may delete it; listing returns only the caller's tasks. No admin override.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "api-spec",
+			"title": "Task API spec",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:owner-only-delete",
+			"statement": "Only the owner may delete a task.",
+			"kind": "security",
+			"expectedStrength": "explicit",
+			"priority": "p0",
+			"risk": "high",
+			"mustCover": true
+		},
+		{
+			"truthKey": "req:list-scoped",
+			"statement": "List returns only the caller's tasks.",
+			"kind": "security",
+			"expectedStrength": "inferred",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:non-owner-delete-403",
+			"title": "Non-owner delete forbidden",
+			"requirementKeys": [
+				"req:owner-only-delete"
+			],
+			"type": "security",
+			"priority": "p0",
+			"risk": "high",
+			"expectedAssertionHint": "DELETE returns 403 and task still exists"
+		},
+		{
+			"truthKey": "scn:list-only-own",
+			"title": "List only own tasks",
+			"requirementKeys": [
+				"req:list-scoped"
+			],
+			"type": "positive",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "list excludes other users' tasks"
+		}
+	],
+	"forbiddenClaims": [
+		{
+			"claimKey": "claim:admin-override",
+			"statement": "Admins can delete any task — the spec forbids an override."
+		}
+	]
+}

@@ -1,0 +1,43 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "integration-failure",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_29393ccbb0b9a7af1177",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:timeout-rollback"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"requirementId": "req_06e3c5e2de9997b7be3b",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:bounded-retry"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_eb6acce622f9337ed744",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:timeout-rolls-back"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"caseId": "case_fc201a8aa67b34f9aecd",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:retry-bounded"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

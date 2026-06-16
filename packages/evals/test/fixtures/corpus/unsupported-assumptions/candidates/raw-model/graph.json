@@ -1,0 +1,303 @@
+{
+	"assertions": [
+		{
+			"expected": 200,
+			"id": "assert_1f95491b9e8b50fc5f41",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred"
+			},
+			"stepId": "step_13edb7f71115d58de591",
+			"subject": "status",
+			"testCaseId": "case_40039009e23b9e2c3f5a"
+		},
+		{
+			"expected": 200,
+			"id": "assert_faa883949f02c1d731b2",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_f944f1d198c7199da4f4",
+			"subject": "status",
+			"testCaseId": "case_944474b18bbdf689b559"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Users can export data as CSV.",
+			"id": "ev_a1d411a4a185de127c2c",
+			"kind": "statement",
+			"sourceId": "src_91d75bbe72b9a2af6c66"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_5b911569c909f2c33b2a",
+		"inputFingerprint": "sha256:unsupported-assumptions-raw-model",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_773341ffb2fbd7c74d40",
+	"planVersion": 1,
+	"projectId": "prj_04b60424d8be6accceed",
+	"requirements": [
+		{
+			"id": "req_1203453ecaa8cae6fcfd",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred",
+				"rationale": "Speculative; not in the spec."
+			},
+			"risk": "low",
+			"statement": "Export also supports PDF."
+		},
+		{
+			"id": "req_a8232e5b593502cd1356",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred",
+				"rationale": "Speculative; not in the spec."
+			},
+			"risk": "low",
+			"statement": "Exports can be scheduled nightly."
+		},
+		{
+			"id": "req_ac502f64c4507951da9b",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Export as CSV."
+		},
+		{
+			"id": "req_b9e341b3fe571078fc47",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred",
+				"rationale": "Speculative; not in the spec."
+			},
+			"risk": "low",
+			"statement": "Exports upload to an S3 bucket."
+		},
+		{
+			"id": "req_c4e8a58a823d6390f643",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred",
+				"rationale": "Speculative; not in the spec."
+			},
+			"risk": "low",
+			"statement": "Exports are encrypted at rest."
+		},
+		{
+			"id": "req_fa25594f87928f6a3f24",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred",
+				"rationale": "Speculative; not in the spec."
+			},
+			"risk": "low",
+			"statement": "Export is emailed to the user."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_91d75bbe72b9a2af6c66",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/export?format=pdf"
+			},
+			"description": "Request PDF.",
+			"id": "step_13edb7f71115d58de591",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred"
+			},
+			"testCaseId": "case_40039009e23b9e2c3f5a"
+		},
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/export?format=csv"
+			},
+			"description": "Request export.",
+			"id": "step_f944f1d198c7199da4f4",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_944474b18bbdf689b559"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_40039009e23b9e2c3f5a",
+			"objective": "Check PDF export.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p2",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "inferred",
+				"rationale": "Speculative."
+			},
+			"qualityTags": [],
+			"requirementIds": [
+				"req_1203453ecaa8cae6fcfd"
+			],
+			"risk": "low",
+			"riskRationale": "Invented.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"title": "Export PDF",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_944474b18bbdf689b559",
+			"objective": "Check export.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_a1d411a4a185de127c2c"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_ac502f64c4507951da9b"
+			],
+			"risk": "medium",
+			"riskRationale": "Core.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"title": "Export CSV",
+			"type": "positive"
+		}
+	],
+	"title": "Export plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

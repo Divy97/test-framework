@@ -1,0 +1,43 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "stateful-workflow",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_66f9fc1090b1e04c1cf6",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:idempotent-submit"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"requirementId": "req_030018621a868ea5b129",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:retry-safe"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_714fb4f5bcf913d04580",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:duplicate-submit-once"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"caseId": "case_5346ab30cc1d3067bed5",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:retry-after-timeout"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

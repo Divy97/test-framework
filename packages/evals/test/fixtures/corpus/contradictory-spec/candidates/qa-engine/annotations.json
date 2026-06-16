@@ -1,0 +1,35 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "contradictory-spec",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_2946623f04dee97f21da",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:password-min"
+			],
+			"satisfaction": "full"
+		},
+		{
+			"requirementId": "req_62cf86e50c3043838423",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:lockout"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_3faf76e072c2653ef50e",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:short-password-rejected"
+			],
+			"satisfaction": "full"
+		}
+	]
+}

@@ -1,0 +1,147 @@
+{
+	"assertions": [
+		{
+			"expected": 0,
+			"id": "assert_e6634881283da2a7bb77",
+			"matcher": "greaterThan",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/search"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_53907802cb098971b1f8"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_8b4d0ca85bd16779e2bf",
+			"subject": "results length",
+			"testCaseId": "case_ba36bc69a8e338192fcb"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Search returns results.",
+			"id": "ev_53907802cb098971b1f8",
+			"kind": "statement",
+			"sourceId": "src_fff8e9248fb6763d380c"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_3d9307e5c96ec7b68465",
+		"inputFingerprint": "sha256:adversarial-shallow-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_43c43c3e2496e5a71452",
+	"planVersion": 1,
+	"projectId": "prj_09d8b7deae8cf9fee06a",
+	"requirements": [
+		{
+			"id": "req_651d0cd696e387b8654c",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_53907802cb098971b1f8"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Search returns results."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_fff8e9248fb6763d380c",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/search?q=x"
+			},
+			"description": "Search.",
+			"id": "step_8b4d0ca85bd16779e2bf",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_53907802cb098971b1f8"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_ba36bc69a8e338192fcb"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_ba36bc69a8e338192fcb",
+			"objective": "Check results exist.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_53907802cb098971b1f8"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_651d0cd696e387b8654c"
+			],
+			"risk": "medium",
+			"riskRationale": "Core.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/search"
+			},
+			"title": "Search returns something",
+			"type": "positive"
+		}
+	],
+	"title": "Search plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

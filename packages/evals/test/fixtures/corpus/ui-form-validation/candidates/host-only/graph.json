@@ -1,0 +1,148 @@
+{
+	"assertions": [
+		{
+			"id": "assert_70ac3630756d5109a2c8",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "#email-error"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_a548fbfe6b87eea98b48"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_816db5e3598c7f150e3d",
+			"subject": "error",
+			"testCaseId": "case_7b4bdad2e241594795ee"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Email is required and must be valid.",
+			"id": "ev_a548fbfe6b87eea98b48",
+			"kind": "statement",
+			"sourceId": "src_d3aefa280f1bbad5e4d6"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_0b5a7d759aaf123f825b",
+		"inputFingerprint": "sha256:ui-form-validation-host-only",
+		"methodologyVersion": "0.1.0",
+		"status": "incomplete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_1877c6e3cfd3e96fbe6c",
+	"planVersion": 1,
+	"projectId": "prj_7aea345837d6c05718fa",
+	"requirements": [
+		{
+			"id": "req_ea892eea1f71345f03c0",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_a548fbfe6b87eea98b48"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Email is required."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_d3aefa280f1bbad5e4d6",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "draft",
+	"steps": [
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "#email",
+				"value": "nope"
+			},
+			"description": "Type bad email.",
+			"id": "step_816db5e3598c7f150e3d",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_a548fbfe6b87eea98b48"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_7b4bdad2e241594795ee"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [
+					"needs selector"
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_7b4bdad2e241594795ee",
+			"objective": "Check the email.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_a548fbfe6b87eea98b48"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_ea892eea1f71345f03c0"
+			],
+			"risk": "medium",
+			"riskRationale": "Input check.",
+			"target": {
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Invalid email",
+			"type": "negative"
+		}
+	],
+	"title": "Signup form plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

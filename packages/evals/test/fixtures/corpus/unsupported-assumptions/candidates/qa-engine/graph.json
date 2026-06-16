@@ -1,0 +1,147 @@
+{
+	"assertions": [
+		{
+			"expected": "text/csv",
+			"id": "assert_481007370e69862a55d5",
+			"matcher": "contains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_499aa89b7f4415b6ddc0"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_7629e5ceb33c27368830",
+			"subject": "content-type",
+			"testCaseId": "case_b895e842e0ef8c9f589b"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Users can export their data as a CSV file.",
+			"id": "ev_499aa89b7f4415b6ddc0",
+			"kind": "statement",
+			"sourceId": "src_154ff58bc3c08ee28900"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_8f81cfcff7191ede488c",
+		"inputFingerprint": "sha256:unsupported-assumptions-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_84896009ae1a200ed3ab",
+	"planVersion": 1,
+	"projectId": "prj_04b60424d8be6accceed",
+	"requirements": [
+		{
+			"id": "req_21a230cd98c15af5926c",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_499aa89b7f4415b6ddc0"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Export data as CSV."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_154ff58bc3c08ee28900",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/export?format=csv"
+			},
+			"description": "Request the export.",
+			"id": "step_7629e5ceb33c27368830",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_499aa89b7f4415b6ddc0"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_b895e842e0ef8c9f589b"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_b895e842e0ef8c9f589b",
+			"objective": "Verify CSV download.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_499aa89b7f4415b6ddc0"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_21a230cd98c15af5926c"
+			],
+			"risk": "medium",
+			"riskRationale": "Core feature.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/export"
+			},
+			"title": "Export downloads CSV",
+			"type": "positive"
+		}
+	],
+	"title": "Export plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

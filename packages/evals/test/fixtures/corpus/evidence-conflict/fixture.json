@@ -1,0 +1,51 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "evidence-conflict",
+	"title": "Soft delete intent vs hard-delete code",
+	"category": "evidence-conflict",
+	"brief": "The spec says deleting a record soft-deletes it. The repository currently hard-deletes. Intended behavior is soft delete.",
+	"suppliedSources": [
+		{
+			"sourceKey": "spec",
+			"kind": "feature-request",
+			"title": "Delete spec",
+			"supplied": true
+		},
+		{
+			"sourceKey": "repo",
+			"kind": "repository",
+			"title": "Repository scan",
+			"supplied": true
+		}
+	],
+	"expectedRequirements": [
+		{
+			"truthKey": "req:soft-delete",
+			"statement": "Deleting a record soft-deletes it.",
+			"kind": "functional",
+			"expectedStrength": "explicit",
+			"priority": "p1",
+			"risk": "medium",
+			"mustCover": true
+		}
+	],
+	"expectedScenarios": [
+		{
+			"truthKey": "scn:delete-is-soft",
+			"title": "Delete marks record as deleted",
+			"requirementKeys": [
+				"req:soft-delete"
+			],
+			"type": "positive",
+			"priority": "p1",
+			"risk": "medium",
+			"expectedAssertionHint": "record still exists with deletedAt set"
+		}
+	],
+	"forbiddenClaims": [
+		{
+			"claimKey": "claim:hard-delete",
+			"statement": "Delete permanently removes the record — contradicts the soft-delete intent."
+		}
+	]
+}

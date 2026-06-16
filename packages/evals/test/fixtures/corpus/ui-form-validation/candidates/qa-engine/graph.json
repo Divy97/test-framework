@@ -1,0 +1,260 @@
+{
+	"assertions": [
+		{
+			"expected": "valid email",
+			"id": "assert_2fd07906a3a5424d0f56",
+			"matcher": "contains",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "#email-error"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_3ce12f596bd512927349",
+			"subject": "email error text",
+			"testCaseId": "case_389ca34a260ca9ab6a2f"
+		},
+		{
+			"id": "assert_76d2565f9761d086c9ec",
+			"matcher": "disabled",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "#submit"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "explicit"
+			},
+			"subject": "submit disabled",
+			"testCaseId": "case_389ca34a260ca9ab6a2f"
+		},
+		{
+			"id": "assert_b3c2a2f97f446e8d49c9",
+			"matcher": "enabled",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "#submit"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "inferred"
+			},
+			"stepId": "step_982480eea685ac1946f4",
+			"subject": "submit enabled",
+			"testCaseId": "case_7b378c6ec27d504ae7cc"
+		}
+	],
+	"createdAt": "2026-06-15T10:00:00.000Z",
+	"dataRequirements": [],
+	"evidence": [
+		{
+			"claim": "Email is required and must be valid; submit stays disabled until valid.",
+			"id": "ev_7a3c8a8e1b715fb7a4ec",
+			"kind": "statement",
+			"sourceId": "src_c886a2a81fd5d575b3d1"
+		}
+	],
+	"features": [],
+	"generation": {
+		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_c966dba5659bdb62a062",
+		"inputFingerprint": "sha256:ui-form-validation-qa-engine",
+		"methodologyVersion": "0.1.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "0.1.0"
+	},
+	"openQuestions": [],
+	"planId": "plan_6a368e1b9bd8f798b80d",
+	"planVersion": 1,
+	"projectId": "prj_7aea345837d6c05718fa",
+	"requirements": [
+		{
+			"id": "req_4b469a80feb66a6f62d6",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "Email is required and valid."
+		},
+		{
+			"id": "req_e4cafcac43eb98a86458",
+			"kind": "ux",
+			"openQuestionIds": [],
+			"priority": "p2",
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "inferred",
+				"rationale": "Standard form UX."
+			},
+			"risk": "low",
+			"statement": "Submit disabled until valid."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_c886a2a81fd5d575b3d1",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Feature spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "#email",
+				"value": "nope"
+			},
+			"description": "Type an invalid email and blur.",
+			"id": "step_3ce12f596bd512927349",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_389ca34a260ca9ab6a2f"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "#email",
+				"value": "a@b.co"
+			},
+			"description": "Type a valid email.",
+			"id": "step_982480eea685ac1946f4",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_7b378c6ec27d504ae7cc"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_389ca34a260ca9ab6a2f",
+			"objective": "Reject a malformed email inline.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional"
+			],
+			"requirementIds": [
+				"req_4b469a80feb66a6f62d6"
+			],
+			"risk": "medium",
+			"riskRationale": "Bad input must be caught.",
+			"target": {
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Invalid email shows error",
+			"type": "negative"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [],
+			"id": "case_7b378c6ec27d504ae7cc",
+			"objective": "Enable submit once valid.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p2",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_7a3c8a8e1b715fb7a4ec"
+				],
+				"kind": "inferred"
+			},
+			"qualityTags": [
+				"usability"
+			],
+			"requirementIds": [
+				"req_e4cafcac43eb98a86458"
+			],
+			"risk": "low",
+			"riskRationale": "Primary path.",
+			"target": {
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Valid form enables submit",
+			"type": "positive"
+		}
+	],
+	"title": "Signup form plan",
+	"updatedAt": "2026-06-15T10:00:00.000Z"
+}

@@ -1,0 +1,724 @@
+{
+	"corpusFingerprint": "sha256:e927c7b50089c23d5e5e04b98a9d50493144d8eb0a102c56ab03bce3911ab169",
+	"evalSchemaVersion": "eval/v1",
+	"fixtures": [
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 0.5,
+						"scenarioCoverage": 0.5,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"assertions: case_5f5acbbe14e45a223147 0/1 specific",
+						"assertions: case_5fc60b282a09db8616c8 0/1 specific",
+						"assertions: case_650ee111147899f62a77 0/1 specific",
+						"assertions: case_8ea1c1e3677b31a66d0e 0/1 specific",
+						"coverage: scn:query-returns-ranked sat=0.5 (w=6)",
+						"duplicate: case_5fc60b282a09db8616c8 repeats an earlier case",
+						"duplicate: case_650ee111147899f62a77 repeats an earlier case",
+						"duplicate: case_8ea1c1e3677b31a66d0e repeats an earlier case",
+						"low-value: case_5f5acbbe14e45a223147 has only presence/no assertions",
+						"recall: req:search-results partial (w=6)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 66,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 0.5,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"coverage: scn:query-returns-ranked sat=0.5 (w=6)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 91,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 100,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "adversarial-shallow",
+			"fixtureId": "adversarial-shallow"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 0,
+						"executionReadiness": 0,
+						"provenanceAccuracy": 0,
+						"requirementRecall": 0,
+						"scenarioCoverage": 0,
+						"traceability": 0,
+						"unsupportedClaims": 0
+					},
+					"explain": [
+						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-INVALID-GRAPH"
+					],
+					"overall": 0,
+					"recordKind": "synthetic",
+					"valid": false,
+					"validationFindings": [
+						{
+							"code": "CASE_REQUIREMENT_REQUIRED",
+							"entity": {
+								"id": "case_ca6deb75b48a9c00e291",
+								"kind": "testCase"
+							},
+							"message": "Test case case_ca6deb75b48a9c00e291 must cover at least one requirement.",
+							"path": "/testCases/0/requirementIds",
+							"relatedIds": [],
+							"severity": "error"
+						}
+					],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 0.6667,
+						"scenarioCoverage": 0.6667,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"coverage: scn:list-only-own sat=0 (w=6)",
+						"recall: req:list-scoped missed (w=6)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 88,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 100,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "authz-api",
+			"fixtureId": "authz-api"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 0,
+						"executionReadiness": 0,
+						"provenanceAccuracy": 0,
+						"requirementRecall": 0,
+						"scenarioCoverage": 0,
+						"traceability": 0,
+						"unsupportedClaims": 0
+					},
+					"explain": [
+						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-INVALID-GRAPH"
+					],
+					"overall": 0,
+					"recordKind": "synthetic",
+					"valid": false,
+					"validationFindings": [
+						{
+							"code": "CASE_REQUIREMENT_REQUIRED",
+							"entity": {
+								"id": "case_f8e27ddaff67e28ef9bd",
+								"kind": "testCase"
+							},
+							"message": "Test case case_f8e27ddaff67e28ef9bd must cover at least one requirement.",
+							"path": "/testCases/0/requirementIds",
+							"relatedIds": [],
+							"severity": "error"
+						}
+					],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 0,
+						"requirementRecall": 0.75,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"provenance: req_9fb575ec872a5eeda253 is explicit, expected assumption",
+						"recall: req:lockout missed (w=2)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 92.5,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 0.75,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"traceability: req:lockout covered but untested"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 97,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "contradictory-spec",
+			"fixtureId": "contradictory-spec"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 0,
+						"scenarioCoverage": 0,
+						"traceability": 1,
+						"unsupportedClaims": 0
+					},
+					"explain": [
+						"coverage: scn:delete-is-soft sat=0 (w=6)",
+						"recall: req:soft-delete missed (w=6)",
+						"unsupported: 2 contradicts-truth claim(s)"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-CONTRADICTS-TRUTH",
+						"HF-UNSUPPORTED-RATE"
+					],
+					"overall": 49,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 0.5,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"assertions: case_9d30abddce6f9c7e4e00 0/1 specific",
+						"coverage: scn:delete-is-soft sat=0.5 (w=6)",
+						"low-value: case_9d30abddce6f9c7e4e00 has only presence/no assertions"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 75,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"assertions: case_0efda3b372c1613605a7 0/1 specific",
+						"low-value: case_0efda3b372c1613605a7 has only presence/no assertions"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 84,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "evidence-conflict",
+			"fixtureId": "evidence-conflict"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 0,
+						"executionReadiness": 0,
+						"provenanceAccuracy": 0,
+						"requirementRecall": 0,
+						"scenarioCoverage": 0,
+						"traceability": 0,
+						"unsupportedClaims": 0
+					},
+					"explain": [
+						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-INVALID-GRAPH"
+					],
+					"overall": 0,
+					"recordKind": "synthetic",
+					"valid": false,
+					"validationFindings": [
+						{
+							"code": "CASE_REQUIREMENT_REQUIRED",
+							"entity": {
+								"id": "case_5f262f32c93ddbeb35ce",
+								"kind": "testCase"
+							},
+							"message": "Test case case_5f262f32c93ddbeb35ce must cover at least one requirement.",
+							"path": "/testCases/0/requirementIds",
+							"relatedIds": [],
+							"severity": "error"
+						}
+					],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 0.6667,
+						"scenarioCoverage": 0.3333,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"assertions: case_7d64d6127536a707bc1e 0/1 specific",
+						"coverage: scn:retry-bounded sat=0 (w=6)",
+						"coverage: scn:timeout-rolls-back sat=0.5 (w=12)",
+						"low-value: case_7d64d6127536a707bc1e has only presence/no assertions",
+						"recall: req:bounded-retry missed (w=6)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 66,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 100,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "integration-failure",
+			"fixtureId": "integration-failure"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 0,
+						"executionReadiness": 0,
+						"provenanceAccuracy": 0,
+						"requirementRecall": 0,
+						"scenarioCoverage": 0,
+						"traceability": 0,
+						"unsupportedClaims": 0
+					},
+					"explain": [
+						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-INVALID-GRAPH"
+					],
+					"overall": 0,
+					"recordKind": "synthetic",
+					"valid": false,
+					"validationFindings": [
+						{
+							"code": "CASE_REQUIREMENT_REQUIRED",
+							"entity": {
+								"id": "case_2afdcaaf34ce3a3600f4",
+								"kind": "testCase"
+							},
+							"message": "Test case case_2afdcaaf34ce3a3600f4 must cover at least one requirement.",
+							"path": "/testCases/0/requirementIds",
+							"relatedIds": [],
+							"severity": "error"
+						}
+					],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 0.6667,
+						"scenarioCoverage": 0.6667,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"coverage: scn:retry-after-timeout sat=0 (w=6)",
+						"recall: req:retry-safe missed (w=6)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 88,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 100,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "stateful-workflow",
+			"fixtureId": "stateful-workflow"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 0,
+						"executionReadiness": 0,
+						"provenanceAccuracy": 0,
+						"requirementRecall": 0,
+						"scenarioCoverage": 0,
+						"traceability": 0,
+						"unsupportedClaims": 0
+					},
+					"explain": [
+						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-INVALID-GRAPH"
+					],
+					"overall": 0,
+					"recordKind": "synthetic",
+					"valid": false,
+					"validationFindings": [
+						{
+							"code": "CASE_REQUIREMENT_REQUIRED",
+							"entity": {
+								"id": "case_80a13d26b78d9e34dd3c",
+								"kind": "testCase"
+							},
+							"message": "Test case case_80a13d26b78d9e34dd3c must cover at least one requirement.",
+							"path": "/testCases/0/requirementIds",
+							"relatedIds": [],
+							"severity": "error"
+						}
+					],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 0,
+						"duplicateLowValue": 0,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 0,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 0.75,
+						"scenarioCoverage": 0.375,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"assertions: case_7b4bdad2e241594795ee 0/1 specific",
+						"coverage: scn:invalid-email-error sat=0.5 (w=6)",
+						"coverage: scn:valid-enables-submit sat=0 (w=2)",
+						"low-value: case_7b4bdad2e241594795ee has only presence/no assertions",
+						"readiness: case_7b4bdad2e241594795ee is not execution-ready",
+						"recall: req:submit-gated missed (w=2)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 58.3,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 0.25,
+						"duplicateLowValue": 0.5,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"assertions: case_389ca34a260ca9ab6a2f 1/2 specific",
+						"assertions: case_7b378c6ec27d504ae7cc 0/1 specific",
+						"low-value: case_7b378c6ec27d504ae7cc has only presence/no assertions"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 89,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "ui-form",
+			"fixtureId": "ui-form-validation"
+		},
+		{
+			"candidates": [
+				{
+					"arm": "raw-model",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 0.25
+					},
+					"explain": [
+						"unsupported: 6 invented claim(s)"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-UNSUPPORTED-RATE"
+					],
+					"overall": 88.8,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "FAIL"
+				},
+				{
+					"arm": "host-only",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 0.5,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [
+						"coverage: scn:export-downloads-csv sat=0.5 (w=6)"
+					],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 91,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				},
+				{
+					"arm": "qa-engine",
+					"dimensions": {
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 1,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
+					},
+					"explain": [],
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 100,
+					"recordKind": "synthetic",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
+				}
+			],
+			"category": "unsupported-assumptions",
+			"fixtureId": "unsupported-assumptions"
+		}
+	],
+	"rubricFingerprint": "sha256:113bda68cf7457ec447d378dab57a3b5aab15fa1693612709123661dbe87e94e"
+}

@@ -1,0 +1,28 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "unsupported-assumptions",
+	"arm": "host-only",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_d8d6c226309b4769c0a4",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:export-csv"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_256b1d8429277abca426",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:export-downloads-csv"
+			],
+			"satisfaction": "partial",
+			"reason": "Only checks 200, not CSV content-type."
+		}
+	]
+}

@@ -1,0 +1,27 @@
+{
+	"evalSchemaVersion": "eval/v1",
+	"fixtureId": "unsupported-assumptions",
+	"arm": "qa-engine",
+	"recordKind": "synthetic",
+	"expectValidationFailure": false,
+	"requirementAnnotations": [
+		{
+			"requirementId": "req_21a230cd98c15af5926c",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:export-csv"
+			],
+			"satisfaction": "full"
+		}
+	],
+	"caseAnnotations": [
+		{
+			"caseId": "case_b895e842e0ef8c9f589b",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:export-downloads-csv"
+			],
+			"satisfaction": "full"
+		}
+	]
+}
