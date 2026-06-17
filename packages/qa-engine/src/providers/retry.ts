@@ -62,8 +62,10 @@ export async function withRetry<T>(
 
 			try {
 				await deps.sleep(delay, signal);
-			} catch {
-				// A rejecting sleep means the backoff was aborted.
+			} catch (err) {
+				// A rejecting sleep is expected only on abort; surface anything
+				// else (e.g. a bug in the injected sleep) instead of swallowing it.
+				if (!signal?.aborted) throw err;
 			}
 			if (signal?.aborted) throw cancelled();
 		}

@@ -136,6 +136,26 @@ test("a pre-aborted signal throws CANCELLED without calling the attempt", async 
 	assert.equal(calls, 0);
 });
 
+test("a non-abort error from sleep is surfaced, not swallowed", async () => {
+	const deps: RetryDeps = {
+		now: () => 0,
+		sleep: async () => {
+			throw new Error("clock exploded");
+		},
+		random: () => 1,
+	};
+	await assert.rejects(
+		withRetry(
+			async () => {
+				throw transient();
+			},
+			policy,
+			deps,
+		),
+		/clock exploded/,
+	);
+});
+
 test("aborting during backoff stops retrying with CANCELLED", async () => {
 	const controller = new AbortController();
 	let t = 0;

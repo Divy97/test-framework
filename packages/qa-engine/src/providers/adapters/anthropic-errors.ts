@@ -1,4 +1,5 @@
 import { ProviderError, type ProviderErrorCode } from "../errors.js";
+import { maskSecrets } from "../redaction.js";
 
 /**
  * Pure mapping from an Anthropic SDK error (or a network error) to a
@@ -39,7 +40,9 @@ const UNSUPPORTED = /tool|schema|structured|unsupported|input_schema/i;
 export function mapAnthropicError(err: unknown): ProviderError {
 	const e = (err ?? {}) as ErrorLike;
 	const status = e.status;
-	const message = e.message ?? "anthropic request failed";
+	// The SDK message can echo request URLs/body excerpts — mask known secret
+	// shapes before it becomes the (serializable) ProviderError.message.
+	const message = maskSecrets(e.message ?? "anthropic request failed");
 
 	const make = (code: ProviderErrorCode, retryable: boolean): ProviderError =>
 		new ProviderError(code, message, retryable, {

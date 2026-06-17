@@ -67,6 +67,15 @@ test("network errors with no status map to retryable transient", () => {
 	assert.equal(err.retryable, true);
 });
 
+test("masks secret shapes in the SDK message so toJSON cannot leak them", () => {
+	const err = mapAnthropicError({
+		status: 400,
+		message: "bad request: Authorization Bearer sk-ant-api03-leakme rejected",
+	});
+	assert.equal(err.message.includes("sk-ant-api03-leakme"), false);
+	assert.equal(JSON.stringify(err).includes("sk-ant-api03-leakme"), false);
+});
+
 test("the original error is preserved as cause but never serialized", () => {
 	const original = new Error("sk-ant-should-not-leak");
 	const err = mapAnthropicError({ status: 401, cause: original, message: "x" });
