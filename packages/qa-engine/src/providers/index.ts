@@ -7,5 +7,8 @@
  * qa-engine, which re-exports this file).
  */
 
+export * from "./config.js";
 export * from "./errors.js";
+export * from "./resolve-config.js";
+export * from "./secret.js";
 export * from "./types.js";
