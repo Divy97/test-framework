@@ -19,7 +19,7 @@ and schema mechanics but still represent the superseded public five-stage design
 | Safe repo scanner | Done foundation | Strong confinement, exclusions, limits, evidence index |
 | Existing QA schemas | Partial | Useful concepts; not yet execution-ready test graph |
 | QA engine | Pending | No provider calls, workflow, semantic review, or repair |
-| BYOK providers | Done foundation | Provider-neutral seam, Anthropic adapter, fake; CI runs on the fake. No engine workflow yet |
+| BYOK providers | Done foundation | Provider-neutral seam, Anthropic + OpenRouter adapters, DI fake; CI runs on the fake. No engine workflow yet |
 | Artifact persistence | Pending | Paths only; no atomic canonical writer |
 | Comparative evals | Pending | No generation-quality corpus or release threshold |
 | Released execution | Later | V2, intentionally outside V1 |
@@ -120,7 +120,8 @@ Exit criteria: one command produces comparable, versioned eval results. **Met** 
 Status: done.
 
 - Local provider/model configuration (env-referenced key; no raw key in config).
-- First real provider adapter (Anthropic), loaded by dynamic import only.
+- Two real provider adapters — Anthropic and OpenRouter (OpenAI-compatible) —
+  each loaded by dynamic import only.
 - Structured generation (caller Zod schema → JSON Schema → seam-side validation),
   timeout/cancellation via composed `AbortSignal`, normalized usage metadata.
 - Typed auth/quota/transient/timeout/cancelled/invalid-output/unsupported/config
@@ -129,10 +130,11 @@ Status: done.
   wall-clock cap over injected clock/sleep/jitter.
 
 Delivered as the provider-neutral `ModelProvider` contract: a deterministic
-scripted fake and the real Anthropic adapter satisfy the same engine-facing
-interface, the engine receives its provider by DI from `createProvider`, and CI
-runs on the fake alone (the live smoke test auto-skips without `RUN_LIVE_PROVIDER`
-+ a key). See [ADR-0010](adr/0010-byok-provider-seam.md) and
+scripted fake (DI-only test seam) and the real Anthropic and OpenRouter adapters
+satisfy the same engine-facing interface, the engine receives its provider by DI
+from `createProvider`, and CI runs on the fake alone (the live smoke tests
+auto-skip without `RUN_LIVE_PROVIDER` + a key). See
+[ADR-0010](adr/0010-byok-provider-seam.md) and
 [docs/byok-setup.md](../byok-setup.md).
 
 ### 6. QA Engine
