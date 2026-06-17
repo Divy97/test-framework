@@ -1,0 +1,136 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { z } from "zod";
+import type { ProviderConfig } from "./config.js";
+import { ProviderError } from "./errors.js";
+import { composeRawProvider, createProvider } from "./factory.js";
+import type { FakeProvider } from "./fake/fake-provider.js";
+import type {
+	GenerationRequest,
+	ProviderCapabilities,
+	RawGeneration,
+	RawProvider,
+} from "./types.js";
+
+const fakeConfig: ProviderConfig = {
+	provider: "fake",
+	model: "fake-1",
+	keySource: { kind: "env", var: "FAKE_KEY" },
+};
+const env = (v: Record<string, string>) => (n: string) => v[n];
+
+const caps = (
+	structuredOutput: ProviderCapabilities["structuredOutput"],
+): ProviderCapabilities => ({
+	structuredOutput,
+	supportsSystemPrompt: true,
+	supportsCancellation: true,
+});
+
+function rawStub(
+	structuredOutput: ProviderCapabilities["structuredOutput"],
+	gen: (req: GenerationRequest) => RawGeneration,
+): RawProvider {
+	return {
+		id: "stub",
+		capabilities: () => caps(structuredOutput),
+		generate: async (req) => gen(req),
+	};
+}
+
+const resilienceDeps = {
+	now: () => 0,
+	sleep: async () => {},
+	random: () => 1,
+	timeoutSignal: () => new AbortController().signal,
+};
+
+const req = (over: object = {}): GenerationRequest => ({
+	messages: [{ role: "user", content: "hi" }],
+	maxOutputTokens: 64,
+	...over,
+});
+
+test("fake provider resolves without touching an adapter", async () => {
+	const provider = await createProvider(fakeConfig, {
+		getEnv: env({ FAKE_KEY: "k" }),
+	});
+	assert.equal(provider.id, "fake");
+});
+
+test("an invocation override reaches the resolved provider", async () => {
+	const provider = await createProvider(fakeConfig, {
+		getEnv: env({ FAKE_KEY: "k" }),
+		invocation: { model: "fake-override" },
+	});
+	assert.equal((provider as FakeProvider).model, "fake-override");
+
+	const baseline = await createProvider(fakeConfig, {
+		getEnv: env({ FAKE_KEY: "k" }),
+	});
+	assert.equal((baseline as FakeProvider).model, "fake-1");
+});
+
+test("invalid config (raw apiKey) rejects with PROVIDER_CONFIG_INVALID", async () => {
+	await assert.rejects(
+		createProvider(
+			{ ...fakeConfig, apiKey: "sk-ant-x" } as unknown as ProviderConfig,
+			{ getEnv: env({ FAKE_KEY: "k" }) },
+		),
+		(e) => e instanceof ProviderError && e.code === "PROVIDER_CONFIG_INVALID",
+	);
+});
+
+test("missing env key rejects with PROVIDER_CONFIG_INVALID", async () => {
+	await assert.rejects(
+		createProvider(fakeConfig, { getEnv: env({}) }),
+		(e) => e instanceof ProviderError && e.code === "PROVIDER_CONFIG_INVALID",
+	);
+});
+
+test("composed provider gates structured output on capability", async () => {
+	const provider = composeRawProvider(
+		rawStub("none", () => {
+			throw new Error("should not be called");
+		}),
+		{ model: "m", resilienceDeps },
+	);
+	await assert.rejects(
+		provider.generate(req({ schema: z.object({ a: z.number() }) }), {
+			timeoutMs: 100,
+		}),
+		(e) =>
+			e instanceof ProviderError &&
+			e.code === "PROVIDER_UNSUPPORTED_CAPABILITY",
+	);
+});
+
+test("composed provider validates structured output through the seam", async () => {
+	const schema = z.object({ a: z.number() });
+	const provider = composeRawProvider(
+		rawStub("tool", () => ({
+			output: { kind: "json", value: { a: 7 } },
+			usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+			model: "m",
+			finishReason: "tool_use",
+		})),
+		{ model: "m", resilienceDeps },
+	);
+	const result = await provider.generate(req({ schema }), { timeoutMs: 100 });
+	assert.deepEqual(result.data, { a: 7 });
+});
+
+test("composed provider returns text when no schema is requested", async () => {
+	const provider = composeRawProvider(
+		rawStub("tool", () => ({
+			output: { kind: "text", value: "plain answer" },
+			usage: { inputTokens: 1, outputTokens: 1, totalTokens: 2 },
+			model: "m",
+			finishReason: "stop",
+		})),
+		{ model: "m", resilienceDeps },
+	);
+	const result = await provider.generate(req(), { timeoutMs: 100 });
+	assert.equal(result.text, "plain answer");
+	assert.equal(result.data, undefined);
+});

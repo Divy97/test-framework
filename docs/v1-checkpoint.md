@@ -19,7 +19,7 @@ and schema mechanics but still represent the superseded public five-stage design
 | Safe repo scanner | Done foundation | Strong confinement, exclusions, limits, evidence index |
 | Existing QA schemas | Partial | Useful concepts; not yet execution-ready test graph |
 | QA engine | Pending | No provider calls, workflow, semantic review, or repair |
-| BYOK providers | Pending | No provider adapters or configuration |
+| BYOK providers | Done foundation | Provider-neutral seam, Anthropic adapter, fake; CI runs on the fake. No engine workflow yet |
 | Artifact persistence | Pending | Paths only; no atomic canonical writer |
 | Comparative evals | Pending | No generation-quality corpus or release threshold |
 | Released execution | Later | V2, intentionally outside V1 |
@@ -117,16 +117,23 @@ Exit criteria: one command produces comparable, versioned eval results. **Met** 
 
 ### 5. BYOK Provider Seam
 
-Status: pending.
+Status: done.
 
-- Local provider/model configuration.
-- First real provider adapter.
-- Structured generation, timeout/cancellation, usage metadata.
-- Typed auth/quota/transient/invalid-output errors.
-- Secret-safe logs and bounded retry/token policies.
+- Local provider/model configuration (env-referenced key; no raw key in config).
+- First real provider adapter (Anthropic), loaded by dynamic import only.
+- Structured generation (caller Zod schema → JSON Schema → seam-side validation),
+  timeout/cancellation via composed `AbortSignal`, normalized usage metadata.
+- Typed auth/quota/transient/timeout/cancelled/invalid-output/unsupported/config
+  errors, thrown as one `ProviderError`.
+- Secret-safe allowlist logging + value masking; bounded retry with jitter and a
+  wall-clock cap over injected clock/sleep/jitter.
 
-Exit criteria: deterministic fake provider and one real provider both satisfy the
-same engine-facing contract.
+Delivered as the provider-neutral `ModelProvider` contract: a deterministic
+scripted fake and the real Anthropic adapter satisfy the same engine-facing
+interface, the engine receives its provider by DI from `createProvider`, and CI
+runs on the fake alone (the live smoke test auto-skips without `RUN_LIVE_PROVIDER`
++ a key). See [ADR-0010](adr/0010-byok-provider-seam.md) and
+[docs/byok-setup.md](../byok-setup.md).
 
 ### 6. QA Engine
 

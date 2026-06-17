@@ -54,3 +54,6 @@ coverage
 .cache
 tmp
 temp
+
+# Raftkit session checkpoints (local-only)
+docs/plans/.*.json

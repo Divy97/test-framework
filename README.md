@@ -24,7 +24,7 @@ packages/
   core/       product schemas and domain types
   evals/      comparative eval harness, calibrated corpus, and baseline
   planner/    planning contracts over core + repo scan
-  qa-engine/  canonical test graph: schema, validation, serialization
+  qa-engine/  canonical test graph + BYOK provider seam (schema, validation, serialization)
   repo-scan   repo scan contracts
 ```
 
@@ -48,6 +48,18 @@ reference-based scoring — no live model calls. It emits a byte-stable
 `results.json` plus a Markdown report and fails on regression against the accepted
 baseline. See [ADR-0009](docs/adr/0009-reference-based-deterministic-eval.md) and
 the [plan](docs/superpowers/plans/2026-06-15-eval-harness-and-baseline.md).
+
+## BYOK Providers
+
+The QA Engine reaches a user-selected model through a provider-neutral seam in
+`packages/qa-engine/src/providers/`. You bring your own key by reference — set the
+env var named in `keySource` (e.g. `ANTHROPIC_API_KEY`); the key is never stored in
+config, logs, or artifacts. The seam owns retry, timeout, cancellation, and
+structured-output validation; adapters are loaded by dynamic import so the vendor
+SDK stays off the common path. Anthropic is the first adapter; a deterministic fake
+implements the same contract and CI runs on it alone. See
+[docs/byok-setup.md](docs/byok-setup.md) and
+[ADR-0010](docs/adr/0010-byok-provider-seam.md).
 
 ## Current MCP Implementation
 

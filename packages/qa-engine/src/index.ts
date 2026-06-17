@@ -1,3 +1,7 @@
+// BYOK provider seam. Only the neutral surface — adapters are never exported
+// here (they are dynamic-imported by the factory), so the vendor SDK stays off
+// this common import path.
+export * from "./providers/index.js";
 export * from "./test-graph/actions.js";
 export * from "./test-graph/assertions.js";
 export * from "./test-graph/canonical-json.js";
