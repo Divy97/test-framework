@@ -14,10 +14,18 @@ test("accepts a minimal env-keyed anthropic config", () => {
 	assert.equal(parsed.keySource.kind, "env");
 });
 
-test("accepts the fake provider", () => {
+test("accepts the openrouter provider", () => {
+	assert.equal(
+		providerConfigSchema.safeParse({ ...valid, provider: "openrouter" })
+			.success,
+		true,
+	);
+});
+
+test("rejects the fake provider as a configurable value (DI-only test seam)", () => {
 	assert.equal(
 		providerConfigSchema.safeParse({ ...valid, provider: "fake" }).success,
-		true,
+		false,
 	);
 });
 

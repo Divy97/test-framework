@@ -27,6 +27,27 @@ rejection. Set the key in the environment instead:
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
+### Providers
+
+| `provider` | SDK | Key env (example) | Models |
+|---|---|---|---|
+| `anthropic` | `@anthropic-ai/sdk` | `ANTHROPIC_API_KEY` | `claude-opus-4-8`, `claude-haiku-4-5`, … |
+| `openrouter` | `openai` (OpenAI-compatible) | `OPENROUTER_API_KEY` | namespaced, e.g. `anthropic/claude-opus-4-8`, `openai/gpt-4o` |
+
+OpenRouter is OpenAI-compatible; the adapter drives it through the `openai` SDK
+pointed at `https://openrouter.ai/api/v1` (override with `baseUrl` if needed):
+
+```ts
+const provider = await createProvider({
+  provider: "openrouter",
+  model: "anthropic/claude-opus-4-8",
+  keySource: { kind: "env", var: "OPENROUTER_API_KEY" },
+});
+```
+
+Both adapters use a forced "emit" tool for structured output and are loaded by
+dynamic `import()` only, so neither vendor SDK sits on the common import path.
+
 ## Precedence
 
 Configuration values resolve `invocation > project-config > env`. This checkpoint
@@ -71,12 +92,16 @@ jitter and a wall-clock cap). Keys never appear in errors, logs, or reports.
 
 ## Testing without a key
 
-A deterministic fake implements the same contract — use it in tests:
+A deterministic fake implements the same contract — use it in tests. It is **not**
+a configurable provider value (a config file can only name a real provider);
+construct it directly, or inject it through `createProvider(config, { fakeProvider })`:
 
 ```ts
 import { createFakeProvider, fakeOk, fakeError } from "@test-framework/qa-engine";
 
 const provider = createFakeProvider([fakeOk({ data: { verdict: "pass" } })]);
+// or, to exercise the factory wiring without a key:
+// await createProvider(config, { fakeProvider: provider });
 ```
 
 CI runs on the fake alone. The real Anthropic smoke test is auto-skipped unless

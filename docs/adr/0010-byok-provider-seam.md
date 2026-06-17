@@ -51,5 +51,9 @@ and putting structured-output validation or semantic repair in the adapter.
 - The project-config-file source (`.test-framework/project.json`, Artifact
   Workspace #7) is deferred; precedence is defined (`invocation > project > env`)
   and this checkpoint implements `invocation` + the env-resolved key.
-- OpenAI is the planned second adapter; its capability declaration selects a
-  different structured-output channel without touching the seam.
+- OpenRouter (OpenAI-compatible, via the `openai` SDK) is the realized second
+  adapter, sharing one provider-agnostic HTTP error mapper with Anthropic; adding
+  it touched no seam logic.
+- The deterministic fake is a **DI-only** test seam (`createProvider(config, { fakeProvider })`),
+  not a value in the config `provider` enum — so a config file can never silently
+  select a no-op model in production.

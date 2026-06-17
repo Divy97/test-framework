@@ -1,6 +1,5 @@
 import { type ProviderConfig, providerConfigSchema } from "./config.js";
 import { ProviderError } from "./errors.js";
-import { createFakeProvider } from "./fake/fake-provider.js";
 import type { LogEntry } from "./redaction.js";
 import { type ResilienceDeps, withResilience } from "./resilience.js";
 import { type InvocationOverrides, resolveConfig } from "./resolve-config.js";
@@ -64,6 +63,7 @@ export function composeRawProvider(
 ): ModelProvider {
 	return {
 		id: raw.id,
+		model: opts.model,
 		capabilities: (model) => raw.capabilities(model),
 		async generate<T>(
 			req: GenerationRequest<T>,
@@ -112,14 +112,19 @@ export function composeRawProvider(
 
 /**
  * Construct a provider from config via dependency injection. The engine receives
- * the returned `ModelProvider` and depends only on the neutral interface. The
- * vendor SDK is loaded lazily — only the `anthropic` branch dynamic-imports the
- * adapter, so `fake` (and the common import path) never pulls it in.
+ * the returned `ModelProvider` and depends only on the neutral interface.
+ *
+ * `deps.fakeProvider` is a pure test seam: when present it short-circuits config
+ * entirely, so the deterministic fake is never a configurable production value
+ * (a config file can only name a real provider). Real adapters are loaded lazily
+ * by dynamic `import()`, so a vendor SDK never reaches the common import path.
  */
 export async function createProvider(
 	config: ProviderConfig,
 	deps?: ProviderDeps,
 ): Promise<ModelProvider> {
+	if (deps?.fakeProvider) return deps.fakeProvider;
+
 	const parsed = providerConfigSchema.safeParse(config);
 	if (!parsed.success) {
 		throw new ProviderError(
@@ -134,19 +139,32 @@ export async function createProvider(
 		invocation: deps?.invocation,
 	});
 
-	if (resolved.provider === "fake") {
-		return (
-			deps?.fakeProvider ?? createFakeProvider([], { model: resolved.model })
-		);
+	let raw: RawProvider;
+	switch (resolved.provider) {
+		case "anthropic": {
+			const { createAnthropicAdapter } = await import(
+				"./adapters/anthropic.js"
+			);
+			raw = createAnthropicAdapter({
+				key: resolved.key,
+				model: resolved.model,
+				baseUrl: resolved.baseUrl,
+			});
+			break;
+		}
+		case "openrouter": {
+			const { createOpenRouterAdapter } = await import(
+				"./adapters/openrouter.js"
+			);
+			raw = createOpenRouterAdapter({
+				key: resolved.key,
+				model: resolved.model,
+				baseUrl: resolved.baseUrl,
+			});
+			break;
+		}
 	}
 
-	// Lazy: the SDK-backed adapter is imported only when actually selected.
-	const { createAnthropicAdapter } = await import("./adapters/anthropic.js");
-	const raw = createAnthropicAdapter({
-		key: resolved.key,
-		model: resolved.model,
-		baseUrl: resolved.baseUrl,
-	});
 	return composeRawProvider(raw, {
 		model: resolved.model,
 		resilienceDeps: resilienceDepsFrom(deps),
