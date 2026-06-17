@@ -8,6 +8,7 @@
 		}
 	},
 	"dependencies": {
+		"@anthropic-ai/sdk": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
@@ -18,6 +19,6 @@
 	},
 	"scripts": {
 		"check-types": "tsc --noEmit",
-		"test": "tsx --test src/**/*.test.ts"
+		"test": "tsx --test \"src/**/*.test.ts\""
 	}
 }
