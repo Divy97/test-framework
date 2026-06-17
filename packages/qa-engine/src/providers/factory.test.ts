@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { ProviderConfig } from "./config.js";
 import { ProviderError } from "./errors.js";
 import { composeRawProvider, createProvider } from "./factory.js";
+import type { FakeProvider } from "./fake/fake-provider.js";
 import type {
 	GenerationRequest,
 	ProviderCapabilities,
@@ -55,6 +56,19 @@ test("fake provider resolves without touching an adapter", async () => {
 		getEnv: env({ FAKE_KEY: "k" }),
 	});
 	assert.equal(provider.id, "fake");
+});
+
+test("an invocation override reaches the resolved provider", async () => {
+	const provider = await createProvider(fakeConfig, {
+		getEnv: env({ FAKE_KEY: "k" }),
+		invocation: { model: "fake-override" },
+	});
+	assert.equal((provider as FakeProvider).model, "fake-override");
+
+	const baseline = await createProvider(fakeConfig, {
+		getEnv: env({ FAKE_KEY: "k" }),
+	});
+	assert.equal((baseline as FakeProvider).model, "fake-1");
 });
 
 test("invalid config (raw apiKey) rejects with PROVIDER_CONFIG_INVALID", async () => {

@@ -2,30 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { z } from "zod";
 import { ProviderError } from "./errors.js";
-import {
-	selectChannel,
-	toProviderSchema,
-	validateOutput,
-} from "./structured-output.js";
-import type { ProviderCapabilities } from "./types.js";
+import { toProviderSchema, validateOutput } from "./structured-output.js";
 
 const schema = z.object({
 	verdict: z.enum(["pass", "fail"]),
 	score: z.number(),
-});
-
-const caps = (
-	structuredOutput: ProviderCapabilities["structuredOutput"],
-): ProviderCapabilities => ({
-	structuredOutput,
-	supportsSystemPrompt: true,
-	supportsCancellation: true,
-});
-
-test("selectChannel reflects the model capability", () => {
-	assert.equal(selectChannel(caps("tool")), "tool");
-	assert.equal(selectChannel(caps("native")), "native");
-	assert.equal(selectChannel(caps("none")), "none");
 });
 
 test("toProviderSchema emits a JSON Schema object", () => {

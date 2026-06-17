@@ -1,19 +1,12 @@
 import { type ZodType, z } from "zod";
 import { ProviderError } from "./errors.js";
-import type { ProviderCapabilities, RawOutput } from "./types.js";
+import type { RawOutput } from "./types.js";
 
 /**
- * Structured-output ladder. The caller always passes a Zod schema; the seam —
+ * Structured-output validation. The caller always passes a Zod schema; the seam —
  * not the adapter — owns validation, so a provider can never hand back partial
  * or unvalidated data.
  */
-
-export type StructuredChannel = ProviderCapabilities["structuredOutput"];
-
-/** Pick the channel from the model's declared capability. */
-export function selectChannel(caps: ProviderCapabilities): StructuredChannel {
-	return caps.structuredOutput;
-}
 
 /** Convert a caller Zod schema to the JSON Schema a provider needs. */
 export function toProviderSchema(schema: ZodType): unknown {

@@ -20,7 +20,7 @@ export interface Message {
 
 export interface GenerationRequest<T = unknown> {
 	system?: string;
-	/** A `prompt` convenience helper (see `userPrompt`) maps to one user message. */
+	/** Conversation turns; a single-prompt request is one user message. */
 	messages: Message[];
 	/** Present ⇒ structured generation; the seam validates the response against it. */
 	schema?: ZodType<T>;
@@ -108,12 +108,4 @@ export interface RawProvider {
 	readonly id: string;
 	capabilities(model: string): ProviderCapabilities;
 	generate(req: GenerationRequest, signal: AbortSignal): Promise<RawGeneration>;
-}
-
-/** Convenience: build a single-user-message request body. */
-export function userPrompt<T = unknown>(
-	prompt: string,
-	rest: Omit<GenerationRequest<T>, "messages">,
-): GenerationRequest<T> {
-	return { ...rest, messages: [{ role: "user", content: prompt }] };
 }

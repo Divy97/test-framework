@@ -55,6 +55,8 @@ export interface RecordedCall {
 }
 
 export interface FakeProvider extends ModelProvider {
+	/** The model id this fake was constructed with (echoed on every result). */
+	readonly model: string;
 	readonly calls: RecordedCall[];
 }
 
@@ -85,6 +87,7 @@ export function createFakeProvider(
 
 	return {
 		id: "fake",
+		model,
 		calls,
 		capabilities: () => capabilities,
 		generate<T>(
