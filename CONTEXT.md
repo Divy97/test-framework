@@ -29,8 +29,23 @@ MCP, CLI, CI, web, and cloud are adapters or deployment surfaces, not the produc
   or weak scenarios.
 - **Deterministic Validation**: code-enforced schema, identity, linkage,
   provenance, coverage-declaration, and persistence invariants.
-- **Provider Adapter**: local BYOK integration normalizing model requests, usage,
-  cancellation, and errors.
+- **Provider Adapter**: single-vendor integration behind the provider seam that
+  translates one provider into the neutral `ModelProvider` contract; loaded only by
+  dynamic import so its SDK stays off the common import path. The seam (not the
+  adapter) owns retry, timeout, cancellation, and structured-output validation.
+- **Provider Capability**: a model's declared abilities the seam reads to drive a
+  request — structured-output channel (`native`/`tool`/`prompted`/`none`), system
+  prompt support, cancellation support, and max output tokens.
+- **Usage Metadata**: normalized, non-secret token counts returned with a
+  generation (`input`/`output`/`total`, optional `cached`/`reasoning`); cost is
+  deferred.
+- **Secret Reference**: a named environment variable (`keySource: { kind: "env", var }`)
+  resolved into a `Secret` wrapper at call time. The key is never stored in config,
+  logs, prompts, artifacts, or reports.
+- **Structured Generation**: a generation whose caller supplies a Zod schema; the
+  seam converts it to JSON Schema for the provider and validates the response
+  against the same schema, throwing `MODEL_OUTPUT_INVALID` on any mismatch — never
+  partial success.
 - **Execution Bundle**: future V2 record containing a test run's request/response,
   logs, traces, screenshots, timings, assertions, and findings.
 - **Plan Revision**: immutable version of one Test Plan; retains its `planId` and
