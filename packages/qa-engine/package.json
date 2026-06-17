@@ -9,6 +9,7 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "catalog:",
+		"openai": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

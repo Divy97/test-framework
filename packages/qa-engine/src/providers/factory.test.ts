@@ -4,7 +4,7 @@ import { z } from "zod";
 import type { ProviderConfig } from "./config.js";
 import { ProviderError } from "./errors.js";
 import { composeRawProvider, createProvider } from "./factory.js";
-import type { FakeProvider } from "./fake/fake-provider.js";
+import { createFakeProvider } from "./fake/fake-provider.js";
 import type {
 	GenerationRequest,
 	ProviderCapabilities,
@@ -12,10 +12,10 @@ import type {
 	RawProvider,
 } from "./types.js";
 
-const fakeConfig: ProviderConfig = {
-	provider: "fake",
-	model: "fake-1",
-	keySource: { kind: "env", var: "FAKE_KEY" },
+const anthropicConfig: ProviderConfig = {
+	provider: "anthropic",
+	model: "claude-opus-4-8",
+	keySource: { kind: "env", var: "ANTHROPIC_API_KEY" },
 };
 const env = (v: Record<string, string>) => (n: string) => v[n];
 
@@ -51,31 +51,48 @@ const req = (over: object = {}): GenerationRequest => ({
 	...over,
 });
 
-test("fake provider resolves without touching an adapter", async () => {
-	const provider = await createProvider(fakeConfig, {
-		getEnv: env({ FAKE_KEY: "k" }),
+test("an injected fake provider short-circuits config (no adapter, no key)", async () => {
+	const fake = createFakeProvider([], { model: "fake-x" });
+	// A deliberately key-less env: the short-circuit must not resolve config.
+	const provider = await createProvider(anthropicConfig, {
+		fakeProvider: fake,
+		getEnv: env({}),
 	});
+	assert.equal(provider, fake);
 	assert.equal(provider.id, "fake");
 });
 
 test("an invocation override reaches the resolved provider", async () => {
-	const provider = await createProvider(fakeConfig, {
-		getEnv: env({ FAKE_KEY: "k" }),
-		invocation: { model: "fake-override" },
+	const provider = await createProvider(anthropicConfig, {
+		getEnv: env({ ANTHROPIC_API_KEY: "k" }),
+		invocation: { model: "claude-haiku-4-5" },
 	});
-	assert.equal((provider as FakeProvider).model, "fake-override");
+	assert.equal(provider.model, "claude-haiku-4-5");
 
-	const baseline = await createProvider(fakeConfig, {
-		getEnv: env({ FAKE_KEY: "k" }),
+	const baseline = await createProvider(anthropicConfig, {
+		getEnv: env({ ANTHROPIC_API_KEY: "k" }),
 	});
-	assert.equal((baseline as FakeProvider).model, "fake-1");
+	assert.equal(baseline.model, "claude-opus-4-8");
+});
+
+test("openrouter config resolves via the openai-compatible adapter", async () => {
+	const provider = await createProvider(
+		{
+			provider: "openrouter",
+			model: "anthropic/claude-opus-4-8",
+			keySource: { kind: "env", var: "OPENROUTER_API_KEY" },
+		},
+		{ getEnv: env({ OPENROUTER_API_KEY: "k" }) },
+	);
+	assert.equal(provider.id, "openrouter");
+	assert.equal(provider.model, "anthropic/claude-opus-4-8");
 });
 
 test("invalid config (raw apiKey) rejects with PROVIDER_CONFIG_INVALID", async () => {
 	await assert.rejects(
 		createProvider(
-			{ ...fakeConfig, apiKey: "sk-ant-x" } as unknown as ProviderConfig,
-			{ getEnv: env({ FAKE_KEY: "k" }) },
+			{ ...anthropicConfig, apiKey: "sk-ant-x" } as unknown as ProviderConfig,
+			{ getEnv: env({ ANTHROPIC_API_KEY: "k" }) },
 		),
 		(e) => e instanceof ProviderError && e.code === "PROVIDER_CONFIG_INVALID",
 	);
@@ -83,7 +100,7 @@ test("invalid config (raw apiKey) rejects with PROVIDER_CONFIG_INVALID", async (
 
 test("missing env key rejects with PROVIDER_CONFIG_INVALID", async () => {
 	await assert.rejects(
-		createProvider(fakeConfig, { getEnv: env({}) }),
+		createProvider(anthropicConfig, { getEnv: env({}) }),
 		(e) => e instanceof ProviderError && e.code === "PROVIDER_CONFIG_INVALID",
 	);
 });

@@ -56,8 +56,10 @@ The QA Engine reaches a user-selected model through a provider-neutral seam in
 env var named in `keySource` (e.g. `ANTHROPIC_API_KEY`); the key is never stored in
 config, logs, or artifacts. The seam owns retry, timeout, cancellation, and
 structured-output validation; adapters are loaded by dynamic import so the vendor
-SDK stays off the common path. Anthropic is the first adapter; a deterministic fake
-implements the same contract and CI runs on it alone. See
+SDK stays off the common path. Two providers ship: `anthropic` (`@anthropic-ai/sdk`)
+and `openrouter` (OpenAI-compatible, via the `openai` SDK). A deterministic fake
+implements the same contract and CI runs on it alone — it is a DI-only test seam,
+never a configurable provider value. See
 [docs/byok-setup.md](docs/byok-setup.md) and
 [ADR-0010](docs/adr/0010-byok-provider-seam.md).
 

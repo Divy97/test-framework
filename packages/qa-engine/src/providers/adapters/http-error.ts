@@ -2,10 +2,11 @@ import { ProviderError, type ProviderErrorCode } from "../errors.js";
 import { maskSecrets } from "../redaction.js";
 
 /**
- * Pure mapping from an Anthropic SDK error (or a network error) to a
- * `ProviderError`. No SDK import — it inspects the duck-typed shape
- * (`status`, `message`, `headers`) so it is fully unit-testable with synthetic
- * errors. The error-mapping table lives in the plan and the tests.
+ * Pure mapping from an OpenAI-style HTTP SDK error (or a network error) to a
+ * `ProviderError`. Shared by every adapter whose SDK exposes the standard
+ * `{status, message, headers}` shape — the Anthropic and OpenAI/OpenRouter SDKs
+ * are both Stainless-generated and follow it. No SDK import, so it is fully
+ * unit-testable with synthetic errors.
  */
 
 interface ErrorLike {
@@ -37,12 +38,12 @@ function retryAfterMs(headers: ErrorLike["headers"]): number | undefined {
 const QUOTA = /credit|quota|billing|insufficient/i;
 const UNSUPPORTED = /tool|schema|structured|unsupported|input_schema/i;
 
-export function mapAnthropicError(err: unknown): ProviderError {
+export function mapHttpError(err: unknown): ProviderError {
 	const e = (err ?? {}) as ErrorLike;
 	const status = e.status;
 	// The SDK message can echo request URLs/body excerpts — mask known secret
 	// shapes before it becomes the (serializable) ProviderError.message.
-	const message = maskSecrets(e.message ?? "anthropic request failed");
+	const message = maskSecrets(e.message ?? "provider request failed");
 
 	const make = (code: ProviderErrorCode, retryable: boolean): ProviderError =>
 		new ProviderError(code, message, retryable, {

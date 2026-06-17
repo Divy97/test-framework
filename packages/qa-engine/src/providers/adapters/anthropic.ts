@@ -11,7 +11,7 @@ import type {
 	RawOutput,
 	RawProvider,
 } from "../types.js";
-import { mapAnthropicError } from "./anthropic-errors.js";
+import { mapHttpError } from "./http-error.js";
 
 /**
  * Anthropic adapter. Loaded ONLY via dynamic `import()` in the factory, so
@@ -117,7 +117,7 @@ export function createAnthropicAdapter(
 				// Aborts (caller cancel or internal timeout) are disambiguated by the
 				// resilience wrapper via the composed signal — rethrow them untouched.
 				if (signal.aborted) throw err;
-				throw mapAnthropicError(err);
+				throw mapHttpError(err);
 			}
 
 			let output: RawOutput;

@@ -75,6 +75,8 @@ export interface ProviderCapabilities {
 
 export interface ModelProvider {
 	readonly id: string;
+	/** The resolved model id this provider is bound to. */
+	readonly model: string;
 	capabilities(model: string): ProviderCapabilities;
 	generate<T>(
 		req: GenerationRequest<T>,

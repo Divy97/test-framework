@@ -24,7 +24,7 @@ export type ProviderDefaults = z.infer<typeof providerDefaultsSchema>;
 
 export const providerConfigSchema = z
 	.object({
-		provider: z.enum(["anthropic", "fake"]),
+		provider: z.enum(["anthropic", "openrouter"]),
 		model: z.string().min(1),
 		keySource: keySourceSchema,
 		baseUrl: z.url().optional(),
