@@ -67,6 +67,44 @@ function normalizeUsage(usage: Anthropic.Usage): NormalizedUsage {
 	};
 }
 
+/**
+ * Pure extraction of a neutral `RawGeneration` from an Anthropic response. Split
+ * out so the normalization, finish-reason mapping, and tool-use/text branches
+ * are deterministically unit-testable without a live call (see extract.test.ts).
+ */
+export function extractAnthropicGeneration(
+	message: Anthropic.Message,
+	wantSchema: boolean,
+): RawGeneration {
+	let output: RawOutput;
+	if (wantSchema) {
+		const toolUse = message.content.find((block) => block.type === "tool_use");
+		if (toolUse === undefined) {
+			throw new ProviderError(
+				"MODEL_OUTPUT_INVALID",
+				"expected a tool_use block but the model returned none",
+				false,
+				{ providerRequestId: message.id },
+			);
+		}
+		output = { kind: "json", value: toolUse.input };
+	} else {
+		const text = message.content
+			.filter((block) => block.type === "text")
+			.map((block) => block.text)
+			.join("");
+		output = { kind: "text", value: text };
+	}
+
+	return {
+		output,
+		usage: normalizeUsage(message.usage),
+		model: message.model,
+		finishReason: mapFinishReason(message.stop_reason),
+		providerRequestId: message.id,
+	};
+}
+
 export function createAnthropicAdapter(
 	options: AnthropicAdapterOptions,
 ): RawProvider {
@@ -120,35 +158,7 @@ export function createAnthropicAdapter(
 				throw mapHttpError(err);
 			}
 
-			let output: RawOutput;
-			if (req.schema) {
-				const toolUse = message.content.find(
-					(block) => block.type === "tool_use",
-				);
-				if (toolUse === undefined) {
-					throw new ProviderError(
-						"MODEL_OUTPUT_INVALID",
-						"expected a tool_use block but the model returned none",
-						false,
-						{ providerRequestId: message.id },
-					);
-				}
-				output = { kind: "json", value: toolUse.input };
-			} else {
-				const text = message.content
-					.filter((block) => block.type === "text")
-					.map((block) => block.text)
-					.join("");
-				output = { kind: "text", value: text };
-			}
-
-			return {
-				output,
-				usage: normalizeUsage(message.usage),
-				model: message.model,
-				finishReason: mapFinishReason(message.stop_reason),
-				providerRequestId: message.id,
-			};
+			return extractAnthropicGeneration(message, req.schema !== undefined);
 		},
 	};
 }

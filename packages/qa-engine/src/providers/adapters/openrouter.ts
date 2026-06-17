@@ -68,6 +68,54 @@ function normalizeUsage(
 	};
 }
 
+/**
+ * Pure extraction of a neutral `RawGeneration` from an OpenAI-compatible
+ * response. Split out so the no-choices/no-tool-call guards, content fallback,
+ * usage normalization, and finish-reason mapping are deterministically
+ * unit-testable without a live call (see extract.test.ts).
+ */
+export function extractOpenRouterGeneration(
+	completion: OpenAI.Chat.Completions.ChatCompletion,
+	wantSchema: boolean,
+): RawGeneration {
+	const choice = completion.choices[0];
+	if (choice === undefined) {
+		throw new ProviderError(
+			"MODEL_OUTPUT_INVALID",
+			"openrouter returned no choices",
+			false,
+			{ providerRequestId: completion.id },
+		);
+	}
+
+	let output: RawOutput;
+	if (wantSchema) {
+		const toolCall = choice.message.tool_calls?.find(
+			(tc) => tc.type === "function",
+		);
+		if (toolCall === undefined) {
+			throw new ProviderError(
+				"MODEL_OUTPUT_INVALID",
+				"expected a function tool call but the model returned none",
+				false,
+				{ providerRequestId: completion.id },
+			);
+		}
+		// arguments is a JSON string; the seam strict-parses + validates it.
+		output = { kind: "text", value: toolCall.function.arguments };
+	} else {
+		output = { kind: "text", value: choice.message.content ?? "" };
+	}
+
+	return {
+		output,
+		usage: normalizeUsage(completion.usage),
+		model: completion.model,
+		finishReason: mapFinishReason(choice.finish_reason),
+		providerRequestId: completion.id,
+	};
+}
+
 export function createOpenRouterAdapter(
 	options: OpenRouterAdapterOptions,
 ): RawProvider {
@@ -133,42 +181,7 @@ export function createOpenRouterAdapter(
 				throw mapHttpError(err);
 			}
 
-			const choice = completion.choices[0];
-			if (choice === undefined) {
-				throw new ProviderError(
-					"MODEL_OUTPUT_INVALID",
-					"openrouter returned no choices",
-					false,
-					{ providerRequestId: completion.id },
-				);
-			}
-
-			let output: RawOutput;
-			if (req.schema) {
-				const toolCall = choice.message.tool_calls?.find(
-					(tc) => tc.type === "function",
-				);
-				if (toolCall === undefined) {
-					throw new ProviderError(
-						"MODEL_OUTPUT_INVALID",
-						"expected a function tool call but the model returned none",
-						false,
-						{ providerRequestId: completion.id },
-					);
-				}
-				// arguments is a JSON string; the seam strict-parses + validates it.
-				output = { kind: "text", value: toolCall.function.arguments };
-			} else {
-				output = { kind: "text", value: choice.message.content ?? "" };
-			}
-
-			return {
-				output,
-				usage: normalizeUsage(completion.usage),
-				model: completion.model,
-				finishReason: mapFinishReason(choice.finish_reason),
-				providerRequestId: completion.id,
-			};
+			return extractOpenRouterGeneration(completion, req.schema !== undefined);
 		},
 	};
 }
