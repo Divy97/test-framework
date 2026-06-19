@@ -56,6 +56,15 @@ export function fromProviderError(err: ProviderError): EngineError {
 	return new EngineError(err.code, err.message, { cause: err });
 }
 
+/** True for a DOMException/Error that signals an aborted operation. */
+function isAbortError(err: unknown): boolean {
+	return (
+		typeof err === "object" &&
+		err !== null &&
+		(err as { name?: unknown }).name === "AbortError"
+	);
+}
+
 /** Wrap any thrown value as an EngineError, mapping ProviderError specially. */
 export function asEngineError(
 	err: unknown,
@@ -63,6 +72,15 @@ export function asEngineError(
 ): EngineError {
 	if (err instanceof EngineError) return err;
 	if (err instanceof ProviderError) return fromProviderError(err);
+	// An aborted in-flight call is a cancellation, never invalid output — classify
+	// it as such whatever surfaced the abort. A resilience-wrapped provider already
+	// throws PROVIDER_CANCELLED; a bare provider rejects with a raw AbortError, which
+	// must not be mislabeled with the fallback (e.g. MODEL_OUTPUT_INVALID).
+	if (isAbortError(err)) {
+		return new EngineError("PROVIDER_CANCELLED", "Request was cancelled.", {
+			cause: err,
+		});
+	}
 	const message = err instanceof Error ? err.message : String(err);
 	return new EngineError(fallback, message, { cause: err });
 }
