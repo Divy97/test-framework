@@ -22,6 +22,7 @@
 		"test": "tsx --test src/**/*.test.ts",
 		"eval": "tsx src/cli/eval.ts",
 		"eval:update": "tsx src/cli/eval.ts --update-baseline",
-		"corpus:build": "tsx src/corpus/build-corpus.ts"
+		"corpus:build": "tsx src/corpus/build-corpus.ts",
+		"record:arms": "tsx src/corpus/record-arms.ts"
 	}
 }
