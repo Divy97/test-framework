@@ -6,7 +6,6 @@ import type {
 	ServerRequest,
 	ToolAnnotations,
 } from "@modelcontextprotocol/sdk/types.js";
-import { EngineError } from "@test-framework/qa-engine";
 import { engineErrorToToolResult } from "./errors.js";
 import type { EngineHandlers, ToolContext } from "./handlers.js";
 import { successResult } from "./result.js";
@@ -45,21 +44,13 @@ const readOnlyAnnotations: ToolAnnotations = {
 };
 
 /**
- * Translate a failed tool operation into a tool error result. The SDK fires
- * `extra.signal` on `notifications/cancelled`; when the call fails *and* the
- * client cancelled, the cause is cancellation regardless of the code the engine
- * bubbled up (a bare provider may surface a raw AbortError), so it is mapped
- * deterministically to `PROVIDER_CANCELLED`.
+ * Translate a failed tool operation into a tool error result. The engine already
+ * classifies an aborted call as PROVIDER_CANCELLED (see `asEngineError`), so the
+ * adapter trusts the engine's typed code rather than overriding it on
+ * `signal.aborted` — an override would mislabel a genuine failure (auth, invalid
+ * output, …) that merely coincided with a client cancel.
  */
-export function failureToToolResult(
-	error: unknown,
-	signal?: AbortSignal,
-): CallToolResult {
-	if (signal?.aborted) {
-		return engineErrorToToolResult(
-			new EngineError("PROVIDER_CANCELLED", "Request was cancelled."),
-		);
-	}
+export function failureToToolResult(error: unknown): CallToolResult {
 	return engineErrorToToolResult(error);
 }
 
@@ -89,7 +80,7 @@ async function runWithProgress<T>(
 	extra: ToolExtra,
 	operation: () => Promise<T>,
 ): Promise<CallToolResult> {
-	return runTool(extra, async () => {
+	return runTool(async () => {
 		await reportProgress(extra, 0, "Generating plan…");
 		const output = await operation();
 		await reportProgress(extra, PROGRESS_TOTAL, "Done");
@@ -98,14 +89,13 @@ async function runWithProgress<T>(
 }
 
 async function runTool<T>(
-	extra: ToolExtra,
 	operation: () => Promise<T>,
 ): Promise<CallToolResult> {
 	try {
 		const output = await operation();
 		return successResult(output as Record<string, unknown>);
 	} catch (error) {
-		return failureToToolResult(error, extra.signal);
+		return failureToToolResult(error);
 	}
 }
 
@@ -157,8 +147,6 @@ export function registerEngineTools(
 			annotations: readOnlyAnnotations,
 		},
 		async (args, extra) =>
-			runTool(extra, async () =>
-				handlers.getTestPlan(args, await makeContext(extra)),
-			),
+			runTool(async () => handlers.getTestPlan(args, await makeContext(extra))),
 	);
 }

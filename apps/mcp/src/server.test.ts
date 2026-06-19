@@ -1,183 +1,30 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readdir, realpath, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { ProgressNotificationSchema } from "@modelcontextprotocol/sdk/types.js";
 import {
 	createFakeProvider,
 	EngineError,
-	type FakeOutcome,
 	fakeHang,
-	fakeOk,
 } from "@test-framework/qa-engine";
-import type { EngineRuntime } from "./engine-runtime.js";
-import { createMcpServer, type RuntimeFactory } from "./server.js";
+import {
+	CREATE_ARGS,
+	connectInMemoryClient,
+	fakeRuntimeFactory,
+	happyScript,
+	tempRoot,
+} from "./test-harness.js";
 import type { ArtifactPaths } from "./tool-schemas.js";
 import { failureToToolResult } from "./tools.js";
-
-const FIXED_NOW = () => Date.parse("2026-06-19T00:00:00.000Z");
 
 const expectedToolNames = [
 	"create_test_plan",
 	"get_test_plan",
 	"refine_test_plan",
 ];
-
-// --- scripted stage payloads (mirrors qa-engine/engine.test.ts happyScript) ----
-
-const EVIDENCE = {
-	evidence: [
-		{
-			key: "login-claim",
-			sourceKey: "Login brief",
-			kind: "statement",
-			claim: "Users must log in with email and password.",
-		},
-	],
-};
-const REQUIREMENTS = {
-	requirements: [
-		{
-			key: "user-can-login",
-			statement: "A registered user can log in with valid credentials.",
-			kind: "functional",
-			provenance: { kind: "explicit", evidenceKeys: ["login-claim"] },
-			priority: "p0",
-			risk: "high",
-			openQuestionKeys: [],
-		},
-	],
-	openQuestions: [],
-};
-const FEATURES = {
-	features: [
-		{
-			key: "authentication",
-			name: "Authentication",
-			description: "Email and password authentication.",
-			requirementKeys: ["user-can-login"],
-			targets: [{ kind: "ui", route: "/login" }],
-			provenance: { kind: "explicit", evidenceKeys: ["login-claim"] },
-			risk: "high",
-		},
-	],
-};
-const CASES = {
-	testCases: [
-		{
-			key: "login-succeeds",
-			title: "Login succeeds with valid credentials",
-			objective: "Verify a registered user can log in.",
-			type: "positive",
-			priority: "p0",
-			risk: "high",
-			riskRationale: "Authentication is the entry point.",
-			provenance: { kind: "explicit", evidenceKeys: ["login-claim"] },
-			requirementKeys: ["user-can-login"],
-			featureKeys: ["authentication"],
-			qualityTags: ["functional", "security"],
-			actor: {
-				role: "registered-user",
-				authentication: "anonymous",
-				permissions: [],
-			},
-			target: { kind: "ui", route: "/login" },
-			preconditions: [{ description: "A registered account exists." }],
-			dependsOnCaseKeys: [],
-			consumesDataKeys: [],
-			producesDataKeys: [],
-			postconditions: [{ description: "User is on the dashboard." }],
-			cleanup: { intent: "none", dataKeys: [], afterCaseKeys: [] },
-			automation: { readiness: "ready", blockers: [] },
-		},
-	],
-};
-const DETAILS = {
-	dataRequirements: [],
-	steps: [
-		{
-			key: "submit-credentials",
-			caseKey: "login-succeeds",
-			order: 1,
-			description: "Submit valid credentials on the login form.",
-			action: {
-				kind: "interact",
-				operation: "submit",
-				selector: "#login-form",
-			},
-			provenance: { kind: "explicit", evidenceKeys: ["login-claim"] },
-		},
-	],
-	assertions: [
-		{
-			key: "redirects-to-dashboard",
-			caseKey: "login-succeeds",
-			stepKey: "submit-credentials",
-			provenance: { kind: "explicit", evidenceKeys: ["login-claim"] },
-			subject: "current route",
-			observationPoint: { kind: "ui", route: "/dashboard" },
-			matcher: "equals",
-			expected: "/dashboard",
-		},
-	],
-};
-const REVIEW = { blocking: false, findings: [] };
-
-export function happyScript(): FakeOutcome[] {
-	return [
-		fakeOk({ data: EVIDENCE }),
-		fakeOk({ data: REQUIREMENTS }),
-		fakeOk({ data: FEATURES }),
-		fakeOk({ data: CASES }),
-		fakeOk({ data: DETAILS }),
-		fakeOk({ data: REVIEW }),
-	];
-}
-
-export const CREATE_ARGS = {
-	project: { name: "Acme Loyalty" },
-	title: "Login feature",
-	sources: [
-		{
-			kind: "feature-request" as const,
-			title: "Login brief",
-			content: "Users must log in with email and password.",
-		},
-	],
-};
-
-// --- harness -------------------------------------------------------------------
-
-async function tempRoot(): Promise<string> {
-	return realpath(await mkdtemp(join(tmpdir(), "mcp-adapter-")));
-}
-
-export function fakeRuntimeFactory(
-	provider: ReturnType<typeof createFakeProvider>,
-	workspaceRoot: string,
-): RuntimeFactory {
-	const runtime: EngineRuntime = { provider, now: FIXED_NOW, workspaceRoot };
-	return async () => runtime;
-}
-
-export async function connectInMemoryClient(
-	runtimeFactory: RuntimeFactory,
-	clientOptions?: ConstructorParameters<typeof Client>[0],
-): Promise<Client> {
-	const server = createMcpServer(runtimeFactory);
-	const [clientTransport, serverTransport] =
-		InMemoryTransport.createLinkedPair();
-	await server.connect(serverTransport);
-	const client = new Client(
-		clientOptions ?? { name: "in-memory-test", version: "0.1.0" },
-	);
-	await client.connect(clientTransport);
-	return client;
-}
 
 function jsonTextOf(result: unknown) {
 	const content =
@@ -335,19 +182,26 @@ test("create_test_plan aborts the in-flight model call when the client cancels",
 	}
 });
 
-test("an aborted signal maps any in-flight failure to PROVIDER_CANCELLED", () => {
-	// The SDK suppresses the response of a cancelled request over the wire, so the
-	// adapter's cancellation mapping is asserted directly: a bare provider may
-	// surface a raw AbortError (MODEL_OUTPUT_INVALID), but with the client signal
-	// aborted the adapter reports PROVIDER_CANCELLED.
-	const aborted = AbortSignal.abort();
-	const result = failureToToolResult(
-		new EngineError("MODEL_OUTPUT_INVALID", "boom at /tmp/x"),
-		aborted,
+test("failureToToolResult trusts the engine's typed code and never overrides it", () => {
+	// The signal-based override was removed: a genuine failure must keep its code
+	// even when a client cancel is in flight. The engine (not the adapter) maps a
+	// real abort to PROVIDER_CANCELLED, so overriding here would hide auth/output
+	// failures that merely coincided with a cancel.
+	const auth = failureToToolResult(
+		new EngineError("PROVIDER_AUTH", "rejected key sk-ant at /tmp/x"),
 	);
-	const error = (result.structuredContent as { error: { code: string } }).error;
-	assert.equal(error.code, "PROVIDER_CANCELLED");
-	assert.equal(result.isError, true);
+	assert.equal(
+		(auth.structuredContent as { error: { code: string } }).error.code,
+		"PROVIDER_AUTH",
+	);
+
+	const cancelled = failureToToolResult(
+		new EngineError("PROVIDER_CANCELLED", "Request was cancelled."),
+	);
+	assert.equal(
+		(cancelled.structuredContent as { error: { code: string } }).error.code,
+		"PROVIDER_CANCELLED",
+	);
 });
 
 // --- Slice 4: progress reporting (opt-in) --------------------------------------

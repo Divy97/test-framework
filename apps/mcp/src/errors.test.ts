@@ -14,7 +14,7 @@ import {
 	connectInMemoryClient,
 	fakeRuntimeFactory,
 	happyScript,
-} from "./server.test.js";
+} from "./test-harness.js";
 
 /**
  * Every `EngineErrorCode`. Codes whose mapping curates the message (provider/IO

@@ -1,4 +1,3 @@
-import { repoScanOptionsSchema } from "@test-framework/repo-scan";
 import { z } from "zod";
 
 /**
@@ -33,12 +32,9 @@ export const createTestPlanInputSchema = z.object({
 	project: z.object({ name: z.string().min(1) }),
 	title: z.string().min(1),
 	sources: z.array(sourceSchema).min(1),
-	repo: z
-		.object({
-			path: z.string().min(1).optional(),
-			scanOptions: repoScanOptionsSchema.partial().optional(),
-		})
-		.optional(),
+	// Only `path` is threaded into the engine today; scan tuning is not yet a
+	// public knob, so it is not advertised here (add it when the engine accepts it).
+	repo: z.object({ path: z.string().min(1).optional() }).optional(),
 });
 export type CreateTestPlanInput = z.infer<typeof createTestPlanInputSchema>;
 

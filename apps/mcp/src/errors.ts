@@ -81,7 +81,10 @@ const TABLE: Record<EngineErrorCode, Mapping> = {
 export function engineErrorToToolResult(err: unknown): CallToolResult {
 	if (err instanceof EngineError) {
 		const mapping = TABLE[err.code];
-		// Engine-authored messages for these codes are safe to surface verbatim.
+		// Passthrough codes (INVALID_INPUT, PLAN_INVARIANT_FAILED) surface the
+		// engine-authored message verbatim. Its freedom from filesystem paths, env
+		// values, and key material is an engine invariant the engine's own error
+		// construction must uphold (the curated codes below never trust err.message).
 		let message = mapping.message ?? err.message;
 		if (err.code === "PLAN_INVARIANT_FAILED" && err.findings !== undefined) {
 			message = `${message} (${err.findings.length} finding(s))`;
