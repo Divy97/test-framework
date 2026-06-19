@@ -1,5 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import {
+	mkdir,
+	readdir,
+	readFile,
+	rename,
+	rm,
+	writeFile,
+} from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import type { NormalizedUsage } from "../providers/types.js";
 import { serializeTestGraph } from "../test-graph/canonical-json.js";
@@ -124,6 +131,162 @@ export async function persistPlan(
 			`Failed to persist plan ${graph.planId}.`,
 			{ cause: err },
 		);
+	}
+	return dir;
+}
+
+/** Read the persisted `planVersion`; missing plan → ARTIFACT_NOT_FOUND. */
+export async function readPlanVersion(
+	workspaceRoot: string,
+	planId: string,
+): Promise<number> {
+	const dir = planDirFor(workspaceRoot, planId);
+	let raw: string;
+	try {
+		raw = await readFile(join(dir, "plan.json"), "utf8");
+	} catch (err) {
+		throw new EngineError(
+			"ARTIFACT_NOT_FOUND",
+			`No plan found for ${planId}.`,
+			{
+				cause: err,
+			},
+		);
+	}
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(raw);
+	} catch (err) {
+		throw new EngineError(
+			"PLAN_INVARIANT_FAILED",
+			`Persisted plan ${planId} is not parseable JSON.`,
+			{ cause: err },
+		);
+	}
+	const version = (parsed as { planVersion?: unknown }).planVersion;
+	if (typeof version !== "number" || !Number.isInteger(version)) {
+		throw new EngineError(
+			"PLAN_INVARIANT_FAILED",
+			`Persisted plan ${planId} has no integer planVersion.`,
+		);
+	}
+	return version;
+}
+
+export interface PersistRevisionOptions {
+	/** Optimistic conflict token: the version the caller last loaded. */
+	expectedVersion?: number;
+}
+
+/**
+ * Hardened refine writer. Serializes concurrent refines of one plan with an
+ * O_EXCL lock, optimistically rejects a stale `expectedVersion`, then overwrites
+ * the existing plan directory file-by-file (plan.json first, read-back validated,
+ * before the derived plan.md/generation.json follow). Any failure throws and
+ * leaves the previous revision intact and loadable; the lock and temp files are
+ * always removed.
+ */
+export async function persistRevision(
+	graph: TestGraphV1,
+	manifest: GenerationManifest,
+	workspaceRoot: string,
+	options: PersistRevisionOptions = {},
+): Promise<string> {
+	const dir = planDirFor(workspaceRoot, graph.planId);
+	const lockPath = join(dir, ".lock");
+
+	// ponytail: single-host advisory lock; add PID-liveness reaper only if stale
+	// locks actually bite.
+	try {
+		await writeFile(lockPath, String(process.pid), { flag: "wx" });
+	} catch (err) {
+		if ((err as NodeJS.ErrnoException).code === "EEXIST") {
+			throw new EngineError(
+				"ARTIFACT_CONFLICT",
+				`A refinement of ${graph.planId} is already in progress; if no refine is running, remove the stale lock at ${lockPath}.`,
+				{ cause: err },
+			);
+		}
+		throw new EngineError(
+			"ARTIFACT_WRITE_FAILED",
+			`Failed to acquire the refine lock for ${graph.planId}.`,
+			{ cause: err },
+		);
+	}
+
+	try {
+		// Read the current version inside the lock so the optimistic compare and
+		// the version-increment check race nothing.
+		const current = await readPlanVersion(workspaceRoot, graph.planId);
+		if (
+			options.expectedVersion !== undefined &&
+			current !== options.expectedVersion
+		) {
+			throw new EngineError(
+				"ARTIFACT_CONFLICT",
+				`Plan ${graph.planId} changed since it was loaded: expected v${options.expectedVersion}, found v${current}.`,
+			);
+		}
+		if (graph.planVersion !== current + 1) {
+			// Programmer error: refine must build exactly current + 1.
+			throw new EngineError(
+				"ARTIFACT_WRITE_FAILED",
+				`Revision must advance planVersion by one for ${graph.planId}: base v${current}, candidate v${graph.planVersion}.`,
+			);
+		}
+
+		// plan.json is the canonical source of truth: write + read-back validate it
+		// FIRST, so a read-back failure never leaves the derived files ahead of it.
+		const planJsonPath = join(dir, "plan.json");
+		await atomicWrite(planJsonPath, serializeTestGraph(graph));
+
+		const readBack = await readFile(planJsonPath, "utf8");
+		let reparsed: unknown;
+		try {
+			reparsed = JSON.parse(readBack);
+		} catch (err) {
+			throw new EngineError(
+				"ARTIFACT_WRITE_FAILED",
+				`Persisted plan.json is not parseable JSON for ${graph.planId}.`,
+				{ cause: err },
+			);
+		}
+		const result = validateTestGraph(reparsed);
+		if (!result.valid) {
+			throw new EngineError(
+				"ARTIFACT_WRITE_FAILED",
+				`Persisted plan.json failed read-back validation for ${graph.planId}.`,
+				{ findings: result.findings },
+			);
+		}
+
+		await atomicWrite(join(dir, "plan.md"), renderTestGraphMarkdown(graph));
+		await atomicWrite(
+			join(dir, "generation.json"),
+			serializeManifest(manifest),
+		);
+	} catch (err) {
+		if (err instanceof EngineError) throw err;
+		throw new EngineError(
+			"ARTIFACT_WRITE_FAILED",
+			`Failed to persist revision of plan ${graph.planId}.`,
+			{ cause: err },
+		);
+	} finally {
+		await rm(lockPath, { force: true }).catch(() => undefined);
+		// Best-effort sweep of any stray temp files an interrupted atomicWrite
+		// (writeFile succeeded, rename did not) may have left in the plan dir.
+		await readdir(dir)
+			.then((entries) =>
+				Promise.all(
+					entries
+						.filter((entry) => entry.endsWith(".tmp"))
+						.map((entry) =>
+							rm(join(dir, entry), { force: true }).catch(() => undefined),
+						),
+				),
+			)
+			.catch(() => undefined);
 	}
 	return dir;
 }

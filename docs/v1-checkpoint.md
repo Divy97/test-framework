@@ -20,7 +20,7 @@ and schema mechanics but still represent the superseded public five-stage design
 | Existing QA schemas | Partial | Useful concepts; not yet execution-ready test graph |
 | QA engine | Pending | No provider calls, workflow, semantic review, or repair |
 | BYOK providers | Done foundation | Provider-neutral seam, Anthropic + OpenRouter adapters, DI fake; CI runs on the fake. No engine workflow yet |
-| Artifact persistence | Pending | Paths only; no atomic canonical writer |
+| Artifact persistence | Done | Atomic per-file writer, read-back validation, optimistic `expectedVersion` conflict, O_EXCL refine lock |
 | Comparative evals | Pending | No generation-quality corpus or release threshold |
 | Released execution | Later | V2, intentionally outside V1 |
 
@@ -152,16 +152,29 @@ callers never orchestrate internal stages.
 
 ### 7. Artifact Workspace
 
-Status: pending.
+Status: done.
 
 - Root-confined plan paths.
 - Atomic JSON writes and read-back validation.
 - Generated Markdown.
-- Optimistic version conflict handling.
+- Optimistic version conflict handling (`expectedVersion` → `ARTIFACT_CONFLICT`).
 - Non-secret generation metadata.
 
+Delivered as the third coarse engine operation, `refinePlan`, plus persistence
+hardening in `engine/persist.ts`: `persistRevision` overwrites an existing plan
+directory file-by-file (canonical `plan.json` first, read-back validated, then the
+derived `plan.md`/`generation.json`), guarded by an optimistic `expectedVersion`
+compare and a single-host `O_EXCL` advisory lock at `<plan-id>/.lock` that
+serializes concurrent refines (the lock-held error names the `.lock` path for
+manual recovery; no stale-lock reaper by design). A revision must pass both
+`validateTestGraph` and `validatePlanRevisionTransition` inside the bounded-repair
+loop before any write.
+
 Exit criteria: interruption or concurrent refinement cannot silently corrupt or
-overwrite a plan.
+overwrite a plan. **Met** — proven by the concurrent-refine race test (exactly one
+winner, the loser gets `ARTIFACT_CONFLICT`, the plan stays a coherent v2) and the
+failure-path tests (a failed write leaves the previous revision intact and loadable
+with no lock or temp left behind).
 
 ### 8. MCP Product Adapter
 

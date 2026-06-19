@@ -31,3 +31,11 @@ graph in `core` and relocating it later; and deleting the old packages now.
   conversion exists, and fake version chains stay test-only.
 - Package consolidation is deferred: the canonical owner exists now, and removing
   the compatibility packages is a later engine milestone.
+- Workstream #7 realizes this contract for writes: `refinePlan` re-derives the
+  same plan-scoped stable ids (so unchanged entities keep their ids across a
+  revision), gates each revision on `validatePlanRevisionTransition`, and persists
+  via `persistRevision` — an optimistic `expectedVersion` compare (mismatch ⇒
+  `ARTIFACT_CONFLICT`) plus a single-host `O_EXCL` advisory lock that serializes
+  concurrent refines of one plan. The lock is fail-closed with no stale-lock
+  reaper (single-host, planning-only); multi-process/cross-host coordination
+  remains a deferred cloud concern.

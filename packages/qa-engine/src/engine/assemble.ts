@@ -5,6 +5,9 @@ import {
 	type DataRequirementId,
 	type EvidenceId,
 	type FeatureId,
+	type GraphIdByKind,
+	type IdKind,
+	idPrefixes,
 	type OpenQuestionId,
 	type RequirementId,
 	type SourceId,
@@ -39,6 +42,47 @@ export interface AssembleMeta {
 	status: "complete" | "incomplete";
 	warnings: string[];
 	repositoryRevision?: string;
+	/** Plan revision number. Defaults to 1 so the v1 create path is unchanged. */
+	planVersion?: number;
+	/**
+	 * Per-revision key for the generation node's stable id. Defaults to "initial"
+	 * so the v1 create path keeps byte-identical output; refine passes
+	 * "revision-2", "revision-3", … so each generation event gets a distinct id.
+	 */
+	generationKey?: string;
+	/**
+	 * When true (the refine/decompose path), a key already shaped like an id of its
+	 * kind is kept verbatim so an unchanged entity keeps its id across a revision.
+	 * Defaults false so the create path always hashes keys — a model-emitted slug
+	 * can never become an entity id.
+	 */
+	preserveExistingIds?: boolean;
+}
+
+const ID_HEX_LENGTH = 20;
+
+/**
+ * Assign a stable id. On the refine/decompose path (`preserveExistingIds`), a key
+ * that is already a well-formed id of `kind` is passed through verbatim:
+ * `createStableId` is not idempotent over its own output, and decompose re-keys
+ * loaded entities by their existing id (see decompose.ts), so the passthrough is
+ * what keeps an unchanged entity's id constant across a revision (the ADR-0007
+ * identity invariant). On the create path it is false, so every key is hashed and
+ * a model emitting an id-shaped slug can never control an entity id.
+ */
+function resolveStableId<TKind extends IdKind>(
+	kind: TKind,
+	scopeId: string,
+	key: string,
+	preserveExistingIds: boolean,
+): GraphIdByKind[TKind] {
+	if (preserveExistingIds) {
+		const idPattern = new RegExp(
+			`^${idPrefixes[kind]}_[0-9a-f]{${ID_HEX_LENGTH}}$`,
+		);
+		if (idPattern.test(key)) return key as GraphIdByKind[TKind];
+	}
+	return createStableId(kind, scopeId, key);
 }
 
 /** Canonicalize a model-emitted key; an empty/whitespace key is bad model output. */
@@ -98,32 +142,42 @@ export function assemble(
 ): TestGraphV1 {
 	const { planId, projectId } = ingested;
 
+	const preserveExistingIds = meta.preserveExistingIds ?? false;
+	// Local `stableId` closes over the per-call preserve flag so every id assignment
+	// below honors create-vs-refine identity rules without threading the flag.
+	const stableId = <TKind extends IdKind>(
+		kind: TKind,
+		scopeId: string,
+		key: string,
+	): GraphIdByKind[TKind] =>
+		resolveStableId(kind, scopeId, key, preserveExistingIds);
+
 	const sourceMap = new Map<string, SourceId>(
 		ingested.sources.map((source) => [source.key, source.id]),
 	);
 	const evidenceMap = buildMap<EvidenceId>(draft.evidence, "evidence", (key) =>
-		createStableId("evidence", planId, key),
+		stableId("evidence", planId, key),
 	);
 	const openQuestionMap = buildMap<OpenQuestionId>(
 		draft.openQuestions,
 		"open question",
-		(key) => createStableId("openQuestion", planId, key),
+		(key) => stableId("openQuestion", planId, key),
 	);
 	const requirementMap = buildMap<RequirementId>(
 		draft.requirements,
 		"requirement",
-		(key) => createStableId("requirement", planId, key),
+		(key) => stableId("requirement", planId, key),
 	);
 	const featureMap = buildMap<FeatureId>(draft.features, "feature", (key) =>
-		createStableId("feature", planId, key),
+		stableId("feature", planId, key),
 	);
 	const caseMap = buildMap<TestCaseId>(draft.testCases, "test case", (key) =>
-		createStableId("testCase", planId, key),
+		stableId("testCase", planId, key),
 	);
 	const dataMap = buildMap<DataRequirementId>(
 		draft.dataRequirements,
 		"data requirement",
-		(key) => createStableId("dataRequirement", planId, key),
+		(key) => stableId("dataRequirement", planId, key),
 	);
 	// Steps and assertions are scoped by their case ID, so resolve the case first.
 	const stepMap = new Map<string, StepId>();
@@ -136,7 +190,7 @@ export function assemble(
 			);
 		}
 		const caseId = resolve(caseMap, step.caseKey, "testCase");
-		stepMap.set(key, createStableId("step", caseId, key));
+		stepMap.set(key, stableId("step", caseId, key));
 	}
 
 	const resolveProvenance = (provenance: ProvenanceDraft): Provenance => {
@@ -174,7 +228,8 @@ export function assemble(
 		blocking: item.blocking,
 		...(item.answer !== undefined && { answer: item.answer }),
 		provenance: resolveProvenance(item.provenance),
-		blockedEntityRefs: [],
+		// Refine carries these forward (decompose populates them); create leaves [].
+		blockedEntityRefs: [...(item.blockedEntityRefs ?? [])],
 	}));
 
 	const requirements: Requirement[] = draft.requirements.map((item) => ({
@@ -277,7 +332,7 @@ export function assemble(
 		// ponytail: passthrough matcher payload; validateTestGraph's assertionSchema
 		// is the gate on matcher/expected agreement and routes bad ones to repair.
 		return {
-			id: createStableId("assertion", testCaseId, normKey(item.key)),
+			id: stableId("assertion", testCaseId, normKey(item.key)),
 			testCaseId,
 			...(item.stepKey !== undefined && {
 				stepId: resolve(stepMap, item.stepKey, "step"),
@@ -295,7 +350,7 @@ export function assemble(
 	});
 
 	const generation: GenerationMetadata = {
-		id: createStableId("generation", planId, "initial"),
+		id: createStableId("generation", planId, meta.generationKey ?? "initial"),
 		generatedAt: meta.generatedAt,
 		methodologyVersion: meta.methodologyVersion,
 		workflowVersion: meta.workflowVersion,
@@ -312,7 +367,7 @@ export function assemble(
 		schemaVersion: TEST_GRAPH_SCHEMA_VERSION,
 		projectId,
 		planId,
-		planVersion: 1,
+		planVersion: meta.planVersion ?? 1,
 		title: ingested.title,
 		status: meta.status,
 		createdAt: meta.createdAt,
