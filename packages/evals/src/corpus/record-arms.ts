@@ -143,6 +143,14 @@ export interface RecordArmDeps {
 	now: () => number;
 	workspaceRoot: string;
 	signal?: AbortSignal;
+	/**
+	 * Per-call model output budget. Reasoning models (e.g. kimi-k2.5) spend tokens
+	 * thinking before emitting JSON, so the engine's small default starves the
+	 * answer; the recording path sets this generously. Omitted ⇒ engine default.
+	 */
+	maxOutputTokens?: number;
+	/** Per-call timeout; reasoning + a large output can exceed the engine default. */
+	timeoutMs?: number;
 }
 
 /**
@@ -158,6 +166,10 @@ export async function recordQaEngineArm(
 		now: deps.now,
 		workspaceRoot: deps.workspaceRoot,
 		...(deps.signal !== undefined ? { signal: deps.signal } : {}),
+		...(deps.maxOutputTokens !== undefined
+			? { maxOutputTokens: deps.maxOutputTokens }
+			: {}),
+		...(deps.timeoutMs !== undefined ? { timeoutMs: deps.timeoutMs } : {}),
 	});
 	return result.graph;
 }
@@ -186,10 +198,10 @@ export async function recordRawModelArm(
 				},
 			],
 			schema: testGraphV1Schema,
-			maxOutputTokens: RAW_MODEL_MAX_OUTPUT_TOKENS,
+			maxOutputTokens: deps.maxOutputTokens ?? RAW_MODEL_MAX_OUTPUT_TOKENS,
 		},
 		{
-			timeoutMs: RAW_MODEL_TIMEOUT_MS,
+			timeoutMs: deps.timeoutMs ?? RAW_MODEL_TIMEOUT_MS,
 			...(deps.signal ? { signal: deps.signal } : {}),
 		},
 	);
@@ -256,6 +268,9 @@ async function main(): Promise<void> {
 			provider,
 			now: () => Date.now(),
 			workspaceRoot,
+			// Reasoning models spend output tokens thinking; give the answer room.
+			maxOutputTokens: Number(process.env.RECORD_MAX_OUTPUT_TOKENS ?? 16000),
+			timeoutMs: Number(process.env.RECORD_TIMEOUT_MS ?? 180000),
 		};
 		const graph =
 			arm === "qa-engine"
