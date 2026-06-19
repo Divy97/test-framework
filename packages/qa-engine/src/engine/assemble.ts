@@ -5,6 +5,9 @@ import {
 	type DataRequirementId,
 	type EvidenceId,
 	type FeatureId,
+	type GraphIdByKind,
+	type IdKind,
+	idPrefixes,
 	type OpenQuestionId,
 	type RequirementId,
 	type SourceId,
@@ -47,6 +50,26 @@ export interface AssembleMeta {
 	 * "revision-2", "revision-3", … so each generation event gets a distinct id.
 	 */
 	generationKey?: string;
+}
+
+const ID_HEX_LENGTH = 20;
+
+/**
+ * Assign a stable id, treating a key that is already a well-formed id of `kind`
+ * as a final id passed through verbatim. `createStableId` is not idempotent over
+ * its own output, so refinement (which re-keys loaded entities by their existing
+ * id — see decompose.ts) relies on this passthrough to keep entity ids constant
+ * across a revision (the ADR-0007 identity invariant). Create-path keys are
+ * slugs (never id-shaped), so they always hash and the v1 path is unchanged.
+ */
+function stableId<TKind extends IdKind>(
+	kind: TKind,
+	scopeId: string,
+	key: string,
+): GraphIdByKind[TKind] {
+	const idPattern = new RegExp(`^${idPrefixes[kind]}_[0-9a-f]{${ID_HEX_LENGTH}}$`);
+	if (idPattern.test(key)) return key as GraphIdByKind[TKind];
+	return createStableId(kind, scopeId, key);
 }
 
 /** Canonicalize a model-emitted key; an empty/whitespace key is bad model output. */
@@ -110,28 +133,28 @@ export function assemble(
 		ingested.sources.map((source) => [source.key, source.id]),
 	);
 	const evidenceMap = buildMap<EvidenceId>(draft.evidence, "evidence", (key) =>
-		createStableId("evidence", planId, key),
+		stableId("evidence", planId, key),
 	);
 	const openQuestionMap = buildMap<OpenQuestionId>(
 		draft.openQuestions,
 		"open question",
-		(key) => createStableId("openQuestion", planId, key),
+		(key) => stableId("openQuestion", planId, key),
 	);
 	const requirementMap = buildMap<RequirementId>(
 		draft.requirements,
 		"requirement",
-		(key) => createStableId("requirement", planId, key),
+		(key) => stableId("requirement", planId, key),
 	);
 	const featureMap = buildMap<FeatureId>(draft.features, "feature", (key) =>
-		createStableId("feature", planId, key),
+		stableId("feature", planId, key),
 	);
 	const caseMap = buildMap<TestCaseId>(draft.testCases, "test case", (key) =>
-		createStableId("testCase", planId, key),
+		stableId("testCase", planId, key),
 	);
 	const dataMap = buildMap<DataRequirementId>(
 		draft.dataRequirements,
 		"data requirement",
-		(key) => createStableId("dataRequirement", planId, key),
+		(key) => stableId("dataRequirement", planId, key),
 	);
 	// Steps and assertions are scoped by their case ID, so resolve the case first.
 	const stepMap = new Map<string, StepId>();
@@ -144,7 +167,7 @@ export function assemble(
 			);
 		}
 		const caseId = resolve(caseMap, step.caseKey, "testCase");
-		stepMap.set(key, createStableId("step", caseId, key));
+		stepMap.set(key, stableId("step", caseId, key));
 	}
 
 	const resolveProvenance = (provenance: ProvenanceDraft): Provenance => {
@@ -285,7 +308,7 @@ export function assemble(
 		// ponytail: passthrough matcher payload; validateTestGraph's assertionSchema
 		// is the gate on matcher/expected agreement and routes bad ones to repair.
 		return {
-			id: createStableId("assertion", testCaseId, normKey(item.key)),
+			id: stableId("assertion", testCaseId, normKey(item.key)),
 			testCaseId,
 			...(item.stepKey !== undefined && {
 				stepId: resolve(stepMap, item.stepKey, "step"),
