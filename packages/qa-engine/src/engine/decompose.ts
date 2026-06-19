@@ -100,6 +100,12 @@ function decomposeOpenQuestion(
 		blocking: question.blocking,
 		...(question.answer !== undefined && { answer: question.answer }),
 		provenance: decomposeProvenance(question.provenance),
+		// Carry blocked-entity refs forward so a revision never silently drops them
+		// (ADR-0007: refinement preserves provenance); ids are stable across the
+		// revision and validateTestGraph regates each ref.
+		...(question.blockedEntityRefs.length > 0 && {
+			blockedEntityRefs: question.blockedEntityRefs.map((ref) => ({ ...ref })),
+		}),
 	};
 }
 

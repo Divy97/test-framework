@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { actionSchema } from "../test-graph/actions.js";
 import {
+	graphEntityRefSchema,
 	jsonValueSchema,
 	prioritySchema,
 	qualityTagSchema,
@@ -73,6 +74,10 @@ export const openQuestionDraftSchema = z
 		blocking: z.boolean(),
 		answer: z.string().min(1).optional(),
 		provenance: provenanceDraftSchema,
+		// Carried verbatim through a refine round-trip (decompose → assemble); the
+		// create path never emits these. Refs hold final entity ids and are regated
+		// by validateTestGraph, so a dropped target surfaces as a finding, not silently.
+		blockedEntityRefs: z.array(graphEntityRefSchema).optional(),
 	})
 	.strict();
 export type OpenQuestionDraft = z.infer<typeof openQuestionDraftSchema>;

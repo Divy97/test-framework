@@ -370,6 +370,9 @@ export async function refinePlan(
 		warnings,
 		planVersion: nextVersion,
 		generationKey: `revision-${nextVersion}`,
+		// Refine re-keys decomposed entities by their existing id; preserve those ids
+		// verbatim so unchanged entities keep identity across the revision (ADR-0007).
+		preserveExistingIds: true,
 		...(previous.generation.repositoryRevision !== undefined && {
 			repositoryRevision: previous.generation.repositoryRevision,
 		}),

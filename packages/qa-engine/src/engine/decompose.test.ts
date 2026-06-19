@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { serializeTestGraph } from "../test-graph/canonical-json.js";
+import { createStableId } from "../test-graph/ids.js";
 import {
 	buildValidTestGraph,
 	testGraphIds,
@@ -22,6 +23,8 @@ function metaFrom(graph: ReturnType<typeof buildValidTestGraph>): AssembleMeta {
 		planVersion: graph.planVersion,
 		// The fixture's generation id is keyed "initial".
 		generationKey: "initial",
+		// decompose → assemble is the refine path: preserve id-shaped keys verbatim.
+		preserveExistingIds: true,
 		...(graph.generation.repositoryRevision !== undefined && {
 			repositoryRevision: graph.generation.repositoryRevision,
 		}),
@@ -68,4 +71,54 @@ test("decompose preserves provenance kind and evidence linkage", () => {
 	assert.deepEqual(requirement.provenance.evidenceKeys, [
 		testGraphIds.evidenceId,
 	]);
+});
+
+test("create-path assemble hashes id-shaped keys; refine preserves them", () => {
+	const graph = buildValidTestGraph();
+	const { ingested, draft } = decomposePlan(graph);
+
+	// decompose re-keys entities by their (id-shaped) id. On the create path
+	// (preserveExistingIds false) those keys are hashed, so a model emitting an
+	// id-shaped slug can never pin an entity id (ADR-0007); only refine preserves.
+	const created = assemble(ingested, draft, {
+		...metaFrom(graph),
+		preserveExistingIds: false,
+	});
+	assert.notEqual(created.requirements[0]?.id, graph.requirements[0]?.id);
+
+	// metaFrom sets preserveExistingIds: true (the refine path) → ids preserved.
+	const refined = assemble(ingested, draft, metaFrom(graph));
+	assert.equal(refined.requirements[0]?.id, graph.requirements[0]?.id);
+});
+
+test("decompose round-trips blockedEntityRefs on open questions", () => {
+	// The default fixture has no open questions, so attach one that blocks a real
+	// entity. A non-blocking open question is valid even in a complete plan.
+	const base = buildValidTestGraph();
+	const ref = { kind: "requirement", id: testGraphIds.requirementId } as const;
+	const graph: ReturnType<typeof buildValidTestGraph> = {
+		...base,
+		openQuestions: [
+			{
+				id: createStableId("openQuestion", testGraphIds.planId, "blocked-q"),
+				question: "Which MFA methods must login support?",
+				status: "open",
+				blocking: false,
+				provenance: {
+					kind: "explicit",
+					evidenceIds: [testGraphIds.evidenceId],
+				},
+				blockedEntityRefs: [ref],
+			},
+		],
+	};
+	// Precondition: the fixture-with-a-blocked-ref is itself valid.
+	assert.equal(validateTestGraph(graph).valid, true);
+
+	const { ingested, draft } = decomposePlan(graph);
+	const rebuilt = assemble(ingested, draft, metaFrom(graph));
+
+	// The ref survives the revision round-trip — no silent provenance loss.
+	assert.equal(serializeTestGraph(rebuilt), serializeTestGraph(graph));
+	assert.deepEqual(rebuilt.openQuestions[0]?.blockedEntityRefs, [ref]);
 });

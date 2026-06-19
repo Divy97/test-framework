@@ -50,27 +50,38 @@ export interface AssembleMeta {
 	 * "revision-2", "revision-3", … so each generation event gets a distinct id.
 	 */
 	generationKey?: string;
+	/**
+	 * When true (the refine/decompose path), a key already shaped like an id of its
+	 * kind is kept verbatim so an unchanged entity keeps its id across a revision.
+	 * Defaults false so the create path always hashes keys — a model-emitted slug
+	 * can never become an entity id.
+	 */
+	preserveExistingIds?: boolean;
 }
 
 const ID_HEX_LENGTH = 20;
 
 /**
- * Assign a stable id, treating a key that is already a well-formed id of `kind`
- * as a final id passed through verbatim. `createStableId` is not idempotent over
- * its own output, so refinement (which re-keys loaded entities by their existing
- * id — see decompose.ts) relies on this passthrough to keep entity ids constant
- * across a revision (the ADR-0007 identity invariant). Create-path keys are
- * slugs (never id-shaped), so they always hash and the v1 path is unchanged.
+ * Assign a stable id. On the refine/decompose path (`preserveExistingIds`), a key
+ * that is already a well-formed id of `kind` is passed through verbatim:
+ * `createStableId` is not idempotent over its own output, and decompose re-keys
+ * loaded entities by their existing id (see decompose.ts), so the passthrough is
+ * what keeps an unchanged entity's id constant across a revision (the ADR-0007
+ * identity invariant). On the create path it is false, so every key is hashed and
+ * a model emitting an id-shaped slug can never control an entity id.
  */
-function stableId<TKind extends IdKind>(
+function resolveStableId<TKind extends IdKind>(
 	kind: TKind,
 	scopeId: string,
 	key: string,
+	preserveExistingIds: boolean,
 ): GraphIdByKind[TKind] {
-	const idPattern = new RegExp(
-		`^${idPrefixes[kind]}_[0-9a-f]{${ID_HEX_LENGTH}}$`,
-	);
-	if (idPattern.test(key)) return key as GraphIdByKind[TKind];
+	if (preserveExistingIds) {
+		const idPattern = new RegExp(
+			`^${idPrefixes[kind]}_[0-9a-f]{${ID_HEX_LENGTH}}$`,
+		);
+		if (idPattern.test(key)) return key as GraphIdByKind[TKind];
+	}
 	return createStableId(kind, scopeId, key);
 }
 
@@ -130,6 +141,16 @@ export function assemble(
 	meta: AssembleMeta,
 ): TestGraphV1 {
 	const { planId, projectId } = ingested;
+
+	const preserveExistingIds = meta.preserveExistingIds ?? false;
+	// Local `stableId` closes over the per-call preserve flag so every id assignment
+	// below honors create-vs-refine identity rules without threading the flag.
+	const stableId = <TKind extends IdKind>(
+		kind: TKind,
+		scopeId: string,
+		key: string,
+	): GraphIdByKind[TKind] =>
+		resolveStableId(kind, scopeId, key, preserveExistingIds);
 
 	const sourceMap = new Map<string, SourceId>(
 		ingested.sources.map((source) => [source.key, source.id]),
@@ -207,7 +228,8 @@ export function assemble(
 		blocking: item.blocking,
 		...(item.answer !== undefined && { answer: item.answer }),
 		provenance: resolveProvenance(item.provenance),
-		blockedEntityRefs: [],
+		// Refine carries these forward (decompose populates them); create leaves [].
+		blockedEntityRefs: [...(item.blockedEntityRefs ?? [])],
 	}));
 
 	const requirements: Requirement[] = draft.requirements.map((item) => ({
