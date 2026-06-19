@@ -67,7 +67,9 @@ function stableId<TKind extends IdKind>(
 	scopeId: string,
 	key: string,
 ): GraphIdByKind[TKind] {
-	const idPattern = new RegExp(`^${idPrefixes[kind]}_[0-9a-f]{${ID_HEX_LENGTH}}$`);
+	const idPattern = new RegExp(
+		`^${idPrefixes[kind]}_[0-9a-f]{${ID_HEX_LENGTH}}$`,
+	);
 	if (idPattern.test(key)) return key as GraphIdByKind[TKind];
 	return createStableId(kind, scopeId, key);
 }

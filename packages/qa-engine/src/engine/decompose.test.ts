@@ -9,9 +9,7 @@ import { validateTestGraph } from "../test-graph/validate.js";
 import { type AssembleMeta, assemble } from "./assemble.js";
 import { decomposePlan } from "./decompose.js";
 
-function metaFrom(
-	graph: ReturnType<typeof buildValidTestGraph>,
-): AssembleMeta {
+function metaFrom(graph: ReturnType<typeof buildValidTestGraph>): AssembleMeta {
 	return {
 		generatedAt: graph.generation.generatedAt,
 		createdAt: graph.createdAt,

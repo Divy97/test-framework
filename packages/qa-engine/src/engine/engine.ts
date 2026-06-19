@@ -1,18 +1,28 @@
 import type { NormalizedUsage } from "../providers/types.js";
-import { planIdSchema } from "../test-graph/ids.js";
-import type { TestGraphV1 } from "../test-graph/schema.js";
-import { validateTestGraph } from "../test-graph/validate.js";
+import { createStableId, planIdSchema } from "../test-graph/ids.js";
+import type { Source, TestGraphV1 } from "../test-graph/schema.js";
+import {
+	validatePlanRevisionTransition,
+	validateTestGraph,
+} from "../test-graph/validate.js";
 import { type AssembleMeta, assemble } from "./assemble.js";
+import { decomposePlan } from "./decompose.js";
 import type { PlanDraft } from "./drafts.js";
 import { asEngineError, EngineError } from "./errors.js";
-import { type Ingested, ingest } from "./identity.js";
-import { type GenerationManifest, persistPlan, readPlan } from "./persist.js";
+import { canonicalKey, type Ingested, ingest } from "./identity.js";
+import {
+	type GenerationManifest,
+	persistPlan,
+	persistRevision,
+	readPlan,
+} from "./persist.js";
 import {
 	METHODOLOGY_VERSION,
 	runCasesStage,
 	runDetailsStage,
 	runEvidenceStage,
 	runFeaturesStage,
+	runRefineStage,
 	runRepairStage,
 	runRequirementsStage,
 	runReviewStage,
@@ -21,8 +31,11 @@ import {
 import type {
 	CreatePlanInput,
 	CreatePlanResult,
+	CreatePlanSource,
 	EngineDeps,
 	LoadPlanInput,
+	RefinePlanInput,
+	RefinePlanResult,
 	RepoContext,
 } from "./types.js";
 
@@ -77,6 +90,13 @@ async function buildValidGraph(
 	baseMeta: Omit<AssembleMeta, "status">,
 	reviewBlocking: boolean,
 	initialDraft: PlanDraft,
+	/**
+	 * When set (refine), a candidate must also pass
+	 * `validatePlanRevisionTransition(transitionBase, candidate)`; its findings join
+	 * the validator findings before the repair/throw decision, so an illegal
+	 * revision transition is a hard gate inside the bounded-repair loop.
+	 */
+	transitionBase?: TestGraphV1,
 ): Promise<{
 	graph: TestGraphV1;
 	usage: NormalizedUsage;
@@ -92,16 +112,24 @@ async function buildValidGraph(
 
 		let problems: string[];
 		try {
-			const result = validateTestGraph(assemble(ingested, draft, meta));
-			if (result.valid) return { graph: result.graph, usage, status };
-			problems = result.findings.map(
+			const candidate = assemble(ingested, draft, meta);
+			const result = validateTestGraph(candidate);
+			const transitionFindings =
+				result.valid && transitionBase !== undefined
+					? validatePlanRevisionTransition(transitionBase, candidate)
+					: [];
+			if (result.valid && transitionFindings.length === 0) {
+				return { graph: result.graph, usage, status };
+			}
+			const findings = [...result.findings, ...transitionFindings];
+			problems = findings.map(
 				(finding) => `${finding.code} at ${finding.path}: ${finding.message}`,
 			);
 			if (attempt >= budget) {
 				throw new EngineError(
 					"PLAN_INVARIANT_FAILED",
 					`Plan failed validation after ${budget} repair attempt(s).`,
-					{ findings: result.findings },
+					{ findings },
 				);
 			}
 		} catch (err) {
@@ -229,4 +257,155 @@ export async function loadPlan(
 		);
 	}
 	return readPlan(deps.workspaceRoot, parsed.data);
+}
+
+/**
+ * Append caller-supplied new sources to a decomposed plan's ingested set, reusing
+ * the same canonicalization + plan-scoped stable-id derivation as create. New
+ * source identity must not collide with an existing source's key.
+ */
+function mergeSources(
+	ingested: Ingested,
+	sources: CreatePlanSource[] | undefined,
+): Ingested {
+	if (sources === undefined || sources.length === 0) return ingested;
+
+	const merged = [...ingested.sources];
+	const seenKeys = new Set(merged.map((source) => source.key));
+	for (const source of sources) {
+		const content = source.content.trim();
+		if (content.length === 0) {
+			throw new EngineError(
+				"INVALID_INPUT",
+				`Source "${source.title}" has empty content.`,
+			);
+		}
+		const key = canonicalKey(source.locator ?? source.title, "source identity");
+		if (seenKeys.has(key)) {
+			throw new EngineError(
+				"INVALID_INPUT",
+				`Duplicate source identity "${key}"; give each new source a distinct locator or title.`,
+			);
+		}
+		seenKeys.add(key);
+		const node: Source = {
+			id: createStableId("source", ingested.planId, key),
+			kind: source.kind,
+			title: canonicalKey(source.title, "source.title"),
+			supplied: true,
+			...(source.locator !== undefined && {
+				locator: canonicalKey(source.locator, "source.locator"),
+			}),
+		};
+		merged.push({ key, id: node.id, node, content });
+	}
+	return { ...ingested, sources: merged };
+}
+
+/**
+ * The coarse refine operation. Loads an existing plan, re-plans it from scoped
+ * feedback, and atomically replaces the on-disk plan with a `planVersion + 1`
+ * revision that passes both `validateTestGraph` and
+ * `validatePlanRevisionTransition`. Refuses with `ARTIFACT_CONFLICT` when the plan
+ * changed under the caller, and never corrupts or partially overwrites the
+ * previous revision. Callers never touch a stage.
+ */
+export async function refinePlan(
+	input: RefinePlanInput,
+	deps: EngineDeps,
+): Promise<RefinePlanResult> {
+	const parsedId = planIdSchema.safeParse(input.planId);
+	if (!parsedId.success) {
+		throw new EngineError(
+			"INVALID_INPUT",
+			`Malformed planId: ${JSON.stringify(input.planId)}.`,
+		);
+	}
+	const feedback = input.feedback.trim();
+	if (feedback.length === 0) {
+		throw new EngineError("INVALID_INPUT", "feedback must not be empty.");
+	}
+
+	const previous = await readPlan(deps.workspaceRoot, parsedId.data);
+
+	// Fail fast on a stale version before any model spend.
+	if (
+		input.expectedVersion !== undefined &&
+		input.expectedVersion !== previous.planVersion
+	) {
+		throw new EngineError(
+			"ARTIFACT_CONFLICT",
+			`Plan ${previous.planId} changed since it was loaded: expected v${input.expectedVersion}, found v${previous.planVersion}.`,
+		);
+	}
+
+	const decomposed = decomposePlan(previous);
+	const ingested = mergeSources(decomposed.ingested, input.sources);
+
+	let usage = ZERO_USAGE;
+	const track = <T>(stage: { data: T; usage: NormalizedUsage }): T => {
+		usage = addUsage(usage, stage.usage);
+		return stage.data;
+	};
+
+	const draft = track(await runRefineStage(deps, decomposed.draft, feedback));
+	const review = track(await runReviewStage(deps, draft));
+	const warnings = review.findings.map(
+		(finding) => `[${finding.severity}] ${finding.message}`,
+	);
+
+	const nextVersion = previous.planVersion + 1;
+	const timestamp = new Date(deps.now()).toISOString();
+	const baseMeta: Omit<AssembleMeta, "status"> = {
+		generatedAt: timestamp,
+		createdAt: previous.createdAt,
+		updatedAt: timestamp,
+		methodologyVersion: deps.methodologyVersion ?? METHODOLOGY_VERSION,
+		workflowVersion: deps.workflowVersion ?? WORKFLOW_VERSION,
+		generator: {
+			kind: "model",
+			provider: deps.provider.id,
+			model: deps.provider.model,
+		},
+		warnings,
+		planVersion: nextVersion,
+		generationKey: `revision-${nextVersion}`,
+		...(previous.generation.repositoryRevision !== undefined && {
+			repositoryRevision: previous.generation.repositoryRevision,
+		}),
+	};
+
+	const built = await buildValidGraph(
+		deps,
+		ingested,
+		baseMeta,
+		review.blocking,
+		draft,
+		previous,
+	);
+	usage = addUsage(usage, built.usage);
+	const graph = built.graph;
+
+	const manifest: GenerationManifest = {
+		generatedAt: graph.generation.generatedAt,
+		methodologyVersion: graph.generation.methodologyVersion,
+		workflowVersion: graph.generation.workflowVersion,
+		inputFingerprint: graph.generation.inputFingerprint,
+		generator: graph.generation.generator,
+		status: built.status,
+		warnings,
+		usage,
+	};
+	const planDir = await persistRevision(graph, manifest, deps.workspaceRoot, {
+		expectedVersion: input.expectedVersion ?? previous.planVersion,
+	});
+
+	return {
+		graph,
+		planDir,
+		usage,
+		warnings,
+		status: built.status,
+		previousVersion: previous.planVersion,
+	};
 }

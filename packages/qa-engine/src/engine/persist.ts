@@ -145,9 +145,13 @@ export async function readPlanVersion(
 	try {
 		raw = await readFile(join(dir, "plan.json"), "utf8");
 	} catch (err) {
-		throw new EngineError("ARTIFACT_NOT_FOUND", `No plan found for ${planId}.`, {
-			cause: err,
-		});
+		throw new EngineError(
+			"ARTIFACT_NOT_FOUND",
+			`No plan found for ${planId}.`,
+			{
+				cause: err,
+			},
+		);
 	}
 	let parsed: unknown;
 	try {
@@ -257,7 +261,10 @@ export async function persistRevision(
 		}
 
 		await atomicWrite(join(dir, "plan.md"), renderTestGraphMarkdown(graph));
-		await atomicWrite(join(dir, "generation.json"), serializeManifest(manifest));
+		await atomicWrite(
+			join(dir, "generation.json"),
+			serializeManifest(manifest),
+		);
 	} catch (err) {
 		if (err instanceof EngineError) throw err;
 		throw new EngineError(
