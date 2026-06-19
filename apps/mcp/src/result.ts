@@ -14,10 +14,25 @@ export function successResult(
 	};
 }
 
-export function errorResult(error: unknown): CallToolResult {
-	const message = error instanceof Error ? error.message : "Unknown tool error";
+/** Machine-branchable tool error envelope returned to the host. */
+export interface ToolError {
+	code: string;
+	message: string;
+	retryable: boolean;
+}
+
+/**
+ * Typed error result: `isError: true`, a curated `{ error }` structuredContent,
+ * and a matching text block. The message is already curated/secret-free by the
+ * caller (see `errors.ts`).
+ */
+export function typedErrorResult(error: ToolError): CallToolResult {
+	const structuredContent = { error };
 	return {
-		content: [{ type: "text", text: message }],
+		content: [
+			{ type: "text", text: JSON.stringify(structuredContent, null, 2) },
+		],
+		structuredContent,
 		isError: true,
 	};
 }

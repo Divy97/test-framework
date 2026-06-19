@@ -15,7 +15,9 @@
 		"@test-framework/artifacts": "workspace:*",
 		"@test-framework/core": "workspace:*",
 		"@test-framework/planner": "workspace:*",
-		"@test-framework/repo-scan": "workspace:*"
+		"@test-framework/qa-engine": "workspace:*",
+		"@test-framework/repo-scan": "workspace:*",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"typescript": "catalog:",
