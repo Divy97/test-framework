@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { EngineRuntime } from "./engine-runtime.js";
 import { createEngineHandlers } from "./handlers.js";
+import { type RootsServer, resolveWorkspaceRoot } from "./roots.js";
 import { type MakeContext, registerEngineTools } from "./tools.js";
 
 export const mcpServerManifest = {
@@ -22,9 +23,16 @@ export function createMcpServer(runtimeFactory: RuntimeFactory): McpServer {
 
 	const makeContext: MakeContext = async (extra) => {
 		const runtime = await runtimeFactory();
+		// Resolve the workspace root per call from MCP roots, falling back to the
+		// runtime's configured/default root. `runtime.workspaceRoot` is the
+		// configured fallback; the roots policy may override it for this call.
+		const root = await resolveWorkspaceRoot(
+			server.server as RootsServer,
+			runtime.workspaceRoot,
+		);
 		return {
 			runtime,
-			root: runtime.workspaceRoot,
+			root,
 			...(extra.signal !== undefined && { signal: extra.signal }),
 		};
 	};

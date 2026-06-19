@@ -410,6 +410,31 @@ test("no progress notifications are emitted without a token", async () => {
 	}
 });
 
+// --- Slice 5: roots / project-root confinement ---------------------------------
+
+test("create_test_plan rejects a repo path escaping the root before any engine call", async () => {
+	const root = await tempRoot();
+	const provider = createFakeProvider(happyScript(), { recordCalls: true });
+	const client = await connectInMemoryClient(
+		fakeRuntimeFactory(provider, root),
+	);
+	try {
+		const result = await client.callTool({
+			name: "create_test_plan",
+			arguments: { ...CREATE_ARGS, repo: { path: "../../etc" } },
+		});
+		assert.equal(result.isError, true);
+		const error = (result.structuredContent as { error: { code: string } })
+			.error;
+		assert.equal(error.code, "REPO_ACCESS_DENIED");
+		// Rejected before the engine runs: no model call.
+		assert.equal(provider.calls.length, 0);
+	} finally {
+		await client.close();
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
 // --- built stdio handshake (full bootstrap in slice 6) -------------------------
 
 test("built stdio server completes the MCP handshake and lists the three tools", async () => {

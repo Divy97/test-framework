@@ -8,6 +8,7 @@ import {
 	type TestGraphV1,
 } from "@test-framework/qa-engine";
 import { type EngineRuntime, engineDepsFor } from "./engine-runtime.js";
+import { confineRepoPath } from "./roots.js";
 import type {
 	CreateTestPlanInput,
 	GetTestPlanInput,
@@ -87,7 +88,9 @@ export function createEngineHandlers(): EngineHandlers {
 					...(source.locator !== undefined && { locator: source.locator }),
 				})),
 				...(input.repo?.path !== undefined && {
-					repo: { path: input.repo.path },
+					// Confine the repo path inside the resolved root before any engine
+					// call; an escaping path is rejected as REPO_ACCESS_DENIED.
+					repo: { path: confineRepoPath(ctx.root, input.repo.path) },
 				}),
 			};
 			const result = await createPlan(
