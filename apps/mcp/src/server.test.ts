@@ -437,16 +437,19 @@ test("create_test_plan rejects a repo path escaping the root before any engine c
 
 // --- built stdio handshake (full bootstrap in slice 6) -------------------------
 
-test("built stdio server completes the MCP handshake and lists the three tools", async () => {
-	const transport = new StdioClientTransport({
+function builtStdioTransport(): StdioClientTransport {
+	return new StdioClientTransport({
 		command: process.execPath,
 		args: [join(process.cwd(), "dist/index.js")],
 		cwd: process.cwd(),
 		stderr: "pipe",
 	});
+}
+
+test("built stdio server completes the MCP handshake and lists the three tools", async () => {
 	const client = new Client({ name: "stdio-test", version: "0.1.0" });
 	try {
-		await client.connect(transport);
+		await client.connect(builtStdioTransport());
 		const listed = await client.listTools();
 		assert.deepEqual(
 			listed.tools.map((tool) => tool.name).sort(),
@@ -454,5 +457,56 @@ test("built stdio server completes the MCP handshake and lists the three tools",
 		);
 	} finally {
 		await client.close();
+	}
+});
+
+test("built stdio server answers a no-provider INVALID_INPUT deterministically", async () => {
+	// The provider is constructed lazily, so this empty-`sources` call is rejected
+	// by the input schema before any provider is built — no key needed.
+	const client = new Client({ name: "stdio-invalid-test", version: "0.1.0" });
+	try {
+		await client.connect(builtStdioTransport());
+		const result = await client.callTool({
+			name: "create_test_plan",
+			arguments: { project: { name: "Acme" }, title: "x", sources: [] },
+		});
+		assert.equal(result.isError, true);
+	} finally {
+		await client.close();
+	}
+});
+
+// --- Slice 6: gated live BYOK smoke test ---------------------------------------
+
+const live = Boolean(
+	process.env.RUN_LIVE_PROVIDER && process.env.ANTHROPIC_API_KEY,
+);
+
+test("live create_test_plan over a real provider persists a valid plan", {
+	skip: !live,
+}, async () => {
+	const { createProvider } = await import("@test-framework/qa-engine");
+	const root = await tempRoot();
+	const provider = await createProvider({
+		provider: "anthropic",
+		model: "claude-haiku-4-5",
+		keySource: { kind: "env", var: "ANTHROPIC_API_KEY" },
+	});
+	const client = await connectInMemoryClient(async () => ({
+		provider,
+		workspaceRoot: root,
+		now: () => Date.now(),
+	}));
+	try {
+		const result = await client.callTool({
+			name: "create_test_plan",
+			arguments: CREATE_ARGS,
+		});
+		assert.notEqual(result.isError, true);
+		const structured = result.structuredContent as { planId?: string };
+		assert.ok(typeof structured.planId === "string");
+	} finally {
+		await client.close();
+		await rm(root, { recursive: true, force: true });
 	}
 });
