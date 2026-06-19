@@ -2,28 +2,183 @@
 	"evalSchemaVersion": "eval/v1",
 	"fixtureId": "authz-api",
 	"arm": "raw-model",
-	"recordKind": "synthetic",
-	"expectValidationFailure": true,
+	"recordKind": "recorded",
+	"expectValidationFailure": false,
 	"sourceAnnotations": [
 		{
-			"sourceId": "src_dc9a958334cc61753c60",
+			"sourceId": "src_0a1b2c3d4e5f60718293",
+			"sourceKey": "spec"
+		},
+		{
+			"sourceId": "src_1a1b2c3d4e5f60718293",
 			"sourceKey": "spec"
 		}
 	],
 	"requirementAnnotations": [
 		{
-			"requirementId": "req_61a38d77478120f56556",
+			"requirementId": "req_1a1b2c3d4e5f60718293",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:owner-only-delete"
+			],
+			"satisfaction": "full",
+			"reason": "States a non-owner cannot delete another user's task, the restrictive heart of req:owner-only-delete ('only the owner may delete'); provenance explicit matches the fixture's expected strength.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_0a1b2c3d4e5f60718293",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:owner-only-delete"
+			],
+			"satisfaction": "partial",
+			"reason": "Covers only the owner-can-delete corollary of req:owner-only-delete, not the non-owner-rejection restriction that is the requirement's core (handled by the sibling requirement); provenance explicit matches expected strength.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_2a1b2c3d4e5f60718293",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:list-scoped"
+			],
+			"satisfaction": "full",
+			"reason": "States listing returns only tasks owned by the caller, a direct match to req:list-scoped. The requirement marks provenance 'explicit' though the fixture's expected strength for this key is 'inferred'; the mapping and coverage are full, and the provenance-kind mismatch is left for the provenance dimension to score.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_3a1b2c3d4e5f60718293",
 			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "Ignores ownership entirely."
+			"classification": "supported-inferred",
+			"reason": "Directly restates the brief's explicit 'No admin override' clause (admins get no override for deleting or listing tasks they do not own). Not one of the two expected scenarios' requirements, but grounded in an explicit brief statement; affirms the claim:admin-override prohibition rather than contradicting it.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_4a1b2c3d4e5f60718293",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Authentication-required is a grounded inference: owner and caller scoping presuppose an identified caller, so unauthenticated delete/list requests must be rejected. Not an expected requirement; provenance correctly inferred. Same standard applied to the qa-engine authentication-required requirement.",
+			"supportsCitedEvidence": true
 		}
 	],
 	"caseAnnotations": [
 		{
-			"caseId": "case_ca6deb75b48a9c00e291",
+			"caseId": "case_1a1b2c3d4e5f60718293",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:non-owner-delete-403"
+			],
+			"satisfaction": "partial",
+			"reason": "Asserts the non-owner delete returns exactly 403 (matching the hint's status), but has no assertion verifying the task still exists (only a postcondition narrative), so the 'task still exists' half of the hint is not actually asserted.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_5a1b2c3d4e5f60718293",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:list-only-own"
+			],
+			"satisfaction": "full",
+			"reason": "Asserts every returned task's owner is the caller and another user's task is absent, directly covering the hint (list excludes other users' tasks).",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_0a1b2c3d4e5f60718293",
 			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "No requirement; ignores authz."
+			"classification": "supported-inferred",
+			"reason": "Owner-success positive path (owner deletes own task: 204, follow-up fetch 404). Not an expected scenario, but a grounded elaboration of 'only a task owner may delete it'; provenance explicit, supported by the owner-delete statement.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_2a1b2c3d4e5f60718293",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Admin attempting to delete a non-owned task is denied (403). Directly enforces the brief's 'No admin override' clause; affirms the claim:admin-override prohibition rather than contradicting it. Not an expected scenario; grounded in an explicit brief statement.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_3a1b2c3d4e5f60718293",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Deleting a non-existent task id returns 404 (standard not-found handling for a delete-by-id endpoint). Not an expected scenario, but a defensible conventional elaboration of the delete API and consistent with the open 403-vs-404 disclosure question; provenance correctly inferred.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_4a1b2c3d4e5f60718293",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Anonymous delete rejected (401), task preserved. Grounded inference that owner-only deletion presupposes an authenticated caller. Not an expected scenario; provenance correctly inferred.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_6a1b2c3d4e5f60718293",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Admin listing returns zero tasks when the admin owns none, confirming no override on listing. Enforces 'No admin override' combined with caller-scoped listing; affirms the admin-override prohibition. Not an expected scenario; grounded in explicit brief statements.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_7a1b2c3d4e5f60718293",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Anonymous list rejected (401). Grounded inference that caller-scoped listing presupposes an authenticated caller. Not an expected scenario; provenance correctly inferred.",
+			"supportsCitedEvidence": true
+		}
+	],
+	"assertionAnnotations": [
+		{
+			"assertionId": "assert_0a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "Owner delete returning 204 is directly supported by 'Only a task owner may delete it'."
+		},
+		{
+			"assertionId": "assert_1a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "A follow-up fetch of the deleted task returning 404 is a sound inference that the delete persisted; provenance correctly inferred."
+		},
+		{
+			"assertionId": "assert_2a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "A non-owner delete returning 403 is directly supported by 'Only a task owner may delete it'."
+		},
+		{
+			"assertionId": "assert_3a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "An admin's non-owned delete returning 403 is directly supported by 'No admin override'."
+		},
+		{
+			"assertionId": "assert_4a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "Deleting a non-existent id returning 404 is a reasonable not-found inference for a delete-by-id endpoint; provenance correctly inferred."
+		},
+		{
+			"assertionId": "assert_5a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "An unauthenticated delete returning 401 is a sound inference from owner-only deletion presupposing an identified caller; provenance correctly inferred."
+		},
+		{
+			"assertionId": "assert_6a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "A 200 on a successful authenticated list is supported by the listing capability."
+		},
+		{
+			"assertionId": "assert_7a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "Every returned task being owned by the caller is directly supported by 'listing returns only the caller's tasks'."
+		},
+		{
+			"assertionId": "assert_8a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "Another user's task being absent from the caller's list is directly supported by caller-scoped listing."
+		},
+		{
+			"assertionId": "assert_9a1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "An admin who owns no tasks getting an empty list is directly supported by 'No admin override' combined with caller-scoped listing."
+		},
+		{
+			"assertionId": "assert_aa1b2c3d4e5f60718293",
+			"supportsCitedEvidence": true,
+			"reason": "An unauthenticated list returning 401 is a sound inference from caller-scoped listing presupposing an identified caller; provenance correctly inferred."
 		}
 	]
 }

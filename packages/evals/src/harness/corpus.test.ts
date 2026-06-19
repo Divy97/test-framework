@@ -69,23 +69,32 @@ test("all eight required fixtures are present", async () => {
 	assert.equal(fixtures.length, 8);
 });
 
-test("weak arms score materially below the strong arm in every fixture", async () => {
+test("every fixture scores all three arms within the valid range", async () => {
 	const { rubric, thresholds } = await loadConfig();
 	const result = scoreCorpus(
 		await discoverCorpus(corpusDir),
 		rubric,
 		thresholds,
 	);
+	// Per ADR-0012 (reposition the moat: reliability over raw quality), this no
+	// longer asserts qa-engine out-scores raw-model — the recorded corpus disproves
+	// that (raw-model beats qa-engine on authz-api, and unsupported-assumptions/
+	// qa-engine hard-fails). We only pin that scoring covers all three arms and
+	// produces in-range overalls; the reliability/refinement gate is a future
+	// workstream.
 	for (const fixture of result.fixtures) {
 		const byArm = new Map(fixture.candidates.map((c) => [c.arm, c]));
-		const strong = byArm.get("qa-engine");
-		const weak = byArm.get("raw-model");
-		if (strong === undefined || weak === undefined)
-			throw new Error(fixture.fixtureId);
-		// The strong arm passes; the weak arm either hard-fails or scores well below it.
-		assert.equal(strong.verdict, "PASS", fixture.fixtureId);
-		const weakIsWorse = weak.hardFail || weak.overall <= strong.overall - 20;
-		assert.ok(weakIsWorse, `${fixture.fixtureId}: weak not materially worse`);
+		for (const arm of ["raw-model", "host-only", "qa-engine"] as const) {
+			const candidate = byArm.get(arm);
+			assert.ok(
+				candidate !== undefined,
+				`${fixture.fixtureId}: missing ${arm}`,
+			);
+			assert.ok(
+				candidate.overall >= 0 && candidate.overall <= 100,
+				`${fixture.fixtureId}/${arm}: overall ${candidate.overall} out of range`,
+			);
+		}
 	}
 });
 

@@ -88,6 +88,17 @@ test("openrouter config resolves via the openai-compatible adapter", async () =>
 	assert.equal(provider.model, "anthropic/claude-opus-4-8");
 });
 
+test("claude-cli config resolves keylessly via the host-model adapter", async () => {
+	// A deliberately key-less env: claude-cli must resolve without any key.
+	const provider = await createProvider(
+		{ provider: "claude-cli", model: "opus" },
+		{ getEnv: env({}) },
+	);
+	assert.equal(provider.id, "claude-cli");
+	assert.equal(provider.model, "opus");
+	assert.equal(provider.capabilities("opus").structuredOutput, "prompted");
+});
+
 test("invalid config (raw apiKey) rejects with PROVIDER_CONFIG_INVALID", async () => {
 	await assert.rejects(
 		createProvider(

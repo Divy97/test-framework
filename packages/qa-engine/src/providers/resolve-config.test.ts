@@ -17,6 +17,7 @@ test("resolves the key from the named env var into a Secret", () => {
 	const resolved = resolveConfig(base, {
 		getEnv: env({ ANTHROPIC_API_KEY: "sk-ant-xyz" }),
 	});
+	assert.ok(resolved.key !== undefined);
 	assert.equal(
 		resolved.key.use((v) => v),
 		"sk-ant-xyz",

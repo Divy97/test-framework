@@ -1,27 +1,8 @@
 {
 	"assertions": [
 		{
-			"expected": "self",
-			"id": "assert_cb352fbd6b9e2b63d066",
-			"matcher": "equals",
-			"observationPoint": {
-				"kind": "api",
-				"method": "GET",
-				"path": "/tasks"
-			},
-			"provenance": {
-				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
-				],
-				"kind": "inferred"
-			},
-			"stepId": "step_818968033cb5542d233f",
-			"subject": "every task.ownerId",
-			"testCaseId": "case_0f97f21478385433f872"
-		},
-		{
-			"expected": 403,
-			"id": "assert_af1049d530eec257b986",
+			"expected": 401,
+			"id": "assert_a9ed78c47aef4a2cfbf3",
 			"matcher": "statusCode",
 			"observationPoint": {
 				"kind": "api",
@@ -30,233 +11,1583 @@
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_5504e316ae52777f1366"
 				],
-				"kind": "explicit"
+				"kind": "inferred",
+				"rationale": "An expired credential must be treated as unauthenticated and rejected."
 			},
-			"stepId": "step_f334f5d9932fa60b5476",
-			"subject": "response.status",
-			"testCaseId": "case_e69065d1031ced309c19"
+			"stepId": "step_6665af0e504ed9b66cc6",
+			"subject": "Delete response status for expired-credential caller",
+			"testCaseId": "case_437dfcc6aa02d32c09b2"
+		},
+		{
+			"id": "assert_0f0f60cb8a17eef037fb",
+			"matcher": "exists",
+			"observationPoint": {
+				"description": "Persistence check of the target task after the request",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "A rejected expired-credential delete must not destroy the task."
+			},
+			"stepId": "step_b17947ed0972f6814b41",
+			"subject": "Persisted task record for the target id",
+			"testCaseId": "case_437dfcc6aa02d32c09b2"
 		},
 		{
 			"expected": 200,
-			"id": "assert_4a968b0a18ada430d353",
+			"id": "assert_eafbed2f5aa1c01038ff",
 			"matcher": "statusCode",
 			"observationPoint": {
 				"kind": "api",
 				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_4726a64838e46b10a3e3",
+			"subject": "List response status for the administrator",
+			"testCaseId": "case_5f99181778d21a05863a"
+		},
+		{
+			"expected": "data-owner-task",
+			"id": "assert_96f9d9b594d821bf0827",
+			"matcher": "contains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_39812ff5d06910d4e80d",
+			"subject": "Administrator-owned task in the list response body",
+			"testCaseId": "case_5f99181778d21a05863a"
+		},
+		{
+			"expected": "data-other-user-task",
+			"id": "assert_98b92d065619b1ced976",
+			"matcher": "notContains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_39812ff5d06910d4e80d",
+			"subject": "Other user's task in the administrator's list response body",
+			"testCaseId": "case_5f99181778d21a05863a"
+		},
+		{
+			"expected": 200,
+			"id": "assert_60387372dd3a5da9f8a4",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_9f6e494a20d12d0759cf",
+			"subject": "List response status for the authenticated caller",
+			"testCaseId": "case_9943d49816ec2d04dc38"
+		},
+		{
+			"expected": "data-other-user-task",
+			"id": "assert_48a0e9c2fe3d8837dbfc",
+			"matcher": "notContains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_384ddcb6bae25cb8b6ac",
+			"subject": "Other user's task in the list response body",
+			"testCaseId": "case_9943d49816ec2d04dc38"
+		},
+		{
+			"expected": "data-owner-task",
+			"id": "assert_bfbe8ff50547776e1452",
+			"matcher": "contains",
+			"note": "Treatment of shared tasks in caller-scoped listing is unconfirmed; see oq-shared-task-access.",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_384ddcb6bae25cb8b6ac",
+			"subject": "Caller-owned task in the list response body",
+			"testCaseId": "case_9943d49816ec2d04dc38"
+		},
+		{
+			"expected": 401,
+			"id": "assert_837382578af036f58505",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
 				"path": "/tasks/{id}"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "An unauthenticated delete must be rejected at the authentication layer."
+			},
+			"stepId": "step_69a733a26f2b5094454c",
+			"subject": "Delete response status for unauthenticated caller",
+			"testCaseId": "case_b4f53173df1b1c34a392"
+		},
+		{
+			"id": "assert_77d2f2c1626ed7a7bb0e",
+			"matcher": "exists",
+			"observationPoint": {
+				"description": "Persistence check of the target task after the request",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "A rejected unauthenticated delete must not destroy the task."
+			},
+			"stepId": "step_2409e44c82807c03592e",
+			"subject": "Persisted task record for the target id",
+			"testCaseId": "case_b4f53173df1b1c34a392"
+		},
+		{
+			"id": "assert_178cd9ea8a03637aba9e",
+			"matcher": "notExists",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "inferred",
+				"rationale": "A rejected list must not return any task data."
+			},
+			"stepId": "step_b543cc79f0ef327f7574",
+			"subject": "Task data in the unauthenticated list response body",
+			"testCaseId": "case_d640e5c4e5b39c03b973"
+		},
+		{
+			"expected": 401,
+			"id": "assert_27bf6a1334e480dd31c2",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "inferred",
+				"rationale": "An unauthenticated list must be rejected before scoping."
+			},
+			"stepId": "step_b543cc79f0ef327f7574",
+			"subject": "List response status for unauthenticated caller",
+			"testCaseId": "case_d640e5c4e5b39c03b973"
+		},
+		{
+			"expected": 400,
+			"id": "assert_52b245086255a0b25856",
+			"matcher": "greaterThanOrEqual",
+			"note": "Exact rejection code (403 vs 404) is unconfirmed; see oq-non-owner-delete-response. Asserting on a 4xx rejection until resolved.",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
 				],
 				"kind": "explicit"
 			},
-			"subject": "task exists",
-			"testCaseId": "case_e69065d1031ced309c19"
-		}
-	],
-	"createdAt": "2026-06-15T10:00:00.000Z",
-	"dataRequirements": [],
-	"evidence": [
-		{
-			"claim": "Only owners delete tasks; list is scoped to the caller; no admin override.",
-			"id": "ev_9184d3ad765d0567ca79",
-			"kind": "statement",
-			"sourceId": "src_97b6819c012d23445ffb"
-		}
-	],
-	"features": [],
-	"generation": {
-		"generatedAt": "2026-06-15T10:00:00.000Z",
-		"generator": {
-			"kind": "model",
-			"model": "claude-opus-4-8",
-			"provider": "anthropic"
+			"stepId": "step_cc3ed6ef320bdfc3644d",
+			"subject": "Delete response status for authenticated non-owner",
+			"testCaseId": "case_dbc485a0f47d3978a6a1"
 		},
-		"id": "gen_5cc8c7bb14205dad5bbc",
-		"inputFingerprint": "sha256:authz-api-qa-engine",
-		"methodologyVersion": "0.1.0",
-		"status": "complete",
-		"warnings": [],
-		"workflowVersion": "0.1.0"
-	},
-	"openQuestions": [],
-	"planId": "plan_b82c0582a74ceacac448",
-	"planVersion": 1,
-	"projectId": "prj_813f94d0d9a3e50c0cb9",
-	"requirements": [
 		{
-			"id": "req_7ad8047803ba62ef68aa",
-			"kind": "security",
-			"openQuestionIds": [],
-			"priority": "p1",
+			"id": "assert_71684dfc3d8ca909c978",
+			"matcher": "exists",
+			"observationPoint": {
+				"description": "Persistence check of the target task after a non-owner delete attempt",
+				"kind": "generic"
+			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_5504e316ae52777f1366"
 				],
-				"kind": "inferred",
-				"rationale": "Implied by ownership."
+				"kind": "explicit"
 			},
-			"risk": "medium",
-			"statement": "List scoped to caller."
+			"stepId": "step_f9a20669dc8b80a072c2",
+			"subject": "Persisted task record owned by user A",
+			"testCaseId": "case_dbc485a0f47d3978a6a1"
 		},
 		{
-			"id": "req_b870f81aad855276bb6d",
+			"expected": 204,
+			"id": "assert_be32c379fd3af2be6612",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_dfb7e4a1169449f7944e",
+			"subject": "Delete response status for the task owner",
+			"testCaseId": "case_e1ba9bf3a11d4639ad71"
+		},
+		{
+			"id": "assert_cf5b9b2c6125df3c4ede",
+			"matcher": "notExists",
+			"observationPoint": {
+				"description": "Persistence check of the task after a successful owner delete",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_47779a3d0cf315f7ef89",
+			"subject": "Persisted task record for the deleted id",
+			"testCaseId": "case_e1ba9bf3a11d4639ad71"
+		},
+		{
+			"expected": 400,
+			"id": "assert_130a8b5568557b88b4e3",
+			"matcher": "greaterThanOrEqual",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_f41468d5bace46818db5",
+			"subject": "Delete response status for administrator on non-owned task",
+			"testCaseId": "case_e742a0cf907c5e937f40"
+		},
+		{
+			"id": "assert_f9f6f021dc3b335e128e",
+			"matcher": "exists",
+			"observationPoint": {
+				"description": "Persistence check of the target task after an admin delete attempt",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_33407b03ae388add29f8",
+			"subject": "Persisted task record owned by a regular user",
+			"testCaseId": "case_e742a0cf907c5e937f40"
+		}
+	],
+	"createdAt": "2026-06-19T18:14:55.055Z",
+	"dataRequirements": [
+		{
+			"description": "A task owned by a user other than the caller, used to verify non-owner and admin override deletion/listing are rejected or scoped out.",
+			"id": "data_0d0b3c1addafd772cba2",
+			"kind": "record",
+			"name": "Task owned by a different user",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"ownedByOtherUser": true,
+				"taskExists": true
+			},
+			"sensitivity": "internal"
+		},
+		{
+			"description": "A task whose owner is the authenticated caller under test, used for legitimate owner deletion and caller-scoped listing.",
+			"id": "data_5a85752ae466023d32ed",
+			"kind": "record",
+			"name": "Task owned by the calling user",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"ownedByCaller": true,
+				"taskExists": true
+			},
+			"sensitivity": "internal"
+		},
+		{
+			"description": "A task record that already exists in the system, owned by some user, used to attempt unauthenticated/expired-credential operations against a real resource.",
+			"id": "data_75bf927f0cf84e05e2b0",
+			"kind": "record",
+			"name": "Existing task record",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "Owner-only deletion and caller-scoped listing both presuppose that addressable tasks exist; a real target task is required to exercise the rejection paths."
+			},
+			"provisioning": "existing",
+			"requiredState": {
+				"taskExists": true
+			},
+			"sensitivity": "internal"
+		},
+		{
+			"description": "A credential for a caller holding an administrative role/override, used to confirm admin privileges do not bypass owner scoping.",
+			"id": "data_7823c7c90b5f8505592a",
+			"kind": "credential",
+			"name": "Administrator caller credential",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"callerIsAdmin": true
+			},
+			"sensitivity": "secret"
+		},
+		{
+			"description": "A credential that was once valid but has passed its validity window, used to confirm expired authentication is treated as unauthenticated.",
+			"id": "data_efbf1ec94740ad55acd3",
+			"kind": "credential",
+			"name": "Expired caller credential",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "Enforcing owner-only deletion requires a currently authenticated identity; an expired credential is needed to verify it does not establish one."
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"credentialExpired": true
+			},
+			"sensitivity": "secret"
+		}
+	],
+	"evidence": [
+		{
+			"claim": "There is no admin override for task deletion or listing.",
+			"excerpt": "No admin override.",
+			"id": "ev_0c2a99b1e411c925e6bc",
+			"kind": "statement",
+			"sourceId": "src_c7a3ffcaf51c9e5d47eb"
+		},
+		{
+			"claim": "Listing tasks returns only the tasks belonging to the calling user.",
+			"excerpt": "listing returns only the caller's tasks",
+			"id": "ev_245cd9ecf62c92bbcd2f",
+			"kind": "statement",
+			"sourceId": "src_c7a3ffcaf51c9e5d47eb"
+		},
+		{
+			"claim": "Only the task owner is permitted to delete a task.",
+			"excerpt": "Only a task owner may delete it",
+			"id": "ev_5504e316ae52777f1366",
+			"kind": "statement",
+			"sourceId": "src_c7a3ffcaf51c9e5d47eb"
+		}
+	],
+	"features": [
+		{
+			"description": "Return only tasks belonging to the calling user when listing, with no administrative role or override permitted to bypass caller-scoped listing.",
+			"id": "feat_0d8e1e343ff09eaccf48",
+			"name": "Task Listing Scope",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit",
+				"rationale": "Groups the caller-scoped listing rule with the no-admin-override constraint that explicitly governs listing scope."
+			},
+			"requirementIds": [
+				"req_671524c8555629ecba25",
+				"req_a721017a2642dcf1fa71"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"kind": "api",
+					"method": "GET",
+					"path": "/tasks"
+				}
+			]
+		},
+		{
+			"description": "Restrict task deletion to the task owner, rejecting non-owner deletion requests, with no administrative role or override permitted to bypass the owner-only rule.",
+			"id": "feat_548b22499c2fe90a8002",
+			"name": "Task Deletion Authorization",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit",
+				"rationale": "Groups the owner-only delete rule with the no-admin-override constraint that explicitly governs deletion."
+			},
+			"requirementIds": [
+				"req_0fc2eb2dfaa97973ab51",
+				"req_a721017a2642dcf1fa71"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"kind": "api",
+					"method": "DELETE",
+					"path": "/tasks/{id}"
+				}
+			]
+		},
+		{
+			"description": "Establish an authenticated calling user identity on delete and list requests before any owner or caller scoping is enforced; anonymous requests cannot be evaluated against ownership or caller rules.",
+			"id": "feat_6e7ca97c7b6d5879c86a",
+			"name": "Caller Authentication",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "Authentication is grouped separately because it is the precondition shared by both deletion and listing scoping; owner and caller checks presuppose an identified user."
+			},
+			"requirementIds": [
+				"req_3abd4e0e1cd75b4d4cdf"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"description": "Authentication layer that resolves the calling user identity for task delete and list requests.",
+					"kind": "generic"
+				}
+			]
+		}
+	],
+	"generation": {
+		"generatedAt": "2026-06-19T18:14:55.055Z",
+		"generator": {
+			"kind": "model",
+			"model": "opus",
+			"provider": "claude-cli"
+		},
+		"id": "gen_d509566ccd201e738df8",
+		"inputFingerprint": "11d36325801742bbd163eee9ab6c4dec424e0f118a471630e2fa1ca789f865c4",
+		"methodologyVersion": "1.0.0",
+		"status": "incomplete",
+		"warnings": [
+			"[info] Coverage of the three explicit requirements is complete and non-duplicative: anonymous-rejection, owner-success, authenticated-non-owner-rejection, and no-admin-override are each exercised for both DELETE and (where applicable) GET, and every test case maps to at least one requirement. No unsupported test cases were found.",
+			"[warning] Orphaned data requirement: 'data-expired-credential' is defined but not referenced in any test case's consumesDataKeys. tc-expired-token-delete-rejected consumes only 'data-existing-task' despite requiring an expired credential. Add 'data-expired-credential' to its consumesDataKeys to restore traceability.",
+			"[warning] Orphaned data requirement: 'data-admin-credential' is defined but not referenced by tc-admin-delete-override-rejected or tc-admin-list-override-rejected (both consume only data-owner-task/data-other-user-task). The admin actor's credential provisioning is untraceable; add 'data-admin-credential' to those cases' consumesDataKeys.",
+			"[info] Asymmetric authentication coverage: an expired-credential rejection case exists for DELETE (tc-expired-token-delete-rejected) but not for GET /tasks. req-authentication-required governs listing too; listing is only negatively tested via the anonymous path. Consider a symmetric expired-credential list-rejection case.",
+			"[info] Missing edge scenarios that are reasonable but not evidence-mandated: (a) malformed/invalid (non-expired) credential rejection, distinct from expired; (b) deletion of a non-existent task id as a baseline, which interacts with the unresolved 403-vs-404 disclosure question (oq-non-owner-delete-response). These are gap candidates, not blocking omissions.",
+			"[info] Assumption embedded in assertion: as-anon-list-status and as-anon-del-status expect 401, but with oq-auth-mechanism still open a design returning an empty 200 for anonymous listing is plausible. The expectation is defensible under req-authentication-required; flagging it as an assumption tied to an unresolved open question rather than a confirmed contract.",
+			"[info] Two open questions are marked blocking:true (oq-ownership-determination, oq-auth-mechanism), but both concern implementation specifics already absorbed by partial-readiness flags and tolerant assertions (e.g. 4xx range for non-owner reject). They do not create a material coverage hole, so the review does not mark the plan incomplete."
+		],
+		"workflowVersion": "1.0.0"
+	},
+	"openQuestions": [
+		{
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_025f8c174e2eaa0c7abd",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "inferred",
+				"rationale": "Listing is scoped strictly to the caller's own tasks; whether sharing or assignment exists is unstated and affects scoping logic."
+			},
+			"question": "Can tasks ever be shared with or assigned to non-owner users, and if so, do they appear in those users' listings?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": true,
+			"id": "question_3cc791b30992e111f837",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "assumption",
+				"rationale": "Owner and caller scoping imply authenticated identity, but no authentication scheme is described in the evidence."
+			},
+			"question": "What authentication mechanism identifies the calling user (session token, bearer JWT, API key)?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": true,
+			"id": "question_54f5dd8e926e0f7b0338",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "Enforcing owner-only deletion requires a defined source of truth for ownership, which the evidence does not describe."
+			},
+			"question": "How is task ownership established and recorded (e.g., the creating user is permanently the owner, or can ownership be transferred)?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_62c2f0500cf4fe38a54a",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "The rule forbids non-owner deletion but does not specify the rejection semantics, which affects information disclosure."
+			},
+			"question": "What response should a non-owner deletion attempt return (403 Forbidden vs 404 Not Found to avoid leaking task existence)?",
+			"status": "open"
+		}
+	],
+	"planId": "plan_34a57047351f7504a27d",
+	"planVersion": 1,
+	"projectId": "prj_395994bf2fbe39e87cab",
+	"requirements": [
+		{
+			"id": "req_0fc2eb2dfaa97973ab51",
 			"kind": "security",
-			"openQuestionIds": [],
+			"openQuestionIds": [
+				"question_54f5dd8e926e0f7b0338",
+				"question_62c2f0500cf4fe38a54a"
+			],
 			"priority": "p0",
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_5504e316ae52777f1366"
 				],
 				"kind": "explicit"
 			},
 			"risk": "high",
-			"statement": "Only owner may delete."
+			"statement": "Only the task owner may delete a task; deletion requests from non-owners must be rejected."
+		},
+		{
+			"id": "req_3abd4e0e1cd75b4d4cdf",
+			"kind": "security",
+			"openQuestionIds": [
+				"question_3cc791b30992e111f837"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "Enforcing 'owner' and 'caller' scoping presupposes an identified, authenticated user; the rules cannot be applied to anonymous requests."
+			},
+			"risk": "high",
+			"statement": "Requests to delete or list tasks must be associated with an authenticated calling user before owner or caller scoping can be enforced."
+		},
+		{
+			"id": "req_671524c8555629ecba25",
+			"kind": "security",
+			"openQuestionIds": [
+				"question_025f8c174e2eaa0c7abd"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Listing tasks must return only tasks belonging to the calling user."
+		},
+		{
+			"id": "req_a721017a2642dcf1fa71",
+			"kind": "business-rule",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc"
+				],
+				"kind": "explicit"
+			},
+			"risk": "medium",
+			"statement": "No administrative role or override may bypass owner-only deletion or caller-scoped listing rules."
 		}
 	],
 	"schemaVersion": "test-graph/v1",
 	"sources": [
 		{
-			"id": "src_97b6819c012d23445ffb",
+			"id": "src_3237a22b5b721ea98934",
+			"kind": "api-spec",
+			"supplied": true,
+			"title": "Task API spec"
+		},
+		{
+			"id": "src_c7a3ffcaf51c9e5d47eb",
 			"kind": "feature-request",
 			"supplied": true,
-			"title": "Feature spec"
+			"title": "Owner-only task deletion API"
 		}
 	],
-	"status": "complete",
+	"status": "incomplete",
 	"steps": [
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer <expired-credential>"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"description": "Send a DELETE request for an existing task presenting the expired credential.",
+			"id": "step_6665af0e504ed9b66cc6",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "An expired credential does not establish a current authenticated caller, so the delete must be rejected before ownership is checked."
+			},
+			"testCaseId": "case_437dfcc6aa02d32c09b2"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Persisted task record for the target id"
+			},
+			"description": "Observe the persisted state of the target task after the expired-credential request.",
+			"id": "step_b17947ed0972f6814b41",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "A rejected expired-credential delete must leave the task intact."
+			},
+			"testCaseId": "case_437dfcc6aa02d32c09b2"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer <admin-credential>"
+				},
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"description": "Authenticated as an administrator, send a GET /tasks request.",
+			"id": "step_4726a64838e46b10a3e3",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_5f99181778d21a05863a"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Task list returned in the response body"
+			},
+			"description": "Observe the task collection returned in the response body to the administrator.",
+			"id": "step_39812ff5d06910d4e80d",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_5f99181778d21a05863a"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer <owner-credential>"
+				},
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"description": "Authenticated as the caller, send a GET /tasks request.",
+			"id": "step_9f6e494a20d12d0759cf",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_9943d49816ec2d04dc38"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Task list returned in the response body"
+			},
+			"description": "Observe the task collection returned in the response body.",
+			"id": "step_384ddcb6bae25cb8b6ac",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_9943d49816ec2d04dc38"
+		},
+		{
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"description": "Send a DELETE request for an existing task with no authentication credential present.",
+			"id": "step_69a733a26f2b5094454c",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "An anonymous delete must be rejected at the authentication layer before owner scoping is evaluated."
+			},
+			"testCaseId": "case_b4f53173df1b1c34a392"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Persisted task record for the target id"
+			},
+			"description": "Observe the persisted state of the target task after the unauthenticated request.",
+			"id": "step_2409e44c82807c03592e",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "A rejected unauthenticated delete must leave the task intact."
+			},
+			"testCaseId": "case_b4f53173df1b1c34a392"
+		},
 		{
 			"action": {
 				"kind": "request",
 				"method": "GET",
 				"path": "/tasks"
 			},
-			"description": "List tasks as the caller.",
-			"id": "step_818968033cb5542d233f",
+			"description": "Send a GET /tasks request with no authentication credential present.",
+			"id": "step_b543cc79f0ef327f7574",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_245cd9ecf62c92bbcd2f"
 				],
-				"kind": "inferred"
+				"kind": "inferred",
+				"rationale": "An anonymous list must be rejected before caller scoping is applied, so no task data can be returned."
 			},
-			"testCaseId": "case_0f97f21478385433f872"
+			"testCaseId": "case_d640e5c4e5b39c03b973"
 		},
 		{
 			"action": {
+				"headers": {
+					"Authorization": "Bearer <non-owner-credential>"
+				},
 				"kind": "request",
 				"method": "DELETE",
-				"path": "/tasks/42"
+				"path": "/tasks/{id}"
 			},
-			"description": "Delete a task owned by another user.",
-			"id": "step_f334f5d9932fa60b5476",
+			"description": "Authenticated as user B (non-owner), send a DELETE request for a task owned by user A.",
+			"id": "step_cc3ed6ef320bdfc3644d",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_5504e316ae52777f1366"
 				],
 				"kind": "explicit"
 			},
-			"testCaseId": "case_e69065d1031ced309c19"
+			"testCaseId": "case_dbc485a0f47d3978a6a1"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Persisted task record for the target id"
+			},
+			"description": "Observe the persisted state of the target task after the non-owner request.",
+			"id": "step_f9a20669dc8b80a072c2",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_dbc485a0f47d3978a6a1"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer <owner-credential>"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"description": "Send a DELETE request for the owned task authenticated as the task owner.",
+			"id": "step_dfb7e4a1169449f7944e",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_e1ba9bf3a11d4639ad71"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Persisted task record for the deleted id"
+			},
+			"description": "Observe that the previously owned task is no longer retrievable.",
+			"id": "step_47779a3d0cf315f7ef89",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_e1ba9bf3a11d4639ad71"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer <admin-credential>"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"description": "Authenticated as an administrator, send a DELETE request for a task owned by a regular user.",
+			"id": "step_f41468d5bace46818db5",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_e742a0cf907c5e937f40"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Persisted task record for the target id"
+			},
+			"description": "Observe the persisted state of the target task after the administrator request.",
+			"id": "step_33407b03ae388add29f8",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_e742a0cf907c5e937f40"
 		}
 	],
 	"testCases": [
 		{
 			"actor": {
-				"authentication": "authenticated",
+				"authentication": "expired",
 				"permissions": [],
-				"role": "user"
+				"role": "expired-session-caller"
 			},
 			"automation": {
-				"blockers": [],
-				"readiness": "ready"
+				"blockers": [
+					"Requires a deterministic way to produce or simulate an expired credential."
+				],
+				"readiness": "partial"
 			},
 			"cleanup": {
 				"afterCaseIds": [],
 				"dataRequirementIds": [],
 				"intent": "none"
 			},
-			"consumesDataRequirementIds": [],
+			"consumesDataRequirementIds": [
+				"data_75bf927f0cf84e05e2b0"
+			],
 			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_0f97f21478385433f872",
-			"objective": "Scope list to caller.",
-			"postconditions": [],
-			"preconditions": [],
+			"featureIds": [
+				"feat_6e7ca97c7b6d5879c86a"
+			],
+			"id": "case_437dfcc6aa02d32c09b2",
+			"objective": "Verify that a delete request presenting an expired credential is treated as unauthenticated and rejected before owner scoping.",
+			"postconditions": [
+				{
+					"description": "The task remains present and unmodified.",
+					"expectedState": {
+						"taskExists": true
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task exists and a credential that has passed its validity window is available.",
+					"requiredState": {
+						"credentialExpired": true,
+						"taskExists": true
+					}
+				}
+			],
 			"priority": "p1",
 			"producesDataRequirementIds": [],
 			"provenance": {
 				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
+					"ev_5504e316ae52777f1366"
 				],
-				"kind": "inferred"
+				"kind": "inferred",
+				"rationale": "An expired credential does not establish a current authenticated caller, so owner-only deletion cannot be enforced and the request must be rejected."
 			},
 			"qualityTags": [
+				"reliability",
 				"security"
 			],
 			"requirementIds": [
-				"req_7ad8047803ba62ef68aa"
-			],
-			"risk": "medium",
-			"riskRationale": "Leakage risk.",
-			"target": {
-				"kind": "api",
-				"method": "GET",
-				"path": "/tasks"
-			},
-			"title": "List returns only own tasks",
-			"type": "positive"
-		},
-		{
-			"actor": {
-				"authentication": "authenticated",
-				"permissions": [],
-				"role": "user"
-			},
-			"automation": {
-				"blockers": [],
-				"readiness": "ready"
-			},
-			"cleanup": {
-				"afterCaseIds": [],
-				"dataRequirementIds": [],
-				"intent": "none"
-			},
-			"consumesDataRequirementIds": [],
-			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_e69065d1031ced309c19",
-			"objective": "Reject delete by a non-owner.",
-			"postconditions": [],
-			"preconditions": [],
-			"priority": "p0",
-			"producesDataRequirementIds": [],
-			"provenance": {
-				"evidenceIds": [
-					"ev_9184d3ad765d0567ca79"
-				],
-				"kind": "explicit"
-			},
-			"qualityTags": [
-				"security"
-			],
-			"requirementIds": [
-				"req_b870f81aad855276bb6d"
+				"req_3abd4e0e1cd75b4d4cdf"
 			],
 			"risk": "high",
-			"riskRationale": "Authz must fail closed.",
+			"riskRationale": "Accepting expired credentials would let formerly valid sessions delete tasks without a currently authenticated identity.",
 			"target": {
 				"kind": "api",
 				"method": "DELETE",
 				"path": "/tasks/{id}"
 			},
-			"title": "Non-owner delete is 403",
+			"title": "Reject task deletion when caller authentication is expired",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"admin"
+				],
+				"role": "administrator"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_0d0b3c1addafd772cba2",
+					"data_5a85752ae466023d32ed"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_0d0b3c1addafd772cba2",
+				"data_5a85752ae466023d32ed"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0d8e1e343ff09eaccf48"
+			],
+			"id": "case_5f99181778d21a05863a",
+			"objective": "Verify that a caller holding an administrative role or override receives only their own tasks when listing, not all users' tasks.",
+			"postconditions": [
+				{
+					"description": "Response contains only the administrator's own tasks.",
+					"expectedState": {
+						"onlyCallerTasksReturned": true
+					}
+				},
+				{
+					"description": "No other user's tasks appear despite admin role.",
+					"expectedState": {
+						"otherUserTasksLeaked": false
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Multiple users own tasks; the authenticated caller is an administrator owning a subset.",
+					"requiredState": {
+						"callerIsAdmin": true,
+						"multipleUsersHaveTasks": true
+					}
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity",
+				"security"
+			],
+			"requirementIds": [
+				"req_671524c8555629ecba25",
+				"req_a721017a2642dcf1fa71"
+			],
+			"risk": "high",
+			"riskRationale": "An admin override on listing would expose every user's tasks, defeating the caller-scoping confidentiality guarantee.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "Administrative role cannot bypass caller-scoped listing",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"list-own-tasks"
+				],
+				"role": "task-owner"
+			},
+			"automation": {
+				"blockers": [
+					"Treatment of shared tasks in caller-scoped listing is unconfirmed (see oq-shared-task-access)."
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_0d0b3c1addafd772cba2",
+					"data_5a85752ae466023d32ed"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_0d0b3c1addafd772cba2",
+				"data_5a85752ae466023d32ed"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0d8e1e343ff09eaccf48",
+				"feat_6e7ca97c7b6d5879c86a"
+			],
+			"id": "case_9943d49816ec2d04dc38",
+			"objective": "Verify that an authenticated caller listing tasks receives only tasks they own and never tasks owned by other users.",
+			"postconditions": [
+				{
+					"description": "Response contains only the caller's tasks.",
+					"expectedState": {
+						"onlyCallerTasksReturned": true
+					}
+				},
+				{
+					"description": "No task owned by another user appears in the response.",
+					"expectedState": {
+						"otherUserTasksLeaked": false
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "The caller owns at least one task and at least one task is owned by a different user.",
+					"requiredState": {
+						"callerTaskExists": true,
+						"otherUserTaskExists": true
+					}
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity",
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_3abd4e0e1cd75b4d4cdf",
+				"req_671524c8555629ecba25"
+			],
+			"risk": "high",
+			"riskRationale": "Leaking other users' tasks in a list response is a direct confidentiality breach of caller-scoped data.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "Listing returns only the calling user's tasks",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "anonymous-caller"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_75bf927f0cf84e05e2b0"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_548b22499c2fe90a8002",
+				"feat_6e7ca97c7b6d5879c86a"
+			],
+			"id": "case_b4f53173df1b1c34a392",
+			"objective": "Verify that a delete request lacking an authenticated calling user identity is rejected before owner scoping is evaluated.",
+			"postconditions": [
+				{
+					"description": "The task remains present and unmodified.",
+					"expectedState": {
+						"taskExists": true
+					}
+				},
+				{
+					"description": "Request is rejected with an unauthenticated/authentication-required outcome.",
+					"expectedState": {
+						"rejected": true
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task exists in the system.",
+					"requiredState": {
+						"taskExists": true
+					}
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "inferred",
+				"rationale": "Owner-only deletion presupposes an identified caller; an anonymous delete must be rejected at the authentication layer before ownership is checked."
+			},
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_0fc2eb2dfaa97973ab51",
+				"req_3abd4e0e1cd75b4d4cdf"
+			],
+			"risk": "high",
+			"riskRationale": "If unauthenticated deletes are processed, owner scoping cannot be enforced and any task could be destroyed by an anonymous caller.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Reject task deletion from anonymous (unauthenticated) caller",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "anonymous-caller"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_75bf927f0cf84e05e2b0"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0d8e1e343ff09eaccf48",
+				"feat_6e7ca97c7b6d5879c86a"
+			],
+			"id": "case_d640e5c4e5b39c03b973",
+			"objective": "Verify that a list request lacking an authenticated calling user identity is rejected before caller scoping is evaluated.",
+			"postconditions": [
+				{
+					"description": "No task data is returned in the response body.",
+					"expectedState": {
+						"tasksLeaked": false
+					}
+				},
+				{
+					"description": "Request is rejected with an authentication-required outcome.",
+					"expectedState": {
+						"rejected": true
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "At least one task belonging to some user exists.",
+					"requiredState": {
+						"taskExists": true
+					}
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_245cd9ecf62c92bbcd2f"
+				],
+				"kind": "inferred",
+				"rationale": "Caller-scoped listing presupposes an identified caller; an anonymous list must be rejected at the authentication layer before scoping is applied."
+			},
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_3abd4e0e1cd75b4d4cdf",
+				"req_671524c8555629ecba25"
+			],
+			"risk": "high",
+			"riskRationale": "Without an identified caller, listing cannot be scoped and could expose tasks belonging to other users.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "Reject task listing from anonymous (unauthenticated) caller",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"delete-own-task"
+				],
+				"role": "non-owner-user"
+			},
+			"automation": {
+				"blockers": [
+					"Expected rejection response for non-owner delete is unconfirmed (see oq-non-owner-delete-response)."
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_0d0b3c1addafd772cba2"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_0d0b3c1addafd772cba2"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_548b22499c2fe90a8002",
+				"feat_6e7ca97c7b6d5879c86a"
+			],
+			"id": "case_dbc485a0f47d3978a6a1",
+			"objective": "Verify that an authenticated caller who does not own a task cannot delete it and the task is preserved.",
+			"postconditions": [
+				{
+					"description": "The task remains present and unmodified.",
+					"expectedState": {
+						"taskExists": true
+					}
+				},
+				{
+					"description": "Deletion request is rejected.",
+					"expectedState": {
+						"rejected": true
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task is owned by user A; the caller is authenticated user B who does not own it.",
+					"requiredState": {
+						"taskOwnedByOtherUser": true
+					}
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity",
+				"security"
+			],
+			"requirementIds": [
+				"req_0fc2eb2dfaa97973ab51",
+				"req_3abd4e0e1cd75b4d4cdf"
+			],
+			"risk": "high",
+			"riskRationale": "Allowing non-owners to delete tasks is a direct authorization bypass enabling destruction of other users' data.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Reject deletion of a task by an authenticated non-owner",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"delete-own-task"
+				],
+				"role": "task-owner"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_5a85752ae466023d32ed"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_5a85752ae466023d32ed"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_548b22499c2fe90a8002",
+				"feat_6e7ca97c7b6d5879c86a"
+			],
+			"id": "case_e1ba9bf3a11d4639ad71",
+			"objective": "Verify that an authenticated caller who owns a task can delete it and the task is removed.",
+			"postconditions": [
+				{
+					"description": "The owned task no longer exists.",
+					"expectedState": {
+						"taskExists": false
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "An authenticated user owns an existing task.",
+					"requiredState": {
+						"ownedTaskExists": true
+					}
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_0fc2eb2dfaa97973ab51",
+				"req_3abd4e0e1cd75b4d4cdf"
+			],
+			"risk": "high",
+			"riskRationale": "Core deletion authorization path; a failure here blocks legitimate owners and indicates the authorization check is misconfigured.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Task owner successfully deletes own task",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"admin"
+				],
+				"role": "administrator"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_0d0b3c1addafd772cba2"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_0d0b3c1addafd772cba2"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_548b22499c2fe90a8002"
+			],
+			"id": "case_e742a0cf907c5e937f40",
+			"objective": "Verify that a caller holding an administrative role or override cannot delete a task they do not own.",
+			"postconditions": [
+				{
+					"description": "The task remains present and unmodified.",
+					"expectedState": {
+						"taskExists": true
+					}
+				},
+				{
+					"description": "Admin deletion request is rejected.",
+					"expectedState": {
+						"rejected": true
+					}
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task is owned by a regular user; the caller is an authenticated administrator who does not own it.",
+					"requiredState": {
+						"callerIsAdmin": true,
+						"taskOwnedByOtherUser": true
+					}
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_0c2a99b1e411c925e6bc",
+					"ev_5504e316ae52777f1366"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity",
+				"security"
+			],
+			"requirementIds": [
+				"req_0fc2eb2dfaa97973ab51",
+				"req_a721017a2642dcf1fa71"
+			],
+			"risk": "high",
+			"riskRationale": "An admin override path would silently defeat the owner-only deletion guarantee for every task in the system.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Administrative role cannot override owner-only deletion",
 			"type": "security"
 		}
 	],
-	"title": "Task authz plan",
-	"updatedAt": "2026-06-15T10:00:00.000Z"
+	"title": "Owner-only task deletion API",
+	"updatedAt": "2026-06-19T18:14:55.055Z"
 }

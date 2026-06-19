@@ -1,5 +1,5 @@
 {
-	"corpusFingerprint": "sha256:bcfc2ce0f7d036cd6b2fec59701399ae4b4f47dd21a6701ceb1360f0e82af53c",
+	"corpusFingerprint": "sha256:67ff4fa53740ec009b5ca637a40459faac2801c39268433973d39f9fc4f50e8b",
 	"evalSchemaVersion": "eval/v1",
 	"fixtures": [
 		{
@@ -92,40 +92,27 @@
 				{
 					"arm": "raw-model",
 					"dimensions": {
-						"assertionQuality": 0,
-						"duplicateLowValue": 0,
-						"evidenceCorrectness": 0,
-						"executionReadiness": 0,
-						"provenanceAccuracy": 0,
-						"requirementRecall": 0,
-						"scenarioCoverage": 0,
-						"traceability": 0,
-						"unsupportedClaims": 0
+						"assertionQuality": 1,
+						"duplicateLowValue": 1,
+						"evidenceCorrectness": 1,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 0.6667,
+						"requirementRecall": 1,
+						"scenarioCoverage": 0.6667,
+						"traceability": 1,
+						"unsupportedClaims": 1
 					},
 					"explain": [
-						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+						"coverage: scn:non-owner-delete-403 sat=0.5 (w=12)",
+						"provenance: req_2a1b2c3d4e5f60718293 is explicit, expected inferred"
 					],
-					"hardFail": true,
-					"hardFailReasons": [
-						"HF-INVALID-GRAPH"
-					],
-					"overall": 0,
-					"recordKind": "synthetic",
-					"valid": false,
-					"validationFindings": [
-						{
-							"code": "CASE_REQUIREMENT_REQUIRED",
-							"entity": {
-								"id": "case_ca6deb75b48a9c00e291",
-								"kind": "testCase"
-							},
-							"message": "Test case case_ca6deb75b48a9c00e291 must cover at least one requirement.",
-							"path": "/testCases/0/requirementIds",
-							"relatedIds": [],
-							"severity": "error"
-						}
-					],
-					"verdict": "FAIL"
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 93,
+					"recordKind": "recorded",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
 				},
 				{
 					"arm": "host-only",
@@ -155,21 +142,33 @@
 				{
 					"arm": "qa-engine",
 					"dimensions": {
-						"assertionQuality": 1,
+						"assertionQuality": 0.625,
 						"duplicateLowValue": 1,
 						"evidenceCorrectness": 1,
-						"executionReadiness": 1,
-						"provenanceAccuracy": 1,
+						"executionReadiness": 0.625,
+						"provenanceAccuracy": 0.5,
 						"requirementRecall": 1,
-						"scenarioCoverage": 1,
+						"scenarioCoverage": 0.6667,
 						"traceability": 1,
 						"unsupportedClaims": 1
 					},
-					"explain": [],
+					"explain": [
+						"assertions: case_437dfcc6aa02d32c09b2 1/2 specific",
+						"assertions: case_b4f53173df1b1c34a392 1/2 specific",
+						"assertions: case_d640e5c4e5b39c03b973 1/2 specific",
+						"assertions: case_dbc485a0f47d3978a6a1 1/2 specific",
+						"assertions: case_e1ba9bf3a11d4639ad71 1/2 specific",
+						"assertions: case_e742a0cf907c5e937f40 1/2 specific",
+						"coverage: scn:non-owner-delete-403 sat=0.5 (w=12)",
+						"provenance: req_671524c8555629ecba25 is explicit, expected inferred",
+						"readiness: case_437dfcc6aa02d32c09b2 is not execution-ready",
+						"readiness: case_9943d49816ec2d04dc38 is not execution-ready",
+						"readiness: case_dbc485a0f47d3978a6a1 is not execution-ready"
+					],
 					"hardFail": false,
 					"hardFailReasons": [],
-					"overall": 100,
-					"recordKind": "synthetic",
+					"overall": 84.3,
+					"recordKind": "recorded",
 					"valid": true,
 					"validationFindings": [],
 					"verdict": "PASS"
@@ -549,38 +548,33 @@
 					"dimensions": {
 						"assertionQuality": 0,
 						"duplicateLowValue": 0,
-						"evidenceCorrectness": 0,
-						"executionReadiness": 0,
-						"provenanceAccuracy": 0,
-						"requirementRecall": 0,
-						"scenarioCoverage": 0,
-						"traceability": 0,
-						"unsupportedClaims": 0
+						"evidenceCorrectness": 0.9167,
+						"executionReadiness": 1,
+						"provenanceAccuracy": 0.6667,
+						"requirementRecall": 1,
+						"scenarioCoverage": 1,
+						"traceability": 1,
+						"unsupportedClaims": 1
 					},
 					"explain": [
-						"validation: CASE_REQUIREMENT_REQUIRED /testCases/0/requirementIds"
+						"assertions: case_5566778899aabbccddee 0/1 specific",
+						"assertions: case_66778899aabbccddeeff 0/2 specific",
+						"assertions: case_778899aabbccddeeff00 0/1 specific",
+						"assertions: case_8899aabbccddeeff0011 0/1 specific",
+						"evidence: assert_2233445566778899a0b1 citation does not support the claim",
+						"low-value: case_5566778899aabbccddee has only presence/no assertions",
+						"low-value: case_66778899aabbccddeeff has only presence/no assertions",
+						"low-value: case_778899aabbccddeeff00 has only presence/no assertions",
+						"low-value: case_8899aabbccddeeff0011 has only presence/no assertions",
+						"provenance: req_2233445566778899aabb is explicit, expected inferred"
 					],
-					"hardFail": true,
-					"hardFailReasons": [
-						"HF-INVALID-GRAPH"
-					],
-					"overall": 0,
-					"recordKind": "synthetic",
-					"valid": false,
-					"validationFindings": [
-						{
-							"code": "CASE_REQUIREMENT_REQUIRED",
-							"entity": {
-								"id": "case_80a13d26b78d9e34dd3c",
-								"kind": "testCase"
-							},
-							"message": "Test case case_80a13d26b78d9e34dd3c must cover at least one requirement.",
-							"path": "/testCases/0/requirementIds",
-							"relatedIds": [],
-							"severity": "error"
-						}
-					],
-					"verdict": "FAIL"
+					"hardFail": false,
+					"hardFailReasons": [],
+					"overall": 82.3,
+					"recordKind": "recorded",
+					"valid": true,
+					"validationFindings": [],
+					"verdict": "PASS"
 				},
 				{
 					"arm": "host-only",
@@ -614,25 +608,37 @@
 				{
 					"arm": "qa-engine",
 					"dimensions": {
-						"assertionQuality": 0.25,
-						"duplicateLowValue": 0.5,
-						"evidenceCorrectness": 1,
-						"executionReadiness": 1,
-						"provenanceAccuracy": 1,
+						"assertionQuality": 0.4,
+						"duplicateLowValue": 0.6,
+						"evidenceCorrectness": 0.8667,
+						"executionReadiness": 0.2,
+						"provenanceAccuracy": 0.3333,
 						"requirementRecall": 1,
-						"scenarioCoverage": 1,
+						"scenarioCoverage": 0.625,
 						"traceability": 1,
 						"unsupportedClaims": 1
 					},
 					"explain": [
-						"assertions: case_389ca34a260ca9ab6a2f 1/2 specific",
-						"assertions: case_7b378c6ec27d504ae7cc 0/1 specific",
-						"low-value: case_7b378c6ec27d504ae7cc has only presence/no assertions"
+						"assertions: case_2f7c4ff22ecc6f50b32c 1/2 specific",
+						"assertions: case_58f129a150503a1cadb3 0/1 specific",
+						"assertions: case_5cc5ad7eb98e56df0fb0 0/1 specific",
+						"assertions: case_765a4cc0f5f7dfc04966 1/2 specific",
+						"coverage: scn:invalid-email-error sat=0.5 (w=6)",
+						"evidence: assert_7b42b0eedbbb9bd6e5ae citation does not support the claim",
+						"evidence: assert_849dab9cae497a4b89f6 citation does not support the claim",
+						"low-value: case_58f129a150503a1cadb3 has only presence/no assertions",
+						"low-value: case_5cc5ad7eb98e56df0fb0 has only presence/no assertions",
+						"provenance: req_2502e4a9d38cb2243134 is explicit, expected inferred",
+						"provenance: req_52267ca4b6b662b00d77 is inferred, expected explicit",
+						"readiness: case_2f7c4ff22ecc6f50b32c is not execution-ready",
+						"readiness: case_4a074bb03ab4ab1abf33 is not execution-ready",
+						"readiness: case_58f129a150503a1cadb3 is not execution-ready",
+						"readiness: case_5cc5ad7eb98e56df0fb0 is not execution-ready"
 					],
 					"hardFail": false,
 					"hardFailReasons": [],
-					"overall": 89,
-					"recordKind": "synthetic",
+					"overall": 73.4,
+					"recordKind": "recorded",
 					"valid": true,
 					"validationFindings": [],
 					"verdict": "PASS"
@@ -648,23 +654,29 @@
 					"dimensions": {
 						"assertionQuality": 1,
 						"duplicateLowValue": 1,
-						"evidenceCorrectness": 1,
-						"executionReadiness": 1,
+						"evidenceCorrectness": 0.7,
+						"executionReadiness": 0,
 						"provenanceAccuracy": 1,
 						"requirementRecall": 1,
 						"scenarioCoverage": 1,
 						"traceability": 1,
-						"unsupportedClaims": 0.25
+						"unsupportedClaims": 0.6667
 					},
 					"explain": [
-						"unsupported: 6 invented claim(s)"
+						"evidence: assert_2f30415263748a9b0c1d citation does not support the claim",
+						"evidence: case_36475a8b9c0d1e2f3041 citation does not support the claim",
+						"evidence: req_9203142536475a8b9c0d citation does not support the claim",
+						"readiness: case_142536475a8b9c0d1e2f is not execution-ready",
+						"readiness: case_2536475a8b9c0d1e2f30 is not execution-ready",
+						"readiness: case_36475a8b9c0d1e2f3041 is not execution-ready",
+						"unsupported: 2 invented claim(s)"
 					],
 					"hardFail": true,
 					"hardFailReasons": [
 						"HF-UNSUPPORTED-RATE"
 					],
-					"overall": 88.8,
-					"recordKind": "synthetic",
+					"overall": 82.6,
+					"recordKind": "recorded",
 					"valid": true,
 					"validationFindings": [],
 					"verdict": "FAIL"
@@ -696,24 +708,42 @@
 				{
 					"arm": "qa-engine",
 					"dimensions": {
-						"assertionQuality": 1,
+						"assertionQuality": 0,
 						"duplicateLowValue": 1,
-						"evidenceCorrectness": 1,
-						"executionReadiness": 1,
+						"evidenceCorrectness": 0.8667,
+						"executionReadiness": 0,
 						"provenanceAccuracy": 1,
 						"requirementRecall": 1,
 						"scenarioCoverage": 1,
 						"traceability": 1,
-						"unsupportedClaims": 1
+						"unsupportedClaims": 0.7143
 					},
-					"explain": [],
-					"hardFail": false,
-					"hardFailReasons": [],
-					"overall": 100,
-					"recordKind": "synthetic",
+					"explain": [
+						"assertions: case_29f317ede3a207dee509 0/2 specific",
+						"assertions: case_31cab3d5a91ac58cc07a 0/3 specific",
+						"assertions: case_433d5b8da0a2da20f07a 0/3 specific",
+						"assertions: case_a3e401e3dc9b6dc444df 0/2 specific",
+						"assertions: case_d0769a9420525fbf7913 0/2 specific",
+						"assertions: case_db486d30fc71b7adda96 0/2 specific",
+						"evidence: assert_50468e2ef4be1086a924 citation does not support the claim",
+						"evidence: assert_7450c3b9eb1ca5e68854 citation does not support the claim",
+						"readiness: case_29f317ede3a207dee509 is not execution-ready",
+						"readiness: case_31cab3d5a91ac58cc07a is not execution-ready",
+						"readiness: case_433d5b8da0a2da20f07a is not execution-ready",
+						"readiness: case_a3e401e3dc9b6dc444df is not execution-ready",
+						"readiness: case_d0769a9420525fbf7913 is not execution-ready",
+						"readiness: case_db486d30fc71b7adda96 is not execution-ready",
+						"unsupported: 2 invented claim(s)"
+					],
+					"hardFail": true,
+					"hardFailReasons": [
+						"HF-UNSUPPORTED-RATE"
+					],
+					"overall": 72.6,
+					"recordKind": "recorded",
 					"valid": true,
 					"validationFindings": [],
-					"verdict": "PASS"
+					"verdict": "FAIL"
 				}
 			],
 			"category": "unsupported-assumptions",

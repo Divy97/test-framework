@@ -1,265 +1,415 @@
 {
 	"assertions": [
 		{
-			"expected": 200,
-			"id": "assert_1f95491b9e8b50fc5f41",
-			"matcher": "statusCode",
+			"expected": "text/csv",
+			"id": "assert_0d1e2f30415263748a9b",
+			"matcher": "contains",
 			"observationPoint": {
 				"kind": "api",
 				"method": "GET",
-				"path": "/export"
+				"path": "/api/export/csv"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_6f70819203142536470b"
 				],
-				"kind": "inferred"
+				"kind": "inferred",
+				"rationale": "A CSV download should declare a CSV content type."
 			},
-			"stepId": "step_13edb7f71115d58de591",
-			"subject": "status",
-			"testCaseId": "case_40039009e23b9e2c3f5a"
+			"stepId": "step_475a8b9c0d1e2f304152",
+			"subject": "Content-Type response header",
+			"testCaseId": "case_142536475a8b9c0d1e2f"
 		},
 		{
 			"expected": 200,
-			"id": "assert_faa883949f02c1d731b2",
+			"id": "assert_9c0d1e2f30415263748a",
 			"matcher": "statusCode",
 			"observationPoint": {
 				"kind": "api",
 				"method": "GET",
-				"path": "/export"
+				"path": "/api/export/csv"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_5e6f708192031425364a"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Successful export must return 200."
 			},
-			"stepId": "step_f944f1d198c7199da4f4",
-			"subject": "status",
-			"testCaseId": "case_944474b18bbdf689b559"
+			"stepId": "step_475a8b9c0d1e2f304152",
+			"subject": "HTTP response status",
+			"testCaseId": "case_142536475a8b9c0d1e2f"
+		},
+		{
+			"expected": 0,
+			"id": "assert_1e2f30415263748a9b0c",
+			"matcher": "count",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/api/export/csv"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f70819203142536470b"
+				],
+				"kind": "inferred",
+				"rationale": "Empty dataset should still yield a header row and zero data rows."
+			},
+			"stepId": "step_5a8b9c0d1e2f30415263",
+			"subject": "Number of data rows in the CSV body",
+			"testCaseId": "case_2536475a8b9c0d1e2f30"
+		},
+		{
+			"expected": 401,
+			"id": "assert_2f30415263748a9b0c1d",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/api/export/csv"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5e6f708192031425364a"
+				],
+				"kind": "inferred",
+				"rationale": "Unauthenticated access must be rejected."
+			},
+			"stepId": "step_8b9c0d1e2f3041526374",
+			"subject": "HTTP response status",
+			"testCaseId": "case_36475a8b9c0d1e2f3041"
 		}
 	],
-	"createdAt": "2026-06-15T10:00:00.000Z",
-	"dataRequirements": [],
+	"createdAt": "2026-06-19T00:00:00Z",
+	"dataRequirements": [
+		{
+			"description": "An authenticated user account owning a known, fixed set of data records used to validate CSV row content.",
+			"id": "data_2536475a8b9c0d1e2f30",
+			"kind": "account",
+			"name": "User with seeded exportable records",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5e6f708192031425364a"
+				],
+				"kind": "inferred",
+				"rationale": "Exporting 'their data' requires a user with deterministic seeded data."
+			},
+			"provisioning": "generated",
+			"sensitivity": "pii"
+		}
+	],
 	"evidence": [
 		{
-			"claim": "Users can export data as CSV.",
-			"id": "ev_a1d411a4a185de127c2c",
+			"claim": "Users can export their data as a CSV file.",
+			"id": "ev_5e6f708192031425364a",
 			"kind": "statement",
-			"sourceId": "src_91d75bbe72b9a2af6c66"
+			"sourceId": "src_3c4d5e6f708192031425"
+		},
+		{
+			"claim": "An export specification governs the CSV output, though its contents were not provided.",
+			"id": "ev_6f70819203142536470b",
+			"kind": "statement",
+			"sourceId": "src_4d5e6f70819203142536"
 		}
 	],
-	"features": [],
+	"features": [
+		{
+			"description": "User-initiated export of their data to a downloadable CSV file.",
+			"id": "feat_03142536475a8b9c0d1e",
+			"name": "CSV export",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5e6f708192031425364a"
+				],
+				"kind": "explicit",
+				"rationale": "Feature named directly in the brief."
+			},
+			"requirementIds": [
+				"req_70819203142536475a8b",
+				"req_819203142536475a8b9c",
+				"req_9203142536475a8b9c0d"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"kind": "api",
+					"method": "GET",
+					"path": "/api/export/csv"
+				},
+				{
+					"component": "ExportButton",
+					"kind": "ui",
+					"route": "/export"
+				}
+			]
+		}
+	],
 	"generation": {
-		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generatedAt": "2026-06-19T00:00:00Z",
 		"generator": {
 			"kind": "model",
 			"model": "claude-opus-4-8",
 			"provider": "anthropic"
 		},
-		"id": "gen_5b911569c909f2c33b2a",
-		"inputFingerprint": "sha256:unsupported-assumptions-raw-model",
-		"methodologyVersion": "0.1.0",
+		"id": "gen_2b3c4d5e6f7081920314",
+		"inputFingerprint": "csv-export-brief-2026-06-19",
+		"methodologyVersion": "1.0.0",
 		"status": "incomplete",
-		"warnings": [],
-		"workflowVersion": "0.1.0"
+		"warnings": [
+			"Brief lacks an actual export specification; column set, encoding, delimiter, filename, scope of 'data', and delivery mechanism (sync download vs async job) are undefined.",
+			"No authentication model, route, or API contract supplied; targets are inferred placeholders."
+		],
+		"workflowVersion": "1.0.0"
 	},
-	"openQuestions": [],
-	"planId": "plan_773341ffb2fbd7c74d40",
+	"openQuestions": [
+		{
+			"blockedEntityRefs": [
+				{
+					"id": "req_70819203142536475a8b",
+					"kind": "requirement"
+				}
+			],
+			"blocking": true,
+			"id": "question_8b9203142536475a6c7d",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f70819203142536470b"
+				],
+				"kind": "inferred",
+				"rationale": "Spec body not provided; delivery shape determines test targets and steps."
+			},
+			"question": "What is the delivery mechanism — synchronous file download, or an asynchronous job producing a downloadable artifact/email link?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [
+				{
+					"id": "req_819203142536475a8b9c",
+					"kind": "requirement"
+				}
+			],
+			"blocking": true,
+			"id": "question_9c03142536475a8b9c0d",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6f70819203142536470b"
+				],
+				"kind": "inferred",
+				"rationale": "The referenced 'Export spec' content is missing; format assertions cannot be finalized without it."
+			},
+			"question": "What is the exact CSV schema — column set/order, delimiter, quoting/escaping rules, encoding (UTF-8/BOM), date/number formats, and filename convention?",
+			"status": "open"
+		}
+	],
+	"planId": "plan_1a2b3c4d5e6f70819203",
 	"planVersion": 1,
-	"projectId": "prj_04b60424d8be6accceed",
+	"projectId": "prj_0a1b2c3d4e5f60718293",
 	"requirements": [
 		{
-			"id": "req_1203453ecaa8cae6fcfd",
+			"id": "req_70819203142536475a8b",
 			"kind": "functional",
-			"openQuestionIds": [],
-			"priority": "p2",
+			"openQuestionIds": [
+				"question_8b9203142536475a6c7d"
+			],
+			"priority": "p0",
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_5e6f708192031425364a"
 				],
-				"kind": "inferred",
-				"rationale": "Speculative; not in the spec."
+				"kind": "explicit",
+				"rationale": "Directly stated in the brief."
 			},
-			"risk": "low",
-			"statement": "Export also supports PDF."
+			"risk": "high",
+			"statement": "An authenticated user can export their own data as a downloadable CSV file."
 		},
 		{
-			"id": "req_a8232e5b593502cd1356",
-			"kind": "functional",
-			"openQuestionIds": [],
-			"priority": "p2",
+			"id": "req_819203142536475a8b9c",
+			"kind": "data",
+			"openQuestionIds": [
+				"question_9c03142536475a8b9c0d"
+			],
+			"priority": "p0",
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_6f70819203142536470b"
 				],
 				"kind": "inferred",
-				"rationale": "Speculative; not in the spec."
+				"rationale": "A CSV export implies a defined, well-formed format even though the spec body is missing."
 			},
-			"risk": "low",
-			"statement": "Exports can be scheduled nightly."
+			"risk": "high",
+			"statement": "The exported CSV must be well-formed: a header row, correct delimiter/quoting/escaping, and rows matching the user's data."
 		},
 		{
-			"id": "req_ac502f64c4507951da9b",
-			"kind": "functional",
+			"id": "req_9203142536475a8b9c0d",
+			"kind": "security",
 			"openQuestionIds": [],
-			"priority": "p1",
+			"priority": "p0",
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
-				],
-				"kind": "explicit"
-			},
-			"risk": "medium",
-			"statement": "Export as CSV."
-		},
-		{
-			"id": "req_b9e341b3fe571078fc47",
-			"kind": "functional",
-			"openQuestionIds": [],
-			"priority": "p2",
-			"provenance": {
-				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_5e6f708192031425364a"
 				],
 				"kind": "inferred",
-				"rationale": "Speculative; not in the spec."
+				"rationale": "Data export of 'their data' implies authorization scoping."
 			},
-			"risk": "low",
-			"statement": "Exports upload to an S3 bucket."
-		},
-		{
-			"id": "req_c4e8a58a823d6390f643",
-			"kind": "functional",
-			"openQuestionIds": [],
-			"priority": "p2",
-			"provenance": {
-				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
-				],
-				"kind": "inferred",
-				"rationale": "Speculative; not in the spec."
-			},
-			"risk": "low",
-			"statement": "Exports are encrypted at rest."
-		},
-		{
-			"id": "req_fa25594f87928f6a3f24",
-			"kind": "functional",
-			"openQuestionIds": [],
-			"priority": "p2",
-			"provenance": {
-				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
-				],
-				"kind": "inferred",
-				"rationale": "Speculative; not in the spec."
-			},
-			"risk": "low",
-			"statement": "Export is emailed to the user."
+			"risk": "high",
+			"statement": "A user must only be able to export data they are authorized to access; unauthenticated requests are rejected."
 		}
 	],
 	"schemaVersion": "test-graph/v1",
 	"sources": [
 		{
-			"id": "src_91d75bbe72b9a2af6c66",
+			"id": "src_3c4d5e6f708192031425",
 			"kind": "feature-request",
 			"supplied": true,
-			"title": "Feature spec"
+			"title": "CSV export"
+		},
+		{
+			"id": "src_4d5e6f70819203142536",
+			"kind": "document",
+			"supplied": true,
+			"title": "Export spec"
 		}
 	],
-	"status": "draft",
+	"status": "incomplete",
 	"steps": [
 		{
 			"action": {
 				"kind": "request",
 				"method": "GET",
-				"path": "/export?format=pdf"
+				"path": "/api/export/csv"
 			},
-			"description": "Request PDF.",
-			"id": "step_13edb7f71115d58de591",
+			"description": "Request the CSV export as an authenticated user with data.",
+			"id": "step_475a8b9c0d1e2f304152",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_5e6f708192031425364a"
 				],
-				"kind": "inferred"
+				"kind": "explicit",
+				"rationale": "Exercises the stated export action."
 			},
-			"testCaseId": "case_40039009e23b9e2c3f5a"
+			"testCaseId": "case_142536475a8b9c0d1e2f"
 		},
 		{
 			"action": {
 				"kind": "request",
 				"method": "GET",
-				"path": "/export?format=csv"
+				"path": "/api/export/csv"
 			},
-			"description": "Request export.",
-			"id": "step_f944f1d198c7199da4f4",
+			"description": "Request the CSV export as an authenticated user with no data.",
+			"id": "step_5a8b9c0d1e2f30415263",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_6f70819203142536470b"
 				],
-				"kind": "explicit"
+				"kind": "inferred",
+				"rationale": "Empty-data boundary exercise."
 			},
-			"testCaseId": "case_944474b18bbdf689b559"
+			"testCaseId": "case_2536475a8b9c0d1e2f30"
+		},
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/api/export/csv"
+			},
+			"description": "Request the CSV export with no authentication.",
+			"id": "step_8b9c0d1e2f3041526374",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5e6f708192031425364a"
+				],
+				"kind": "inferred",
+				"rationale": "Negative authorization exercise."
+			},
+			"testCaseId": "case_36475a8b9c0d1e2f3041"
 		}
 	],
 	"testCases": [
 		{
 			"actor": {
 				"authentication": "authenticated",
-				"permissions": [],
-				"role": "user"
+				"permissions": [
+					"export:own-data"
+				],
+				"role": "standard-user"
 			},
 			"automation": {
-				"blockers": [],
-				"readiness": "ready"
+				"blockers": [
+					"Export route/contract and CSV column schema unconfirmed."
+				],
+				"readiness": "partial"
 			},
 			"cleanup": {
 				"afterCaseIds": [],
 				"dataRequirementIds": [],
 				"intent": "none"
 			},
-			"consumesDataRequirementIds": [],
+			"consumesDataRequirementIds": [
+				"data_2536475a8b9c0d1e2f30"
+			],
 			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_40039009e23b9e2c3f5a",
-			"objective": "Check PDF export.",
-			"postconditions": [],
-			"preconditions": [],
-			"priority": "p2",
+			"featureIds": [
+				"feat_03142536475a8b9c0d1e"
+			],
+			"id": "case_142536475a8b9c0d1e2f",
+			"objective": "Verify an authenticated user with existing data receives a downloadable, well-formed CSV.",
+			"postconditions": [
+				{
+					"description": "A CSV file is returned with content-type text/csv and a non-empty body."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "User account exists and is authenticated."
+				},
+				{
+					"description": "User has at least one data record."
+				}
+			],
+			"priority": "p0",
 			"producesDataRequirementIds": [],
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_5e6f708192031425364a"
 				],
-				"kind": "inferred",
-				"rationale": "Speculative."
+				"kind": "explicit",
+				"rationale": "Core stated capability."
 			},
-			"qualityTags": [],
-			"requirementIds": [
-				"req_1203453ecaa8cae6fcfd"
+			"qualityTags": [
+				"data-integrity",
+				"functional"
 			],
-			"risk": "low",
-			"riskRationale": "Invented.",
+			"requirementIds": [
+				"req_70819203142536475a8b",
+				"req_819203142536475a8b9c"
+			],
+			"risk": "high",
+			"riskRationale": "Primary happy path; broken export blocks the entire feature.",
 			"target": {
 				"kind": "api",
 				"method": "GET",
-				"path": "/export"
+				"path": "/api/export/csv"
 			},
-			"title": "Export PDF",
+			"title": "Export returns a well-formed CSV for a user with data",
 			"type": "positive"
 		},
 		{
 			"actor": {
 				"authentication": "authenticated",
-				"permissions": [],
-				"role": "user"
+				"permissions": [
+					"export:own-data"
+				],
+				"role": "standard-user"
 			},
 			"automation": {
-				"blockers": [],
-				"readiness": "ready"
+				"blockers": [
+					"Header schema unconfirmed."
+				],
+				"readiness": "partial"
 			},
 			"cleanup": {
 				"afterCaseIds": [],
@@ -268,36 +418,107 @@
 			},
 			"consumesDataRequirementIds": [],
 			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_944474b18bbdf689b559",
-			"objective": "Check export.",
-			"postconditions": [],
-			"preconditions": [],
+			"featureIds": [
+				"feat_03142536475a8b9c0d1e"
+			],
+			"id": "case_2536475a8b9c0d1e2f30",
+			"objective": "Verify the export produces a valid CSV (header row only, no data rows) when the user has no records.",
+			"postconditions": [
+				{
+					"description": "CSV contains exactly one (header) row and no data rows."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "User account exists, is authenticated, and has zero data records."
+				}
+			],
 			"priority": "p1",
 			"producesDataRequirementIds": [],
 			"provenance": {
 				"evidenceIds": [
-					"ev_a1d411a4a185de127c2c"
+					"ev_6f70819203142536470b"
 				],
-				"kind": "explicit"
+				"kind": "inferred",
+				"rationale": "Empty dataset is a standard boundary for any export."
 			},
 			"qualityTags": [
+				"data-integrity",
 				"functional"
 			],
 			"requirementIds": [
-				"req_ac502f64c4507951da9b"
+				"req_819203142536475a8b9c"
 			],
 			"risk": "medium",
-			"riskRationale": "Core.",
+			"riskRationale": "Empty-state handling commonly produces malformed or zero-byte files.",
 			"target": {
 				"kind": "api",
 				"method": "GET",
-				"path": "/export"
+				"path": "/api/export/csv"
 			},
-			"title": "Export CSV",
-			"type": "positive"
+			"title": "Export for a user with no data returns header-only CSV",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "anonymous"
+			},
+			"automation": {
+				"blockers": [
+					"Auth mechanism and expected status code unconfirmed."
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_03142536475a8b9c0d1e"
+			],
+			"id": "case_36475a8b9c0d1e2f3041",
+			"objective": "Verify an anonymous request to the export endpoint is denied with 401/403 and returns no data.",
+			"postconditions": [
+				{
+					"description": "Request is rejected and no CSV body is returned."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "No valid session or credentials are presented."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5e6f708192031425364a"
+				],
+				"kind": "inferred",
+				"rationale": "'Their data' requires authorization scoping."
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_9203142536475a8b9c0d"
+			],
+			"risk": "high",
+			"riskRationale": "Unauthenticated data export would be a data-leak vulnerability.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/api/export/csv"
+			},
+			"title": "Unauthenticated export request is rejected",
+			"type": "security"
 		}
 	],
-	"title": "Export plan",
-	"updatedAt": "2026-06-15T10:00:00.000Z"
+	"title": "CSV Export — Test Plan",
+	"updatedAt": "2026-06-19T00:00:00Z"
 }

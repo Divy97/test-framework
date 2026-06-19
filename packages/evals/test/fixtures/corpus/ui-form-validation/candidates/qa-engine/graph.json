@@ -1,166 +1,670 @@
 {
 	"assertions": [
 		{
-			"expected": "valid email",
-			"id": "assert_2fd07906a3a5424d0f56",
-			"matcher": "contains",
+			"id": "assert_849dab9cae497a4b89f6",
+			"matcher": "visible",
+			"note": "A validation message is displayed for the malformed email.",
 			"observationPoint": {
+				"component": "SignupForm",
 				"kind": "ui",
 				"route": "/signup",
-				"selector": "#email-error"
+				"selector": "input[name=email]"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_55d8b59d3473c15661e2"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Failed validation is expected to surface an error message."
 			},
-			"stepId": "step_3ce12f596bd512927349",
-			"subject": "email error text",
-			"testCaseId": "case_389ca34a260ca9ab6a2f"
+			"stepId": "step_1e013aea4bbdd2a75d1a",
+			"subject": "Email field validation error message",
+			"testCaseId": "case_2f7c4ff22ecc6f50b32c"
 		},
 		{
-			"id": "assert_76d2565f9761d086c9ec",
+			"expected": "invalid",
+			"id": "assert_a006b7766999322b933d",
+			"matcher": "equals",
+			"observationPoint": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "input[name=email]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Malformed email must fail validation per stated behavior."
+			},
+			"stepId": "step_1e013aea4bbdd2a75d1a",
+			"subject": "Email field invalid state",
+			"testCaseId": "case_2f7c4ff22ecc6f50b32c"
+		},
+		{
+			"expected": "invalid",
+			"id": "assert_2a651d024d080b2cfda1",
+			"matcher": "equals",
+			"observationPoint": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Email gating submit implies an empty email keeps the form invalid; exact validity rule pending oq-form-validity-definition."
+			},
+			"stepId": "step_65adfd160f0af03be2ec",
+			"subject": "Overall form validity with email empty",
+			"testCaseId": "case_4a074bb03ab4ab1abf33"
+		},
+		{
+			"id": "assert_fd8f58ad3f0029b78e5c",
 			"matcher": "disabled",
 			"observationPoint": {
+				"component": "SignupForm",
 				"kind": "ui",
 				"route": "/signup",
-				"selector": "#submit"
+				"selector": "button[type=submit]"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_6892289287774ee271a6"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Submit button is stated to be disabled until the form is valid."
 			},
-			"subject": "submit disabled",
-			"testCaseId": "case_389ca34a260ca9ab6a2f"
+			"stepId": "step_e902a12b55c4aef53d59",
+			"subject": "Submit button state while form invalid",
+			"testCaseId": "case_58f129a150503a1cadb3"
 		},
 		{
-			"id": "assert_b3c2a2f97f446e8d49c9",
+			"id": "assert_d8bbf40e40adbce62e5d",
 			"matcher": "enabled",
 			"observationPoint": {
+				"component": "SignupForm",
 				"kind": "ui",
 				"route": "/signup",
-				"selector": "#submit"
+				"selector": "button[type=submit]"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_6892289287774ee271a6"
 				],
-				"kind": "inferred"
+				"kind": "explicit",
+				"rationale": "Submit button is stated to become enabled when the form is valid."
 			},
-			"stepId": "step_982480eea685ac1946f4",
-			"subject": "submit enabled",
-			"testCaseId": "case_7b378c6ec27d504ae7cc"
+			"stepId": "step_1df7548219721025655d",
+			"subject": "Submit button state when all fields valid",
+			"testCaseId": "case_5cc5ad7eb98e56df0fb0"
+		},
+		{
+			"id": "assert_7b42b0eedbbb9bd6e5ae",
+			"matcher": "hidden",
+			"note": "No validation error is displayed for the email field after valid input.",
+			"observationPoint": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "input[name=email]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Valid email must pass field validation per stated behavior."
+			},
+			"stepId": "step_ab2b4d6196c33c8a73fd",
+			"subject": "Email field validation error",
+			"testCaseId": "case_765a4cc0f5f7dfc04966"
+		},
+		{
+			"expected": "valid",
+			"id": "assert_e066f84b30d8f2e6b8ab",
+			"matcher": "equals",
+			"observationPoint": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "input[name=email]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Valid email is expected to mark the field as valid."
+			},
+			"stepId": "step_ab2b4d6196c33c8a73fd",
+			"subject": "Email field valid state",
+			"testCaseId": "case_765a4cc0f5f7dfc04966"
 		}
 	],
-	"createdAt": "2026-06-15T10:00:00.000Z",
-	"dataRequirements": [],
+	"createdAt": "2026-06-19T17:55:32.256Z",
+	"dataRequirements": [
+		{
+			"description": "A complete set of valid values for every required signup field, including a valid email, used to drive the form to an overall valid state.",
+			"id": "data_5578a81a3e1de4641d97",
+			"kind": "dataset",
+			"name": "Fully valid signup field set",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Submit gating on full form validity implies a complete valid field set is needed; exact non-email fields are not specified in sources."
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"includes": "valid email plus all other required signup fields populated with valid values",
+				"note": "Non-email field composition pending oq-form-validity-definition"
+			},
+			"sensitivity": "pii"
+		},
+		{
+			"description": "A syntactically valid email address (local-part, @, domain with TLD) used to exercise the positive email validation path.",
+			"id": "data_81051dd3da3231cff403",
+			"kind": "dataset",
+			"name": "Well-formed email address",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Email validation evidence requires a valid email value to test acceptance."
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"constraints": "must contain local-part, single @, and domain with a TLD",
+				"example": "user@example.com"
+			},
+			"sensitivity": "pii"
+		},
+		{
+			"description": "An email value missing the @ symbol or domain, used to exercise the negative email validation path.",
+			"id": "data_a9a3f44438cc2afa3288",
+			"kind": "dataset",
+			"name": "Malformed email address",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Email validation evidence requires a malformed email value to test rejection."
+			},
+			"provisioning": "generated",
+			"requiredState": {
+				"constraints": "fails standard email syntax (missing @ or missing domain)",
+				"examples": [
+					"userexample.com",
+					"user@",
+					"@example.com"
+				]
+			},
+			"sensitivity": "none"
+		}
+	],
 	"evidence": [
 		{
-			"claim": "Email is required and must be valid; submit stays disabled until valid.",
-			"id": "ev_7a3c8a8e1b715fb7a4ec",
+			"claim": "The signup form validates the email field.",
+			"excerpt": "A signup form validates email",
+			"id": "ev_55d8b59d3473c15661e2",
 			"kind": "statement",
-			"sourceId": "src_c886a2a81fd5d575b3d1"
+			"sourceId": "src_406812db9a1b828ed111"
+		},
+		{
+			"claim": "The submit button is disabled until the form is valid.",
+			"excerpt": "disables submit until the form is valid",
+			"id": "ev_6892289287774ee271a6",
+			"kind": "statement",
+			"sourceId": "src_406812db9a1b828ed111"
 		}
 	],
-	"features": [],
+	"features": [
+		{
+			"description": "Field-level and form-level validation for the signup form, including email validation and overall form validity determination.",
+			"id": "feat_12f32521ff08a0d5efb5",
+			"name": "Signup Form Validation",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Email field validation on the signup form is directly stated, and email-required is the inferred validity component grouped with it."
+			},
+			"requirementIds": [
+				"req_52267ca4b6b662b00d77",
+				"req_5d56f914e620d53f5aba"
+			],
+			"risk": "medium",
+			"targets": [
+				{
+					"component": "SignupForm",
+					"kind": "ui",
+					"selector": "input[name=email]"
+				}
+			]
+		},
+		{
+			"description": "Gating of the submit button so it stays disabled until the entire signup form is valid and enables only when valid.",
+			"id": "feat_f854915d41d5d5a09cc7",
+			"name": "Signup Submit Gating",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Directly stated that the submit button is disabled until the form is valid."
+			},
+			"requirementIds": [
+				"req_2502e4a9d38cb2243134"
+			],
+			"risk": "medium",
+			"targets": [
+				{
+					"component": "SignupForm",
+					"kind": "ui",
+					"selector": "button[type=submit]"
+				}
+			]
+		}
+	],
 	"generation": {
-		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generatedAt": "2026-06-19T17:55:32.256Z",
 		"generator": {
 			"kind": "model",
-			"model": "claude-opus-4-8",
-			"provider": "anthropic"
+			"model": "opus",
+			"provider": "claude-cli"
 		},
-		"id": "gen_c966dba5659bdb62a062",
-		"inputFingerprint": "sha256:ui-form-validation-qa-engine",
-		"methodologyVersion": "0.1.0",
-		"status": "complete",
-		"warnings": [],
-		"workflowVersion": "0.1.0"
+		"id": "gen_50f675d8287747833f85",
+		"inputFingerprint": "671eaa2a7ef9909f1190208794dd92eb7a6945b2db7d5a424d35c25df0b041ba",
+		"methodologyVersion": "1.0.0",
+		"status": "incomplete",
+		"warnings": [
+			"[info] Coverage of the two stated behaviors (email field validation, submit gating on form validity) is complete: positive, negative, and edge cases exist for each, and every requirement maps to at least one test case. The two material unknowns are correctly externalized as blocking open questions (oq-email-validation-rules, oq-form-validity-definition) with matching partial automation readiness, so the plan is internally consistent rather than incomplete.",
+			"[warning] Orphaned data requirements: data-valid-email, data-invalid-email, and data-valid-signup-form are defined but every test case has consumesDataKeys=[]. The cases hardcode values in steps (e.g. 'user@example.com', 'userexample.com') instead of referencing the data keys. Either wire the cases to the data via consumesDataKeys or drop the unused dataRequirements; as-is the data model is dangling.",
+			"[warning] Over-claimed provenance on UI-feedback assertions. as-invalid-rejected-error-shown, as-valid-accepted-no-error, and as-valid-accepted-marked-valid are marked provenance.kind='explicit', but the only evidence ('A signup form validates email') says nothing about surfacing an error message or a discrete valid/invalid field state. The existence and presentation of validation feedback is itself flagged as unknown by oq-validation-trigger-timing. Downgrade these to 'inferred' (or gate them behind that open question), and reflect in readiness — they are currently presented as firmer than the evidence supports.",
+			"[warning] Non-deterministic observation point: tc-email-empty-required / as-empty-required-form-invalid asserts 'Overall form validity'='invalid' against an observationPoint with no selector. There is no documented form-level validity indicator in the sources — the only observable proxy is the submit button's disabled state. As written this assertion is not mechanically verifiable. Bind it to button[type=submit] disabled, or hold the case until oq-form-validity-definition resolves.",
+			"[warning] Step/action mismatch in tc-submit-enabled-when-valid: st-submit-enabled-fill-all is described as 'Populate every required signup field' but its action fills only input[name=email]. The case cannot actually drive the form to valid without the other fields, which are unknown (oq-form-validity-definition). Readiness=partial is appropriate, but the step should not imply it fills all fields when it does not — split into per-field steps once the field set is known.",
+			"[info] Partial overlap (not true duplication) between tc-email-empty-required (email-empty keeps form invalid) and tc-submit-disabled-when-invalid (submit disabled while a field is invalid). They test adjacent abstractions (field/form validity vs submit state) and are acceptable to keep distinct, but the empty-email path should be exercised explicitly in tc-submit-disabled-when-invalid rather than only the malformed-email path, otherwise empty-email→submit-disabled is never directly asserted.",
+			"[info] Requirement statements mildly exceed evidence: req-email-validation adds 'before allowing submission' and req-submit-disabled-until-valid adds 'all signup form fields' / 'become enabled only when valid'. These are reasonable inferences but are asserted under explicit provenance. Acceptable given the linked open questions, but the 'enabled only when valid' exclusivity is an inference beyond 'disabled until valid' and should be noted as such.",
+			"[info] Deferred-but-untested behaviors to confirm are intentionally out of scope: validation trigger timing (on blur/change/submit) is captured as non-blocking oq-validation-trigger-timing with no corresponding case, and boundary cases (whitespace trimming, case handling, max length) are correctly deferred to oq-email-validation-rules. No action required unless those questions resolve."
+		],
+		"workflowVersion": "1.0.0"
 	},
-	"openQuestions": [],
-	"planId": "plan_6a368e1b9bd8f798b80d",
+	"openQuestions": [
+		{
+			"blockedEntityRefs": [],
+			"blocking": true,
+			"id": "question_08fa89328b14af77382c",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "inferred",
+				"rationale": "Evidence confirms email validation exists but does not specify the validation criteria needed to write deterministic test cases."
+			},
+			"question": "What exact rules define a valid email (format/regex, max length, domain restrictions, allowed/blocked domains, trimming, case handling)?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": true,
+			"id": "question_8c18fa39a85d62bc0e20",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Evidence references overall form validity but does not enumerate the fields or conditions that make the form valid."
+			},
+			"question": "What constitutes a fully valid form (which fields beyond email are required) that triggers enabling of the submit button?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_c96b7cbc90a7d1fd27bd",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Validation and submit-gating behavior are stated, but the timing and UX feedback mechanism are unspecified."
+			},
+			"question": "When is validation evaluated (on blur, on change, on submit) and how is the disabled/enabled submit state communicated to the user?",
+			"status": "open"
+		}
+	],
+	"planId": "plan_5442d8fffae408ea28f8",
 	"planVersion": 1,
-	"projectId": "prj_7aea345837d6c05718fa",
+	"projectId": "prj_395994bf2fbe39e87cab",
 	"requirements": [
 		{
-			"id": "req_4b469a80feb66a6f62d6",
+			"id": "req_2502e4a9d38cb2243134",
 			"kind": "functional",
-			"openQuestionIds": [],
+			"openQuestionIds": [
+				"question_8c18fa39a85d62bc0e20"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Directly stated that submit is disabled until the form is valid."
+			},
+			"risk": "medium",
+			"statement": "The submit button must remain disabled until all signup form fields are valid, and become enabled only when the form is valid."
+		},
+		{
+			"id": "req_52267ca4b6b662b00d77",
+			"kind": "ux",
+			"openQuestionIds": [
+				"question_8c18fa39a85d62bc0e20"
+			],
 			"priority": "p1",
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
-				],
-				"kind": "explicit"
-			},
-			"risk": "medium",
-			"statement": "Email is required and valid."
-		},
-		{
-			"id": "req_e4cafcac43eb98a86458",
-			"kind": "ux",
-			"openQuestionIds": [],
-			"priority": "p2",
-			"provenance": {
-				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
 				],
 				"kind": "inferred",
-				"rationale": "Standard form UX."
+				"rationale": "Email validation gating the submit button implies the email is a required component of overall form validity."
 			},
 			"risk": "low",
-			"statement": "Submit disabled until valid."
+			"statement": "The email field must be present and complete for the form to be considered valid."
+		},
+		{
+			"id": "req_5d56f914e620d53f5aba",
+			"kind": "functional",
+			"openQuestionIds": [
+				"question_08fa89328b14af77382c"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Directly stated that the signup form validates the email field."
+			},
+			"risk": "medium",
+			"statement": "The signup form must validate the email field before allowing submission."
 		}
 	],
 	"schemaVersion": "test-graph/v1",
 	"sources": [
 		{
-			"id": "src_c886a2a81fd5d575b3d1",
+			"id": "src_406812db9a1b828ed111",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Signup form validation and submit state"
+		},
+		{
+			"id": "src_ce9fb5a5f9c860fb12d2",
 			"kind": "feature-request",
 			"supplied": true,
 			"title": "Feature spec"
 		}
 	],
-	"status": "complete",
+	"status": "incomplete",
 	"steps": [
 		{
 			"action": {
-				"kind": "interact",
-				"operation": "fill",
-				"selector": "#email",
-				"value": "nope"
+				"kind": "navigate",
+				"route": "/signup"
 			},
-			"description": "Type an invalid email and blur.",
-			"id": "step_3ce12f596bd512927349",
+			"description": "Navigate to the signup page so the signup form is loaded.",
+			"id": "step_1e7a91e32734035ac950",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_55d8b59d3473c15661e2"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "The signup form is the documented location of email validation."
 			},
-			"testCaseId": "case_389ca34a260ca9ab6a2f"
+			"testCaseId": "case_2f7c4ff22ecc6f50b32c"
 		},
 		{
 			"action": {
 				"kind": "interact",
 				"operation": "fill",
-				"selector": "#email",
-				"value": "a@b.co"
+				"selector": "input[name=email]",
+				"value": "userexample.com"
 			},
-			"description": "Type a valid email.",
-			"id": "step_982480eea685ac1946f4",
+			"description": "Enter a malformed email address (missing @ or domain) into the email field.",
+			"id": "step_89cc3796c752e7b948eb",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "A malformed value exercises the rejection path of email validation."
+			},
+			"testCaseId": "case_2f7c4ff22ecc6f50b32c"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Email field invalid state and validation error message"
+			},
+			"description": "Observe the email field's validation state and surfaced error message.",
+			"id": "step_1e013aea4bbdd2a75d1a",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Rejection and error surfacing must be observed to confirm validation fails."
+			},
+			"testCaseId": "case_2f7c4ff22ecc6f50b32c"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page with the email field left empty.",
+			"id": "step_b07a15c0801a9dfa2bf8",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_55d8b59d3473c15661e2"
 				],
-				"kind": "explicit"
+				"kind": "inferred",
+				"rationale": "Empty-field behavior is evaluated on the same signup form."
 			},
-			"testCaseId": "case_7b378c6ec27d504ae7cc"
+			"testCaseId": "case_4a074bb03ab4ab1abf33"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Overall form validity state with email empty"
+			},
+			"description": "Observe overall form validity while the email field remains empty.",
+			"id": "step_65adfd160f0af03be2ec",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Email gating submit implies an empty email keeps the form invalid; exact validity rule pending oq-form-validity-definition."
+			},
+			"testCaseId": "case_4a074bb03ab4ab1abf33"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page so the form and submit button are loaded.",
+			"id": "step_7a671be7080d3fbe05c8",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Submit gating is observed on the signup form."
+			},
+			"testCaseId": "case_58f129a150503a1cadb3"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "input[name=email]",
+				"value": "userexample.com"
+			},
+			"description": "Enter a malformed email so at least one required field is invalid.",
+			"id": "step_a774cbfe0a5f6bc84d32",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "An invalid field drives the form into an invalid state to verify submit stays disabled."
+			},
+			"testCaseId": "case_58f129a150503a1cadb3"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Submit button disabled state"
+			},
+			"description": "Observe the submit button's enabled/disabled state while the form is invalid.",
+			"id": "step_e902a12b55c4aef53d59",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Submit is stated to be disabled until the form is valid."
+			},
+			"testCaseId": "case_58f129a150503a1cadb3"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page so the form and submit button are loaded.",
+			"id": "step_153b28d613f4fb40d377",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Submit gating is observed on the signup form."
+			},
+			"testCaseId": "case_5cc5ad7eb98e56df0fb0"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "input[name=email]",
+				"value": "user@example.com"
+			},
+			"description": "Populate every required signup field, including a valid email, with valid values.",
+			"id": "step_1b9264ea3401e0e993b8",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Submit enables only when the whole form is valid; the email is the only documented field, others pending oq-form-validity-definition."
+			},
+			"testCaseId": "case_5cc5ad7eb98e56df0fb0"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Submit button enabled state"
+			},
+			"description": "Observe the submit button's enabled/disabled state once all fields are valid.",
+			"id": "step_1df7548219721025655d",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Submit is stated to become enabled when the form is valid."
+			},
+			"testCaseId": "case_5cc5ad7eb98e56df0fb0"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page so the signup form is loaded.",
+			"id": "step_4e0b00a37649e1728eca",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "The signup form is the documented location of email validation."
+			},
+			"testCaseId": "case_765a4cc0f5f7dfc04966"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "input[name=email]",
+				"value": "user@example.com"
+			},
+			"description": "Enter a well-formed email address into the email field.",
+			"id": "step_ab3bb8b2f60593107d0b",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Entering an email value exercises the stated field-level email validation."
+			},
+			"testCaseId": "case_765a4cc0f5f7dfc04966"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Email field validation state and any error message"
+			},
+			"description": "Observe the email field's validation state after input.",
+			"id": "step_ab2b4d6196c33c8a73fd",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2"
+				],
+				"kind": "explicit",
+				"rationale": "Validation outcome must be observed to confirm acceptance."
+			},
+			"testCaseId": "case_765a4cc0f5f7dfc04966"
 		}
 	],
 	"testCases": [
@@ -168,11 +672,13 @@
 			"actor": {
 				"authentication": "anonymous",
 				"permissions": [],
-				"role": "user"
+				"role": "prospective user"
 			},
 			"automation": {
-				"blockers": [],
-				"readiness": "ready"
+				"blockers": [
+					"Exact email validation rules undefined (oq-email-validation-rules)."
+				],
+				"readiness": "partial"
 			},
 			"cleanup": {
 				"afterCaseIds": [],
@@ -181,39 +687,241 @@
 			},
 			"consumesDataRequirementIds": [],
 			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_389ca34a260ca9ab6a2f",
-			"objective": "Reject a malformed email inline.",
-			"postconditions": [],
-			"preconditions": [],
-			"priority": "p1",
+			"featureIds": [
+				"feat_12f32521ff08a0d5efb5"
+			],
+			"id": "case_2f7c4ff22ecc6f50b32c",
+			"objective": "Verify that entering a malformed email address (missing @ or domain) fails validation and surfaces an error.",
+			"postconditions": [
+				{
+					"description": "The email field is marked invalid and a validation message is displayed."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup page is loaded."
+				}
+			],
+			"priority": "p0",
 			"producesDataRequirementIds": [],
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_55d8b59d3473c15661e2"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Signup form validates the email field before allowing submission."
 			},
 			"qualityTags": [
+				"data-integrity",
 				"functional"
 			],
 			"requirementIds": [
-				"req_4b469a80feb66a6f62d6"
+				"req_5d56f914e620d53f5aba"
 			],
 			"risk": "medium",
-			"riskRationale": "Bad input must be caught.",
+			"riskRationale": "Allowing malformed emails through validation corrupts downstream account data and breaks delivery.",
 			"target": {
+				"component": "SignupForm",
 				"kind": "ui",
-				"route": "/signup"
+				"route": "/signup",
+				"selector": "input[name=email]"
 			},
-			"title": "Invalid email shows error",
+			"title": "Malformed email is rejected by validation",
 			"type": "negative"
 		},
 		{
 			"actor": {
 				"authentication": "anonymous",
 				"permissions": [],
-				"role": "user"
+				"role": "prospective user"
+			},
+			"automation": {
+				"blockers": [
+					"Form validity definition undefined (oq-form-validity-definition)."
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_12f32521ff08a0d5efb5"
+			],
+			"id": "case_4a074bb03ab4ab1abf33",
+			"objective": "Verify that leaving the email field empty keeps the form invalid, confirming email is a required component of validity.",
+			"postconditions": [
+				{
+					"description": "The form is not considered valid while email is empty."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup page is loaded with the email field empty."
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_55d8b59d3473c15661e2",
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "inferred",
+				"rationale": "Email validation gating submit implies email is required for overall form validity."
+			},
+			"qualityTags": [
+				"functional",
+				"usability"
+			],
+			"requirementIds": [
+				"req_52267ca4b6b662b00d77"
+			],
+			"risk": "low",
+			"riskRationale": "Empty-field handling is a common boundary; low blast radius but must be enforced for required-field semantics.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "input[name=email]"
+			},
+			"title": "Empty email field blocks form validity",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "prospective user"
+			},
+			"automation": {
+				"blockers": [
+					"Full set of fields constituting form validity undefined (oq-form-validity-definition)."
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_f854915d41d5d5a09cc7"
+			],
+			"id": "case_58f129a150503a1cadb3",
+			"objective": "Verify the submit button remains disabled when any required field, including email, is missing or invalid.",
+			"postconditions": [
+				{
+					"description": "The submit button is in the disabled state."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup page is loaded with at least one field invalid or empty."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Submit button is disabled until the form is valid, directly stated."
+			},
+			"qualityTags": [
+				"functional",
+				"usability"
+			],
+			"requirementIds": [
+				"req_2502e4a9d38cb2243134"
+			],
+			"risk": "medium",
+			"riskRationale": "A submit button enabled on an invalid form lets bad data reach the backend and bypasses validation.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "button[type=submit]"
+			},
+			"title": "Submit button stays disabled while form is invalid",
+			"type": "negative"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "prospective user"
+			},
+			"automation": {
+				"blockers": [
+					"Form validity definition undefined (oq-form-validity-definition)."
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [
+				"case_58f129a150503a1cadb3"
+			],
+			"featureIds": [
+				"feat_12f32521ff08a0d5efb5",
+				"feat_f854915d41d5d5a09cc7"
+			],
+			"id": "case_5cc5ad7eb98e56df0fb0",
+			"objective": "Verify the submit button becomes enabled only once every signup field, including a valid email, is valid.",
+			"postconditions": [
+				{
+					"description": "The submit button transitions to the enabled state."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup page is loaded and all fields can be populated with valid values."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_6892289287774ee271a6"
+				],
+				"kind": "explicit",
+				"rationale": "Submit becomes enabled only when the form is valid, directly stated."
+			},
+			"qualityTags": [
+				"functional",
+				"usability"
+			],
+			"requirementIds": [
+				"req_2502e4a9d38cb2243134",
+				"req_5d56f914e620d53f5aba"
+			],
+			"risk": "medium",
+			"riskRationale": "Failure to enable submit on a valid form blocks legitimate signups entirely.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "button[type=submit]"
+			},
+			"title": "Submit button enables when all fields are valid",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "prospective user"
 			},
 			"automation": {
 				"blockers": [],
@@ -226,35 +934,50 @@
 			},
 			"consumesDataRequirementIds": [],
 			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_7b378c6ec27d504ae7cc",
-			"objective": "Enable submit once valid.",
-			"postconditions": [],
-			"preconditions": [],
-			"priority": "p2",
+			"featureIds": [
+				"feat_12f32521ff08a0d5efb5"
+			],
+			"id": "case_765a4cc0f5f7dfc04966",
+			"objective": "Verify that entering a well-formed email address passes field-level validation on the signup form.",
+			"postconditions": [
+				{
+					"description": "The email field shows no validation error and is marked valid."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup page is loaded and the email field is empty."
+				}
+			],
+			"priority": "p0",
 			"producesDataRequirementIds": [],
 			"provenance": {
 				"evidenceIds": [
-					"ev_7a3c8a8e1b715fb7a4ec"
+					"ev_55d8b59d3473c15661e2"
 				],
-				"kind": "inferred"
+				"kind": "explicit",
+				"rationale": "Signup form validates the email field is directly stated."
 			},
 			"qualityTags": [
+				"functional",
 				"usability"
 			],
 			"requirementIds": [
-				"req_e4cafcac43eb98a86458"
+				"req_52267ca4b6b662b00d77",
+				"req_5d56f914e620d53f5aba"
 			],
-			"risk": "low",
-			"riskRationale": "Primary path.",
+			"risk": "medium",
+			"riskRationale": "Email validation gates form submission; a false negative on valid input blocks all signups.",
 			"target": {
+				"component": "SignupForm",
 				"kind": "ui",
-				"route": "/signup"
+				"route": "/signup",
+				"selector": "input[name=email]"
 			},
-			"title": "Valid form enables submit",
+			"title": "Valid email is accepted by signup form validation",
 			"type": "positive"
 		}
 	],
-	"title": "Signup form plan",
-	"updatedAt": "2026-06-15T10:00:00.000Z"
+	"title": "Signup form validation and submit state",
+	"updatedAt": "2026-06-19T17:55:32.256Z"
 }
