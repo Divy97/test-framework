@@ -223,14 +223,27 @@ a real plan using local BYOK configuration.
 
 ### 9. Quality Gate and Release
 
-Status: pending.
+Status: infrastructure done; quality-moat disproven; release gate repositioned
+([ADR-0012](adr/0012-reposition-moat-reliability-over-raw-quality.md)).
 
-- Run comparative evals against recorded baselines.
-- Confirm quality, unsupported-claim, latency, cost, and failure thresholds.
-- Test install/config/error flows.
-- Publish limitations and security model.
+Delivered: the deterministic eval harness, the gated `record:arms` recording tool,
+the keyless `claude-cli` host-model provider, the engine fixes that let *any* real
+provider run for the first time (`toProviderSchema` transforms/custom-types;
+OpenRouter content fallback), four fixtures recorded under Claude Opus 4.8 with
+reviewed annotations, plus install/config/error-flow and limitations/security docs.
 
-Exit criteria: all [V1 definition-of-done](v1-mvp.md#definition-of-done) items pass.
+Finding (first real-model measurement): the qa-engine **lost to a raw prompt on all
+three recorded fixtures**, so the "beats the recorded raw-model baseline" exit item
+is **not met as quality** and is retired as the gate — see the
+[moat & thesis review](research/moat-and-thesis-review-2026-06.md) and ADR-0012.
+The gate is repositioned to measure reliability (valid-rate over N runs), refinement
+coherence, and provenance. Implementing that gate, leaning the engine, and the
+deep-lean vs thin-layer decision are the next workstream, gated on the
+real-repository comparison.
+
+Original scope (history): run comparative evals against recorded baselines; confirm
+quality/unsupported-claim/latency/cost/failure thresholds; test install/config/error
+flows; publish limitations and security model.
 
 ## Recommended Order
 

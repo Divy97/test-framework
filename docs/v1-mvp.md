@@ -192,7 +192,13 @@ V1 is done when:
 3. The engine performs internal semantic review and deterministic validation.
 4. The output is traceable, editable, execution-ready, and safe to commit.
 5. Refinement updates a plan without losing stable identities or provenance.
-6. Comparative evals beat the recorded raw-model baseline.
+6. ~~Comparative evals beat the recorded raw-model baseline.~~ **Not met (quality):
+   the first real-model eval (Opus 4.8) showed the engine loses to a raw prompt on
+   all recorded fixtures. Retired as the gate and repositioned to reliability
+   (valid-rate over N runs), refinement coherence, and provenance — see
+   [ADR-0012](adr/0012-reposition-moat-reliability-over-raw-quality.md) and the
+   [moat & thesis review](research/moat-and-thesis-review-2026-06.md). The new gate
+   is the next workstream.**
 7. Installation, configuration, errors, and limitations are documented.
 
 ## Beyond V1
