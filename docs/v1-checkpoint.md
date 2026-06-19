@@ -15,7 +15,7 @@ and schema mechanics but still represent the superseded public five-stage design
 | Area | Status | Reality |
 | --- | --- | --- |
 | Engineering gate | Done | Biome, typecheck, build, tests, commitlint, Dependabot |
-| MCP stdio adapter | Done foundation | Starts and validates calls; public tool shape must change |
+| MCP stdio adapter | Done | Coarse `create_test_plan` / `refine_test_plan` / `get_test_plan` over the QA engine; progress, cancellation, typed secret-free errors, roots policy, lazy BYOK provider; CI on the fake |
 | Safe repo scanner | Done foundation | Strong confinement, exclusions, limits, evidence index |
 | Existing QA schemas | Partial | Useful concepts; not yet execution-ready test graph |
 | QA engine | Pending | No provider calls, workflow, semantic review, or repair |
@@ -178,16 +178,48 @@ with no lock or temp left behind).
 
 ### 8. MCP Product Adapter
 
-Status: pending.
+Status: done.
 
-- Replace five stage tools with create/refine/get operations.
-- Progress and cancellation.
-- Typed domain-to-MCP errors.
-- MCP roots/project-root policy.
-- End-to-end tests through stdio.
+- Replaced the five stage tools with `create_test_plan`, `refine_test_plan`,
+  and `get_test_plan`, each backed by the QA engine (`createPlan` / `refinePlan` /
+  `loadPlan`) over a provider built from local BYOK config (or an injected fake in
+  tests).
+- Opt-in coarse progress (gated on `progressToken`); cancellation passes the
+  request's `extra.signal` into `EngineDeps.signal`, aborting the in-flight model
+  call and mapping to `PROVIDER_CANCELLED`.
+- Typed `EngineErrorCode -> MCP error` translator: every error returns
+  `{ code, message, retryable }` with a curated, secret-free message (no paths,
+  SDK detail, env values, or key material); a table-driven test asserts no leak.
+- Retired `packages/{core,planner,artifacts}` (deepened into the engine) and
+  dropped `repo-scan`'s stale `core` dependency; the workspace is green at every
+  step.
 
-Exit criteria: supported host can install the MCP server and create/refine a real
-plan using local BYOK configuration.
+Adapter surface and policy (capturing the ratified roots/error decisions here per
+the plan, rather than a new ADR; ADR-0003 ratifies the coarse surface, ADR-0010
+the BYOK seam):
+
+- Tool names are `create_test_plan`, `refine_test_plan`, `get_test_plan`; the
+  eight workflow stages stay internal.
+- Project-root policy: `workspaceRoot` is resolved per call as
+  `firstMcpRoot ?? TEST_FRAMEWORK_ROOT ?? process.cwd()` (file URI -> path);
+  resolved once per call (no `roots/list_changed` subscription in V1). An optional
+  `repo.path` is hard-confined inside the resolved root; an escaping path is
+  rejected as `REPO_ACCESS_DENIED` before any engine call. Root paths may appear in
+  returned `planDir`/`artifacts` (the host's own project), never credentials.
+- Error policy: `EngineError` codes pass through with a code-specific curated
+  message (engine-authored `INVALID_INPUT` / `PLAN_INVARIANT_FAILED` messages are
+  already safe and pass through; `PLAN_INVARIANT_FAILED` appends a findings count,
+  never paths); any non-`EngineError` becomes a generic `INTERNAL` with no
+  `err.message`.
+- The provider is constructed lazily on the first generative call, so the
+  handshake, `tools/list`, `get_test_plan`, and input validation work keyless.
+- CI is keyless: E2E tool tests inject `createFakeProvider` over `InMemoryTransport`;
+  the built-stdio test asserts handshake + `tools/list` + a no-provider
+  `INVALID_INPUT`; one live `create_test_plan` smoke test is `skip`-ped without
+  `RUN_LIVE_PROVIDER` + a key.
+
+Exit criteria (met): a supported host can install the MCP server and create/refine
+a real plan using local BYOK configuration.
 
 ### 9. Quality Gate and Release
 
