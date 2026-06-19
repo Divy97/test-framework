@@ -1,30 +1,40 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol.js";
 import type {
 	CallToolResult,
+	ServerNotification,
+	ServerRequest,
 	ToolAnnotations,
 } from "@modelcontextprotocol/sdk/types.js";
+import { engineErrorToToolResult } from "./errors.js";
+import type { EngineHandlers, ToolContext } from "./handlers.js";
+import { successResult } from "./result.js";
 import {
-	analyzeFeatureInputSchema,
-	analyzeFeatureOutputSchema,
-	exportTestCasesInputSchema,
-	exportTestCasesOutputSchema,
-	generateTestCasesInputSchema,
-	generateTestCasesOutputSchema,
-	mapFeatureInputSchema,
-	mapFeatureOutputSchema,
-	reviewTestCasesInputSchema,
-	reviewTestCasesOutputSchema,
-} from "@test-framework/planner";
-import type { ToolHandlers } from "./handlers.js";
-import { errorResult, successResult } from "./result.js";
+	createTestPlanInputSchema,
+	getTestPlanInputSchema,
+	getTestPlanOutputSchema,
+	planResultOutputSchema,
+	refineTestPlanInputSchema,
+} from "./tool-schemas.js";
 
 export const toolNames = [
-	"analyze_feature",
-	"map_feature",
-	"generate_test_cases",
-	"review_test_cases",
-	"export_test_cases",
+	"create_test_plan",
+	"refine_test_plan",
+	"get_test_plan",
 ] as const;
+
+type ToolExtra = RequestHandlerExtra<ServerRequest, ServerNotification>;
+
+/** Builds the per-call context (runtime + resolved root + signal) from the request. */
+export type MakeContext = (extra: ToolExtra) => Promise<ToolContext>;
+
+const generativeAnnotations: ToolAnnotations = {
+	// create/refine call a model and write a new plan/revision (not destructive).
+	readOnlyHint: false,
+	destructiveHint: false,
+	idempotentHint: false,
+	openWorldHint: true,
+};
 
 const readOnlyAnnotations: ToolAnnotations = {
 	readOnlyHint: true,
@@ -33,11 +43,50 @@ const readOnlyAnnotations: ToolAnnotations = {
 	openWorldHint: false,
 };
 
-const stubNotice =
-	"Implementation is a deterministic, input-derived stub: no model, repository scan, network, or filesystem access.";
+/**
+ * Translate a failed tool operation into a tool error result. The engine already
+ * classifies an aborted call as PROVIDER_CANCELLED (see `asEngineError`), so the
+ * adapter trusts the engine's typed code rather than overriding it on
+ * `signal.aborted` — an override would mislabel a genuine failure (auth, invalid
+ * output, …) that merely coincided with a client cancel.
+ */
+export function failureToToolResult(error: unknown): CallToolResult {
+	return engineErrorToToolResult(error);
+}
 
-const mapFeatureNotice =
-	"Performs a real, read-only, bounded local repository scan: symlinks are never followed and secrets, dependencies, build output, generated, and binary files are excluded. Feature-map and acceptance-criteria reasoning remain deterministic stubs.";
+const PROGRESS_TOTAL = 2;
+
+/**
+ * Coarse, opt-in progress around a single engine call. The adapter cannot see
+ * the engine's internal stage boundaries (ADR-0003 keeps them private), so it
+ * reports only start/done with a fixed `total`. Emits nothing unless the client
+ * requested progress via `extra._meta.progressToken`.
+ */
+async function reportProgress(
+	extra: ToolExtra,
+	progress: number,
+	message: string,
+): Promise<void> {
+	const progressToken = extra._meta?.progressToken;
+	if (progressToken === undefined) return;
+	await extra.sendNotification({
+		method: "notifications/progress",
+		params: { progressToken, progress, total: PROGRESS_TOTAL, message },
+	});
+}
+
+/** Run an engine operation while bracketing it with coarse opt-in progress. */
+async function runWithProgress<T>(
+	extra: ToolExtra,
+	operation: () => Promise<T>,
+): Promise<CallToolResult> {
+	return runTool(async () => {
+		await reportProgress(extra, 0, "Generating plan…");
+		const output = await operation();
+		await reportProgress(extra, PROGRESS_TOTAL, "Done");
+		return output;
+	});
+}
 
 async function runTool<T>(
 	operation: () => Promise<T>,
@@ -46,71 +95,58 @@ async function runTool<T>(
 		const output = await operation();
 		return successResult(output as Record<string, unknown>);
 	} catch (error) {
-		return errorResult(error);
+		return failureToToolResult(error);
 	}
 }
 
-export function registerPlannerTools(
+export function registerEngineTools(
 	server: McpServer,
-	handlers: ToolHandlers,
+	handlers: EngineHandlers,
+	makeContext: MakeContext,
 ): void {
 	server.registerTool(
-		"analyze_feature",
+		"create_test_plan",
 		{
-			title: "Analyze Feature",
-			description: `Normalize a feature request into a structured PRD. ${stubNotice}`,
-			inputSchema: analyzeFeatureInputSchema,
-			outputSchema: analyzeFeatureOutputSchema,
-			annotations: readOnlyAnnotations,
+			title: "Create Test Plan",
+			description:
+				"Generate a validated, persisted QA test plan from a product brief and optional repository context. Calls your configured model with your key (BYOK).",
+			inputSchema: createTestPlanInputSchema,
+			outputSchema: planResultOutputSchema,
+			annotations: generativeAnnotations,
 		},
-		(args) => runTool(() => handlers.analyzeFeature(args)),
+		async (args, extra) =>
+			runWithProgress(extra, async () =>
+				handlers.createTestPlan(args, await makeContext(extra)),
+			),
 	);
 
 	server.registerTool(
-		"map_feature",
+		"refine_test_plan",
 		{
-			title: "Map Feature",
-			description: `Map a normalized PRD to features, acceptance criteria, and a repo scan. ${mapFeatureNotice}`,
-			inputSchema: mapFeatureInputSchema,
-			outputSchema: mapFeatureOutputSchema,
-			annotations: readOnlyAnnotations,
+			title: "Refine Test Plan",
+			description:
+				"Revise an existing test plan from scoped feedback into a new versioned revision. Calls your configured model with your key (BYOK).",
+			inputSchema: refineTestPlanInputSchema,
+			outputSchema: planResultOutputSchema,
+			annotations: generativeAnnotations,
 		},
-		(args) => runTool(() => handlers.mapFeature(args)),
+		async (args, extra) =>
+			runWithProgress(extra, async () =>
+				handlers.refineTestPlan(args, await makeContext(extra)),
+			),
 	);
 
 	server.registerTool(
-		"generate_test_cases",
+		"get_test_plan",
 		{
-			title: "Generate Test Cases",
-			description: `Generate test cases from a feature map and acceptance criteria. ${stubNotice}`,
-			inputSchema: generateTestCasesInputSchema,
-			outputSchema: generateTestCasesOutputSchema,
+			title: "Get Test Plan",
+			description:
+				"Read a persisted test plan's metadata, a bounded summary, and its artifact paths. Read-only; writes nothing and calls no model.",
+			inputSchema: getTestPlanInputSchema,
+			outputSchema: getTestPlanOutputSchema,
 			annotations: readOnlyAnnotations,
 		},
-		(args) => runTool(() => handlers.generateTestCases(args)),
-	);
-
-	server.registerTool(
-		"review_test_cases",
-		{
-			title: "Review Test Cases",
-			description: `Review test cases and surface review findings. ${stubNotice}`,
-			inputSchema: reviewTestCasesInputSchema,
-			outputSchema: reviewTestCasesOutputSchema,
-			annotations: readOnlyAnnotations,
-		},
-		(args) => runTool(() => handlers.reviewTestCases(args)),
-	);
-
-	server.registerTool(
-		"export_test_cases",
-		{
-			title: "Export Test Cases",
-			description: `Preview the artifact paths for exported test cases. ${stubNotice} Returns status "preview" and writes no files.`,
-			inputSchema: exportTestCasesInputSchema,
-			outputSchema: exportTestCasesOutputSchema,
-			annotations: readOnlyAnnotations,
-		},
-		(args) => runTool(() => handlers.exportTestCases(args)),
+		async (args, extra) =>
+			runTool(async () => handlers.getTestPlan(args, await makeContext(extra))),
 	);
 }

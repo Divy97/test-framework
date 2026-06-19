@@ -62,18 +62,15 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: 'catalog:'
         version: 1.29.0(zod@4.4.3)
-      '@test-framework/artifacts':
+      '@test-framework/qa-engine':
         specifier: workspace:*
-        version: link:../../packages/artifacts
-      '@test-framework/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@test-framework/planner':
-        specifier: workspace:*
-        version: link:../../packages/planner
+        version: link:../../packages/qa-engine
       '@test-framework/repo-scan':
         specifier: workspace:*
         version: link:../../packages/repo-scan
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@test-framework/config':
         specifier: workspace:*
@@ -91,39 +88,7 @@ importers:
         specifier: 'catalog:'
         version: 6.0.3
 
-  packages/artifacts:
-    dependencies:
-      '@test-framework/core':
-        specifier: workspace:*
-        version: link:../core
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@test-framework/config':
-        specifier: workspace:*
-        version: link:../config
-      '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-
   packages/config: {}
-
-  packages/core:
-    dependencies:
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@test-framework/config':
-        specifier: workspace:*
-        version: link:../config
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
 
   packages/evals:
     dependencies:
@@ -143,25 +108,6 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.22.4
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-
-  packages/planner:
-    dependencies:
-      '@test-framework/core':
-        specifier: workspace:*
-        version: link:../core
-      '@test-framework/repo-scan':
-        specifier: workspace:*
-        version: link:../repo-scan
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@test-framework/config':
-        specifier: workspace:*
-        version: link:../config
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -193,9 +139,6 @@ importers:
 
   packages/repo-scan:
     dependencies:
-      '@test-framework/core':
-        specifier: workspace:*
-        version: link:../core
       ignore:
         specifier: ^7.0.5
         version: 7.0.5
