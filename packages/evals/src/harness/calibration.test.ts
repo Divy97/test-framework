@@ -2,20 +2,29 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { parseEvalResult } from "../report/json.js";
+import { parseEvalResult, serializeEvalResult } from "../report/json.js";
 import type { CandidateResult, EvalResult } from "../schema/result.js";
 import { compareToBaseline } from "./regression.js";
 
 /**
- * Calibration / moat regression tests. These pin the structural release
- * properties of the committed baseline that must hold across the calibration
- * commit — they make no assumption about `recordKind`, so they keep holding once
- * the raw-model and qa-engine arms become `recorded` (workstream #9 Slice 3/4).
+ * Baseline regression-gate tests.
  *
- * The threshold-calibration assertions (`minOverall > 0`, a recorded qa-engine
- * arm strictly beating a recorded raw-model arm) are added in the calibration
- * commit (Slice 4), after the live recording exists; this file deliberately does
- * not assert them yet so the baseline stays byte-stable.
+ * Per ADR-0012 (reposition the moat: reliability/auditability over raw plan
+ * quality), quality-superiority is intentionally NO LONGER asserted here. The
+ * first real-model recording showed the qa-engine arm loses to a raw prompt on
+ * every recorded fixture (e.g. `unsupported-assumptions/qa-engine` hard-fails;
+ * raw-model out-scores qa-engine on `authz-api`, `ui-form-validation`, and
+ * `unsupported-assumptions`). The earlier assertions that qa-engine beats
+ * host-only/raw-model on average, and that every qa-engine candidate passes with
+ * no hard-fail, are disproven by the recorded corpus and have been removed —
+ * keeping them would be both failing and dishonest.
+ *
+ * The reliability/refinement/provenance gate that ADR-0012 makes the real moat is
+ * a FUTURE workstream and is not asserted here. What this file pins is the
+ * still-valid behavioral contract of the regression gate: scoring is
+ * deterministic/byte-stable, the recorded arms are present and parse, and a NEW
+ * hard-fail versus the accepted baseline is reported as a regression by
+ * `compareToBaseline`.
  */
 
 const baselineUrl = new URL(
@@ -35,55 +44,30 @@ function armCandidates(result: EvalResult, arm: string): CandidateResult[] {
 	);
 }
 
-function mean(values: number[]): number {
-	assert.ok(values.length > 0, "cannot average an empty arm");
-	return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
-
-test("the moat holds: qa-engine beats host-only and raw-model on average", async () => {
+test("the accepted baseline parses and carries every arm", async () => {
 	const baseline = await loadBaseline();
 
-	const qaEngine = mean(
-		armCandidates(baseline, "qa-engine").map((c) => c.overall),
-	);
-	const hostOnly = mean(
-		armCandidates(baseline, "host-only").map((c) => c.overall),
-	);
-	const rawModel = mean(
-		armCandidates(baseline, "raw-model").map((c) => c.overall),
-	);
-
-	assert.ok(
-		qaEngine > hostOnly,
-		`qa-engine avg ${qaEngine} not above host-only avg ${hostOnly}`,
-	);
-	assert.ok(
-		qaEngine > rawModel,
-		`qa-engine avg ${qaEngine} not above raw-model avg ${rawModel}`,
-	);
-});
-
-test("every qa-engine candidate passes with no hard-fail", async () => {
-	const baseline = await loadBaseline();
-	const qaEngine = armCandidates(baseline, "qa-engine");
-
-	assert.ok(qaEngine.length > 0, "expected at least one qa-engine candidate");
-	for (const candidate of qaEngine) {
-		const fixture = baseline.fixtures.find((f) =>
-			f.candidates.includes(candidate),
-		);
-		const label = `${fixture?.fixtureId ?? "?"}/qa-engine`;
-		assert.equal(candidate.verdict, "PASS", `${label} did not PASS`);
-		assert.equal(candidate.hardFail, false, `${label} hard-failed`);
-		assert.deepEqual(
-			candidate.hardFailReasons,
-			[],
-			`${label} carries hard-fail reasons`,
+	// No quality-superiority claim (ADR-0012). Only that each arm we record is
+	// present and parses, so the regression gate has something to compare against.
+	for (const arm of ["raw-model", "host-only", "qa-engine"]) {
+		assert.ok(
+			armCandidates(baseline, arm).length > 0,
+			`expected at least one ${arm} candidate in the baseline`,
 		);
 	}
 });
 
-test("failure-rate is gated: a new hard-fail vs baseline is a regression", async () => {
+test("serializing the accepted baseline is byte-stable", async () => {
+	const baseline = await loadBaseline();
+
+	// Determinism is part of the repositioned moat (ADR-0012): the artifact is a
+	// byte-stable canonical record, not a chat reply. Re-serializing the parsed
+	// baseline must reproduce the committed bytes exactly.
+	const committed = await readFile(fileURLToPath(baselineUrl), "utf8");
+	assert.equal(serializeEvalResult(baseline), committed);
+});
+
+test("a new hard-fail vs baseline is reported as a regression", async () => {
 	const baseline = await loadBaseline();
 
 	// Synthesize an Eval Run identical to the baseline except that a previously
