@@ -138,21 +138,31 @@ export function buildCreatePlanInput(fixture: Fixture): CreatePlanInput {
 }
 
 /**
- * Validate a captured graph and serialize it to canonical bytes. Throws on an
- * invalid graph (mirroring `build-corpus.ts`): a recorded arm that does not
- * validate is a real engine/model signal, never hand-edited to pass.
+ * Validate a captured graph and serialize it to canonical bytes. By default
+ * throws on an invalid graph (mirroring `build-corpus.ts`): a recorded arm that
+ * does not validate is a real engine/model signal, never hand-edited to pass.
+ *
+ * `allowInvalid` is for the **raw-model control only**: a single-prompt model
+ * output is *expected* to sometimes be invalid — that is the honest baseline the
+ * engine arm is measured against, and the harness scores it `HF-INVALID-GRAPH`.
+ * Discarding it would hide the real result, so it is captured with a warning. The
+ * qa-engine arm never sets this — an invalid engine plan is a real engine bug.
  */
 export function validateAndSerialize(
 	graph: TestGraphV1,
 	label: string,
+	allowInvalid = false,
 ): string {
 	const result = validateTestGraph(graph);
 	if (!result.valid) {
-		throw new Error(
-			`${label}: captured graph is invalid: ${result.findings
-				.map((finding) => finding.code)
-				.join(", ")}`,
+		const codes = result.findings.map((finding) => finding.code).join(", ");
+		if (!allowInvalid) {
+			throw new Error(`${label}: captured graph is invalid: ${codes}`);
+		}
+		process.stderr.write(
+			`${label}: captured graph is INVALID (${codes}); recording it as the honest raw-model control.\n`,
 		);
+		return serializeTestGraph(graph);
 	}
 	return serializeTestGraph(result.graph);
 }
@@ -297,7 +307,11 @@ async function main(): Promise<void> {
 				? await recordQaEngineArm(input, deps)
 				: await recordRawModelArm(input, deps);
 
-		const graphText = validateAndSerialize(graph, `${fixtureId}/${arm}`);
+		const graphText = validateAndSerialize(
+			graph,
+			`${fixtureId}/${arm}`,
+			arm === "raw-model",
+		);
 		const path = await writeGraph(fixtureId, arm, graphText);
 
 		process.stdout.write(
