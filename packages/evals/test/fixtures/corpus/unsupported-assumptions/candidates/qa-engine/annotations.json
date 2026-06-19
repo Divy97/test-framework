@@ -2,32 +2,127 @@
 	"evalSchemaVersion": "eval/v1",
 	"fixtureId": "unsupported-assumptions",
 	"arm": "qa-engine",
-	"recordKind": "synthetic",
+	"recordKind": "recorded",
 	"expectValidationFailure": false,
 	"sourceAnnotations": [
 		{
-			"sourceId": "src_154ff58bc3c08ee28900",
+			"sourceId": "src_f4d18771940a37f8ffd8",
+			"sourceKey": "spec"
+		},
+		{
+			"sourceId": "src_fa26080fe63b3ba7f087",
 			"sourceKey": "spec"
 		}
 	],
 	"requirementAnnotations": [
 		{
-			"requirementId": "req_21a230cd98c15af5926c",
+			"requirementId": "req_bb09a9a8f2ce2560c162",
 			"verdict": "maps",
 			"truthKeys": [
 				"req:export-csv"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "Restates the sole capability that users can export their data as a CSV file, a near-verbatim match to req:export-csv; provenance explicit matches the fixture's expected strength.",
+			"supportsCitedEvidence": true
 		}
 	],
 	"caseAnnotations": [
 		{
-			"caseId": "case_b895e842e0ef8c9f589b",
+			"caseId": "case_433d5b8da0a2da20f07a",
 			"verdict": "maps",
 			"truthKeys": [
 				"scn:export-downloads-csv"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "Triggers the export and asserts a downloadable CSV file is delivered that conforms to CSV and contains the user's rows, covering the scenario hint (response is a CSV attachment).",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_29f317ede3a207dee509",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Scoping the export to the requesting user's own records is a defensible inference from the brief phrase 'their data'. Not an expected scenario. The case marks this provenance 'explicit' though ownership-scoping enforcement is not explicitly stated in the one-line brief; the inference itself is grounded, so it is supported rather than invented.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_31cab3d5a91ac58cc07a",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Empty-dataset boundary of the stated export capability (export with no records yields a valid CSV). Not an expected scenario, but a reasonable elaboration of exporting one's data; the case correctly marks provenance inferred.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_d0769a9420525fbf7913",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Correct escaping of CSV-significant characters is intrinsic to producing a valid 'CSV file' as the brief states. Not an expected scenario, but a sound well-formedness inference; provenance is correctly marked inferred.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_a3e401e3dc9b6dc444df",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Asserts a specific access-control behavior (anonymous requests rejected, no file produced). The one-line brief states nothing about authentication or an access model; the case itself marks provenance 'assumption'. Behavior is asserted with no basis in the brief or evidence.",
+			"supportsCitedEvidence": false
+		},
+		{
+			"caseId": "case_db486d30fc71b7adda96",
+			"verdict": "extra",
+			"classification": "unsupported-invented",
+			"reason": "Asserts a volume/performance guarantee (full high-volume export with no truncation, completes within a timeout). The brief mentions no volume, limits, or performance expectation; the case marks provenance 'assumption'. Behavior is asserted with no basis in the brief or evidence.",
+			"supportsCitedEvidence": false
+		}
+	],
+	"assertionAnnotations": [
+		{
+			"assertionId": "assert_77381c349afd32eb98f2",
+			"supportsCitedEvidence": true,
+			"reason": "A downloadable CSV file being delivered is directly supported by the stated export capability."
+		},
+		{
+			"assertionId": "assert_636278b4b46c22153f96",
+			"supportsCitedEvidence": true,
+			"reason": "The exported rows matching the user's stored records is directly supported by 'export their data as a CSV file'."
+		},
+		{
+			"assertionId": "assert_c96f2e68d11bc928ac1b",
+			"supportsCitedEvidence": true,
+			"reason": "A well-formed CSV is implied by the capability; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_50468e2ef4be1086a924",
+			"supportsCitedEvidence": false,
+			"reason": "Over-claims explicit provenance: the sole evidence ('users can export their data as a CSV file') does not state that ownership scoping is enforced, so 'no foreign records' is an inference, not an explicit claim."
+		},
+		{
+			"assertionId": "assert_7450c3b9eb1ca5e68854",
+			"supportsCitedEvidence": false,
+			"reason": "Over-claims explicit provenance: that the export contains exactly the requesting user's records is an inference from 'their data', not an explicitly specified scoping rule."
+		},
+		{
+			"assertionId": "assert_397fffd2dc104b9e50a4",
+			"supportsCitedEvidence": true,
+			"reason": "Empty-input export completing without error is a sound inference; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_7e204ce57cafe1b438c2",
+			"supportsCitedEvidence": true,
+			"reason": "Empty-state output still parsing as valid CSV is a reasonable well-formedness inference; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_b639f639a39482ca8c86",
+			"supportsCitedEvidence": true,
+			"reason": "Zero data rows on an empty dataset is a sound inference; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_4a9f223c566f884701ca",
+			"supportsCitedEvidence": true,
+			"reason": "Round-trip field-value fidelity follows from producing a valid CSV; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_55b137fc5e27e2ec9a8a",
+			"supportsCitedEvidence": true,
+			"reason": "Column alignment per row follows from correct CSV escaping; provenance is correctly marked inferred."
 		}
 	]
 }

@@ -2,68 +2,90 @@
 	"evalSchemaVersion": "eval/v1",
 	"fixtureId": "unsupported-assumptions",
 	"arm": "raw-model",
-	"recordKind": "synthetic",
+	"recordKind": "recorded",
 	"expectValidationFailure": false,
 	"sourceAnnotations": [
 		{
-			"sourceId": "src_91d75bbe72b9a2af6c66",
+			"sourceId": "src_3c4d5e6f708192031425",
+			"sourceKey": "spec"
+		},
+		{
+			"sourceId": "src_4d5e6f70819203142536",
 			"sourceKey": "spec"
 		}
 	],
 	"requirementAnnotations": [
 		{
-			"requirementId": "req_ac502f64c4507951da9b",
+			"requirementId": "req_70819203142536475a8b",
 			"verdict": "maps",
 			"truthKeys": [
 				"req:export-csv"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "States an authenticated user can export their own data as a downloadable CSV file, covering req:export-csv; provenance explicit matches the fixture's expected strength.",
+			"supportsCitedEvidence": true
 		},
 		{
-			"requirementId": "req_1203453ecaa8cae6fcfd",
+			"requirementId": "req_819203142536475a8b9c",
 			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "PDF export is not in the spec."
+			"classification": "supported-inferred",
+			"reason": "Well-formedness (header row, correct delimiter/quoting/escaping, rows matching the user's data) is intrinsic to producing a valid 'CSV file' as the brief states. Not an expected requirement, but a grounded inference; provenance is correctly marked inferred. Same standard applied to the qa-engine escaping/well-formedness elaboration.",
+			"supportsCitedEvidence": true
 		},
 		{
-			"requirementId": "req_fa25594f87928f6a3f24",
+			"requirementId": "req_9203142536475a8b9c0d",
 			"verdict": "extra",
 			"classification": "unsupported-invented",
-			"reason": "Emailing exports is not in the spec."
-		},
-		{
-			"requirementId": "req_a8232e5b593502cd1356",
-			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "Scheduling is not in the spec."
-		},
-		{
-			"requirementId": "req_c4e8a58a823d6390f643",
-			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "Encryption-at-rest is not in the spec."
-		},
-		{
-			"requirementId": "req_b9e341b3fe571078fc47",
-			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "S3 upload is not in the spec."
+			"reason": "Asserts an access-control model (a user may only export data they are authorized to access; unauthenticated requests are rejected). The one-line brief states nothing about authentication or authorization. Behavior is asserted with no basis in the brief or evidence. Same standard applied to the qa-engine unauthenticated-export case.",
+			"supportsCitedEvidence": false
 		}
 	],
 	"caseAnnotations": [
 		{
-			"caseId": "case_944474b18bbdf689b559",
+			"caseId": "case_142536475a8b9c0d1e2f",
 			"verdict": "maps",
 			"truthKeys": [
 				"scn:export-downloads-csv"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "Requests the export and asserts a 200 with Content-Type text/csv, covering the scenario hint (response is a CSV attachment).",
+			"supportsCitedEvidence": true
 		},
 		{
-			"caseId": "case_40039009e23b9e2c3f5a",
+			"caseId": "case_2536475a8b9c0d1e2f30",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Empty-dataset boundary of the stated export capability (header-only CSV when the user has no records). Not an expected scenario, but a reasonable elaboration; provenance is correctly marked inferred. Same standard applied to the qa-engine empty-state case.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_36475a8b9c0d1e2f3041",
 			"verdict": "extra",
 			"classification": "unsupported-invented",
-			"reason": "Tests an invented PDF feature."
+			"reason": "Asserts a specific access-control behavior (anonymous request rejected with 401/403, no body returned). The one-line brief states nothing about authentication or an access model. Behavior is asserted with no basis in the brief or evidence. Same standard applied to the qa-engine unauthenticated-export case.",
+			"supportsCitedEvidence": false
+		}
+	],
+	"assertionAnnotations": [
+		{
+			"assertionId": "assert_9c0d1e2f30415263748a",
+			"supportsCitedEvidence": true,
+			"reason": "A 200 status on a successful export is directly supported by the stated export capability."
+		},
+		{
+			"assertionId": "assert_0d1e2f30415263748a9b",
+			"supportsCitedEvidence": true,
+			"reason": "A CSV download declaring a text/csv content type is a reasonable inference from the stated CSV export; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_1e2f30415263748a9b0c",
+			"supportsCitedEvidence": true,
+			"reason": "Zero data rows on an empty dataset is a sound inference; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_2f30415263748a9b0c1d",
+			"supportsCitedEvidence": false,
+			"reason": "The cited evidence (the export-capability statement) does not support a 401 unauthenticated-rejection; no authentication or access model appears in the brief, so the citation does not support the claim. Same standard applied to the qa-engine anonymous-export assertions."
 		}
 	]
 }
