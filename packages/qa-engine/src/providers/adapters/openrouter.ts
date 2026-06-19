@@ -19,7 +19,9 @@ import { mapHttpError } from "./http-error.js";
  * dynamic `import()` in the factory, so the SDK stays off the common import path.
  *
  * Structured output uses a forced "emit" function tool (broadest model support
- * on OpenRouter); the seam validates the returned JSON against the caller schema.
+ * on OpenRouter) plus a `require_parameters` routing hint; if a model answers
+ * with content instead of a tool call, the extractor falls back to the message
+ * content. The seam validates the returned JSON against the caller schema.
  * Models are namespaced, e.g. `anthropic/claude-opus-4-8`, `openai/gpt-4o`.
  */
 
@@ -37,6 +39,19 @@ const CAPABILITIES: ProviderCapabilities = {
 	supportsSystemPrompt: true,
 	supportsCancellation: true,
 };
+
+/**
+ * Normalize structured content emitted as a plain message (some OpenRouter
+ * sub-providers answer with content instead of a forced tool call). Trims
+ * surrounding whitespace and, if the body is wrapped in a markdown code fence
+ * (```json … ``` or ``` … ```), strips the fence so only the JSON remains.
+ * The result is handed to the seam, which strict-parses + Zod-validates it.
+ */
+function normalizeStructuredContent(content: string): string {
+	const trimmed = content.trim();
+	const fence = /^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i.exec(trimmed);
+	return (fence?.[1] ?? trimmed).trim();
+}
 
 function mapFinishReason(reason: string | null | undefined): FinishReason {
 	switch (reason) {
@@ -70,8 +85,8 @@ function normalizeUsage(
 
 /**
  * Pure extraction of a neutral `RawGeneration` from an OpenAI-compatible
- * response. Split out so the no-choices/no-tool-call guards, content fallback,
- * usage normalization, and finish-reason mapping are deterministically
+ * response. Split out so the no-choices guard, structured tool-call / content
+ * fallback, usage normalization, and finish-reason mapping are deterministically
  * unit-testable without a live call (see extract.test.ts).
  */
 export function extractOpenRouterGeneration(
@@ -93,16 +108,24 @@ export function extractOpenRouterGeneration(
 		const toolCall = choice.message.tool_calls?.find(
 			(tc) => tc.type === "function",
 		);
-		if (toolCall === undefined) {
-			throw new ProviderError(
-				"MODEL_OUTPUT_INVALID",
-				"expected a function tool call but the model returned none",
-				false,
-				{ providerRequestId: completion.id },
-			);
+		if (toolCall !== undefined) {
+			// arguments is a JSON string; the seam strict-parses + validates it.
+			output = { kind: "text", value: toolCall.function.arguments };
+		} else {
+			// Fallback: many OpenRouter models emit the structured JSON as message
+			// content rather than a forced tool call. Normalize and hand it to the
+			// seam, which strict-parses + validates it exactly as tool-call args.
+			const content = normalizeStructuredContent(choice.message.content ?? "");
+			if (content === "") {
+				throw new ProviderError(
+					"MODEL_OUTPUT_INVALID",
+					"model returned neither a tool call nor content",
+					false,
+					{ providerRequestId: completion.id },
+				);
+			}
+			output = { kind: "text", value: content };
 		}
-		// arguments is a JSON string; the seam strict-parses + validates it.
-		output = { kind: "text", value: toolCall.function.arguments };
 	} else {
 		output = { kind: "text", value: choice.message.content ?? "" };
 	}
@@ -168,6 +191,11 @@ export function createOpenRouterAdapter(
 							type: "function",
 							function: { name: STRUCTURED_TOOL },
 						},
+						// OpenRouter-specific routing hint (untyped by the openai SDK):
+						// only route to sub-providers that honor tools/tool_choice.
+						...({ provider: { require_parameters: true } } as {
+							provider: { require_parameters: boolean };
+						}),
 					}),
 				};
 

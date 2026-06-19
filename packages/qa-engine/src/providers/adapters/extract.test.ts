@@ -145,19 +145,89 @@ test("openrouter: structured request extracts tool call arguments as raw text", 
 	assert.equal(gen.providerRequestId, "cmpl_1");
 });
 
-test("openrouter: structured request with no tool call rejects as MODEL_OUTPUT_INVALID", () => {
+test("openrouter: structured request with no tool call falls back to raw json content", () => {
 	const completion = openRouterCompletion({
 		choices: [
 			{
 				index: 0,
 				finish_reason: "stop",
 				logprobs: null,
-				message: { role: "assistant", content: "plain", refusal: null },
+				message: { role: "assistant", content: '{"a":7}', refusal: null },
+			},
+		],
+	});
+	// No tool call: the seam strict-parses the message content as the output.
+	const gen = extractOpenRouterGeneration(completion, true);
+	assert.deepEqual(gen.output, { kind: "text", value: '{"a":7}' });
+	assert.equal(gen.finishReason, "stop");
+});
+
+test("openrouter: structured request strips a ```json markdown fence from content", () => {
+	const completion = openRouterCompletion({
+		choices: [
+			{
+				index: 0,
+				finish_reason: "stop",
+				logprobs: null,
+				message: {
+					role: "assistant",
+					content: '```json\n{"a":7}\n```',
+					refusal: null,
+				},
+			},
+		],
+	});
+	const gen = extractOpenRouterGeneration(completion, true);
+	assert.deepEqual(gen.output, { kind: "text", value: '{"a":7}' });
+});
+
+test("openrouter: structured request strips a bare ``` fence from content", () => {
+	const completion = openRouterCompletion({
+		choices: [
+			{
+				index: 0,
+				finish_reason: "stop",
+				logprobs: null,
+				message: {
+					role: "assistant",
+					content: '```\n{"a":7}\n```',
+					refusal: null,
+				},
+			},
+		],
+	});
+	const gen = extractOpenRouterGeneration(completion, true);
+	assert.deepEqual(gen.output, { kind: "text", value: '{"a":7}' });
+});
+
+test("openrouter: structured request with no tool call and empty content rejects as MODEL_OUTPUT_INVALID", () => {
+	const blankContent = openRouterCompletion({
+		choices: [
+			{
+				index: 0,
+				finish_reason: "stop",
+				logprobs: null,
+				message: { role: "assistant", content: "   \n  ", refusal: null },
 			},
 		],
 	});
 	assert.throws(
-		() => extractOpenRouterGeneration(completion, true),
+		() => extractOpenRouterGeneration(blankContent, true),
+		isInvalidOutput,
+	);
+
+	const nullContent = openRouterCompletion({
+		choices: [
+			{
+				index: 0,
+				finish_reason: "stop",
+				logprobs: null,
+				message: { role: "assistant", content: null, refusal: null },
+			},
+		],
+	});
+	assert.throws(
+		() => extractOpenRouterGeneration(nullContent, true),
 		isInvalidOutput,
 	);
 });
