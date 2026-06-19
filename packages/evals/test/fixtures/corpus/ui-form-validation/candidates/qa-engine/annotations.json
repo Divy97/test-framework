@@ -2,48 +2,123 @@
 	"evalSchemaVersion": "eval/v1",
 	"fixtureId": "ui-form-validation",
 	"arm": "qa-engine",
-	"recordKind": "synthetic",
+	"recordKind": "recorded",
 	"expectValidationFailure": false,
 	"sourceAnnotations": [
 		{
-			"sourceId": "src_c886a2a81fd5d575b3d1",
+			"sourceId": "src_406812db9a1b828ed111",
+			"sourceKey": "spec"
+		},
+		{
+			"sourceId": "src_ce9fb5a5f9c860fb12d2",
 			"sourceKey": "spec"
 		}
 	],
 	"requirementAnnotations": [
 		{
-			"requirementId": "req_4b469a80feb66a6f62d6",
+			"requirementId": "req_5d56f914e620d53f5aba",
 			"verdict": "maps",
 			"truthKeys": [
 				"req:email-valid"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "Validates the email field before submission, covering the valid-address core of req:email-valid; cited brief evidence supports it.",
+			"supportsCitedEvidence": true
 		},
 		{
-			"requirementId": "req_e4cafcac43eb98a86458",
+			"requirementId": "req_52267ca4b6b662b00d77",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:email-valid"
+			],
+			"satisfaction": "partial",
+			"reason": "Covers only the required/presence half of req:email-valid (email must be present and complete), not the format-validity half handled by the sibling requirement.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_2502e4a9d38cb2243134",
 			"verdict": "maps",
 			"truthKeys": [
 				"req:submit-gated"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "States submit stays disabled until the form is valid and enables only when valid, directly covering req:submit-gated.",
+			"supportsCitedEvidence": true
 		}
 	],
 	"caseAnnotations": [
 		{
-			"caseId": "case_389ca34a260ca9ab6a2f",
+			"caseId": "case_2f7c4ff22ecc6f50b32c",
 			"verdict": "maps",
 			"truthKeys": [
 				"scn:invalid-email-error"
 			],
-			"satisfaction": "full"
+			"satisfaction": "partial",
+			"reason": "Asserts the inline validation error is visible for a malformed email, but does not assert submit is blocked, so it covers only part of the scenario hint (inline error visible and submit blocked).",
+			"supportsCitedEvidence": true
 		},
 		{
-			"caseId": "case_7b378c6ec27d504ae7cc",
+			"caseId": "case_5cc5ad7eb98e56df0fb0",
 			"verdict": "maps",
 			"truthKeys": [
 				"scn:valid-enables-submit"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "Drives all fields valid and asserts the submit button becomes enabled, matching scn:valid-enables-submit.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_765a4cc0f5f7dfc04966",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Positive email-validation path (well-formed email accepted, no error). Not an expected scenario, but a reasonable elaboration grounded in the brief's stated email validation and cited evidence.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_58f129a150503a1cadb3",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Negative submit-gating case (submit stays disabled while a field is invalid). Not an expected scenario, but grounded in the brief's 'disables submit until the form is valid' and cited evidence.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_4a074bb03ab4ab1abf33",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Empty email keeps the form invalid. Not an expected scenario, but a reasonable inference from email being a required component of validity, with provenance citing the brief evidence.",
+			"supportsCitedEvidence": true
+		}
+	],
+	"assertionAnnotations": [
+		{
+			"assertionId": "assert_a006b7766999322b933d",
+			"supportsCitedEvidence": true,
+			"reason": "Malformed email marked invalid is directly supported by the stated email-validation behavior."
+		},
+		{
+			"assertionId": "assert_849dab9cae497a4b89f6",
+			"supportsCitedEvidence": false,
+			"reason": "Over-claims explicit provenance: the cited evidence ('validates email') does not state that a discrete validation error message is surfaced; existence of the message is itself an open question."
+		},
+		{
+			"assertionId": "assert_fd8f58ad3f0029b78e5c",
+			"supportsCitedEvidence": true,
+			"reason": "Submit disabled while the form is invalid is directly supported by 'disables submit until the form is valid'."
+		},
+		{
+			"assertionId": "assert_d8bbf40e40adbce62e5d",
+			"supportsCitedEvidence": true,
+			"reason": "Submit enabled when all fields are valid is the directly stated enable side of submit gating."
+		},
+		{
+			"assertionId": "assert_7b42b0eedbbb9bd6e5ae",
+			"supportsCitedEvidence": false,
+			"reason": "Over-claims explicit provenance: 'validates email' does not state that no error is shown for valid input; the validation-feedback mechanism is an open question."
+		},
+		{
+			"assertionId": "assert_2a651d024d080b2cfda1",
+			"supportsCitedEvidence": true,
+			"reason": "Empty email keeping overall form validity invalid is a reasonable read of email gating submit; provenance is correctly marked inferred."
 		}
 	]
 }

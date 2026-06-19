@@ -2,30 +2,107 @@
 	"evalSchemaVersion": "eval/v1",
 	"fixtureId": "ui-form-validation",
 	"arm": "raw-model",
-	"recordKind": "synthetic",
-	"expectValidationFailure": true,
+	"recordKind": "recorded",
+	"expectValidationFailure": false,
 	"sourceAnnotations": [
 		{
-			"sourceId": "src_244483676861c8921173",
+			"sourceId": "src_00112233445566778899",
 			"sourceKey": "spec"
 		}
 	],
 	"requirementAnnotations": [
 		{
-			"requirementId": "req_80f8acb3282ce73005a9",
+			"requirementId": "req_1122334455667788990a",
 			"verdict": "maps",
 			"truthKeys": [
 				"req:email-valid"
 			],
-			"satisfaction": "full"
+			"satisfaction": "full",
+			"reason": "Requires the form to validate the email field for correct format, covering the valid-address core of req:email-valid; cited brief evidence supports it.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_2233445566778899aabb",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:submit-gated"
+			],
+			"satisfaction": "full",
+			"reason": "States submit must remain disabled until the form is valid, a near-verbatim match to req:submit-gated.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"requirementId": "req_33445566778899aabbcc",
+			"verdict": "maps",
+			"truthKeys": [
+				"req:submit-gated"
+			],
+			"satisfaction": "partial",
+			"reason": "Covers only the enable-when-valid corollary of the gating requirement; provenance is correctly marked inferred and grounded in the brief.",
+			"supportsCitedEvidence": true
 		}
 	],
 	"caseAnnotations": [
 		{
-			"caseId": "case_80a13d26b78d9e34dd3c",
+			"caseId": "case_66778899aabbccddeeff",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:invalid-email-error"
+			],
+			"satisfaction": "full",
+			"reason": "Asserts both the inline email validation error is visible and submit stays disabled, covering the full scenario hint (inline error visible and submit blocked).",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_778899aabbccddeeff00",
+			"verdict": "maps",
+			"truthKeys": [
+				"scn:valid-enables-submit"
+			],
+			"satisfaction": "full",
+			"reason": "Enters a well-formed email and asserts the submit button becomes enabled, matching scn:valid-enables-submit.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_5566778899aabbccddee",
 			"verdict": "extra",
-			"classification": "unsupported-invented",
-			"reason": "No requirement; vague."
+			"classification": "supported-inferred",
+			"reason": "Submit disabled on initial empty load. Not an expected scenario, but a reasonable elaboration grounded in 'disables submit until the form is valid' and cited evidence.",
+			"supportsCitedEvidence": true
+		},
+		{
+			"caseId": "case_8899aabbccddeeff0011",
+			"verdict": "extra",
+			"classification": "supported-inferred",
+			"reason": "Submit re-disables when a previously valid email is cleared. Not an expected scenario, but a sound inference that gating tracks validity changes in both directions, grounded in the brief.",
+			"supportsCitedEvidence": true
+		}
+	],
+	"assertionAnnotations": [
+		{
+			"assertionId": "assert_112233445566778899a0",
+			"supportsCitedEvidence": true,
+			"reason": "Submit disabled on initial load is directly supported by 'disables submit until the form is valid'."
+		},
+		{
+			"assertionId": "assert_2233445566778899a0b1",
+			"supportsCitedEvidence": false,
+			"reason": "Over-claims explicit provenance: 'validates email' does not state that a discrete error element ([data-testid=email-error]) is surfaced; the validation-feedback mechanism is unspecified. Same standard applied to the qa-engine error-message assertions."
+		},
+		{
+			"assertionId": "assert_33445566778899a0b1c2",
+			"supportsCitedEvidence": true,
+			"reason": "Submit stays disabled while the form is invalid is directly supported by the stated gating behavior."
+		},
+		{
+			"assertionId": "assert_445566778899a0b1c2d3",
+			"supportsCitedEvidence": true,
+			"reason": "Submit enabled once the form is valid is the enable side of submit gating; provenance is correctly marked inferred."
+		},
+		{
+			"assertionId": "assert_5566778899a0b1c2d3e4",
+			"supportsCitedEvidence": true,
+			"reason": "Submit re-disabling when the form becomes invalid is a sound inference from gating on validity; provenance is correctly marked inferred."
 		}
 	]
 }
