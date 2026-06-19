@@ -8,12 +8,15 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import {
 	createFakeProvider,
+	EngineError,
 	type FakeOutcome,
+	fakeHang,
 	fakeOk,
 } from "@test-framework/qa-engine";
 import type { EngineRuntime } from "./engine-runtime.js";
 import { createMcpServer, type RuntimeFactory } from "./server.js";
 import type { ArtifactPaths } from "./tool-schemas.js";
+import { failureToToolResult } from "./tools.js";
 
 const FIXED_NOW = () => Date.parse("2026-06-19T00:00:00.000Z");
 
@@ -291,6 +294,59 @@ test("invalid create_test_plan input is rejected before the engine runs", async 
 		await client.close();
 		await rm(root, { recursive: true, force: true });
 	}
+});
+
+// --- Slice 3: cancellation aborts the in-flight model call ---------------------
+
+test("create_test_plan aborts the in-flight model call when the client cancels", async () => {
+	const root = await tempRoot();
+	// First stage hangs forever; only an abort can settle it. The later script
+	// entries must never be consumed — proving the in-flight generate was aborted.
+	const provider = createFakeProvider([fakeHang(), ...happyScript()], {
+		recordCalls: true,
+	});
+	const client = await connectInMemoryClient(
+		fakeRuntimeFactory(provider, root),
+	);
+	const abort = new AbortController();
+	try {
+		const call = client.callTool(
+			{ name: "create_test_plan", arguments: CREATE_ARGS },
+			undefined,
+			{ signal: abort.signal },
+		);
+		// Abort after a tick so the request is in flight at the hanging stage.
+		setTimeout(() => abort.abort(), 10);
+
+		// The cancelled call settles promptly via abort — not by the script running
+		// to completion (the hang would otherwise never resolve).
+		await assert.rejects(call, "cancelled call must reject promptly");
+
+		// Let the server's aborted handler unwind.
+		await new Promise((resolve) => setTimeout(resolve, 20));
+
+		// The in-flight generate was aborted: exactly one stage call started, and
+		// the later script entries (happyScript) were never consumed.
+		assert.equal(provider.calls.length, 1);
+	} finally {
+		await client.close();
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test("an aborted signal maps any in-flight failure to PROVIDER_CANCELLED", () => {
+	// The SDK suppresses the response of a cancelled request over the wire, so the
+	// adapter's cancellation mapping is asserted directly: a bare provider may
+	// surface a raw AbortError (MODEL_OUTPUT_INVALID), but with the client signal
+	// aborted the adapter reports PROVIDER_CANCELLED.
+	const aborted = AbortSignal.abort();
+	const result = failureToToolResult(
+		new EngineError("MODEL_OUTPUT_INVALID", "boom at /tmp/x"),
+		aborted,
+	);
+	const error = (result.structuredContent as { error: { code: string } }).error;
+	assert.equal(error.code, "PROVIDER_CANCELLED");
+	assert.equal(result.isError, true);
 });
 
 // --- built stdio handshake (full bootstrap in slice 6) -------------------------
