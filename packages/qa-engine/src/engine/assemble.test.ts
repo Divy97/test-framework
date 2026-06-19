@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { createStableId } from "../test-graph/ids.js";
 import { validateTestGraph } from "../test-graph/validate.js";
 import { type AssembleMeta, assemble } from "./assemble.js";
 import type { PlanDraft } from "./drafts.js";
@@ -167,4 +168,34 @@ test("assemble rejects a duplicate semantic key within a stage", () => {
 	assert.ok(requirement);
 	draft.requirements.push({ ...requirement });
 	assert.throws(() => assemble(ingested, draft, META), /Duplicate requirement/);
+});
+
+test("assemble defaults reproduce a v1 generation node", () => {
+	const ingested = ingest(INPUT);
+	const graph = assemble(ingested, minimalDraft(), META);
+
+	// No planVersion/generationKey in meta -> the create path is byte-unchanged.
+	assert.equal(graph.planVersion, 1);
+	assert.equal(
+		graph.generation.id,
+		createStableId("generation", ingested.planId, "initial"),
+	);
+});
+
+test("assemble honors an explicit planVersion and generationKey", () => {
+	const ingested = ingest(INPUT);
+	const v1 = assemble(ingested, minimalDraft(), META);
+	const v2 = assemble(ingested, minimalDraft(), {
+		...META,
+		planVersion: 2,
+		generationKey: "revision-2",
+	});
+
+	assert.equal(v2.planVersion, 2);
+	assert.equal(
+		v2.generation.id,
+		createStableId("generation", ingested.planId, "revision-2"),
+	);
+	// Each revision's generation event gets a distinct stable id.
+	assert.notEqual(v2.generation.id, v1.generation.id);
 });

@@ -39,6 +39,14 @@ export interface AssembleMeta {
 	status: "complete" | "incomplete";
 	warnings: string[];
 	repositoryRevision?: string;
+	/** Plan revision number. Defaults to 1 so the v1 create path is unchanged. */
+	planVersion?: number;
+	/**
+	 * Per-revision key for the generation node's stable id. Defaults to "initial"
+	 * so the v1 create path keeps byte-identical output; refine passes
+	 * "revision-2", "revision-3", … so each generation event gets a distinct id.
+	 */
+	generationKey?: string;
 }
 
 /** Canonicalize a model-emitted key; an empty/whitespace key is bad model output. */
@@ -295,7 +303,7 @@ export function assemble(
 	});
 
 	const generation: GenerationMetadata = {
-		id: createStableId("generation", planId, "initial"),
+		id: createStableId("generation", planId, meta.generationKey ?? "initial"),
 		generatedAt: meta.generatedAt,
 		methodologyVersion: meta.methodologyVersion,
 		workflowVersion: meta.workflowVersion,
@@ -312,7 +320,7 @@ export function assemble(
 		schemaVersion: TEST_GRAPH_SCHEMA_VERSION,
 		projectId,
 		planId,
-		planVersion: 1,
+		planVersion: meta.planVersion ?? 1,
 		title: ingested.title,
 		status: meta.status,
 		createdAt: meta.createdAt,
