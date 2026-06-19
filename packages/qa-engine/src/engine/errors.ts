@@ -23,7 +23,8 @@ export type EngineErrorCode =
 	| "CONTEXT_LIMIT_REACHED"
 	| "PLAN_INVARIANT_FAILED"
 	| "ARTIFACT_NOT_FOUND"
-	| "ARTIFACT_WRITE_FAILED";
+	| "ARTIFACT_WRITE_FAILED"
+	| "ARTIFACT_CONFLICT";
 
 export interface EngineErrorOptions {
 	cause?: unknown;

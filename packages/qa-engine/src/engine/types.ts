@@ -66,3 +66,27 @@ export interface CreatePlanResult {
 export interface LoadPlanInput {
 	planId: string;
 }
+
+/**
+ * Refine an existing persisted plan into a `planVersion + 1` revision from scoped
+ * feedback. `expectedVersion` is the optimistic conflict token: the version the
+ * caller last loaded. When supplied and stale, refine throws `ARTIFACT_CONFLICT`
+ * before any model spend or write. `sources` may add new sources to the plan.
+ */
+export interface RefinePlanInput {
+	planId: string;
+	feedback: string;
+	expectedVersion?: number;
+	sources?: CreatePlanSource[];
+}
+
+export interface RefinePlanResult {
+	graph: TestGraphV1;
+	/** Directory the revision was persisted to (under `workspaceRoot`). */
+	planDir: string;
+	usage: NormalizedUsage;
+	warnings: string[];
+	status: "complete" | "incomplete";
+	/** The `planVersion` of the revision this one replaced. */
+	previousVersion: number;
+}

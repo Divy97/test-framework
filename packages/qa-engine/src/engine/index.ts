@@ -8,5 +8,7 @@ export type {
 	CreatePlanSource,
 	EngineDeps,
 	LoadPlanInput,
+	RefinePlanInput,
+	RefinePlanResult,
 	RepoContext,
 } from "./types.js";
