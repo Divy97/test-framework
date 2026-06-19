@@ -63,6 +63,40 @@ export function failureToToolResult(
 	return engineErrorToToolResult(error);
 }
 
+const PROGRESS_TOTAL = 2;
+
+/**
+ * Coarse, opt-in progress around a single engine call. The adapter cannot see
+ * the engine's internal stage boundaries (ADR-0003 keeps them private), so it
+ * reports only start/done with a fixed `total`. Emits nothing unless the client
+ * requested progress via `extra._meta.progressToken`.
+ */
+async function reportProgress(
+	extra: ToolExtra,
+	progress: number,
+	message: string,
+): Promise<void> {
+	const progressToken = extra._meta?.progressToken;
+	if (progressToken === undefined) return;
+	await extra.sendNotification({
+		method: "notifications/progress",
+		params: { progressToken, progress, total: PROGRESS_TOTAL, message },
+	});
+}
+
+/** Run an engine operation while bracketing it with coarse opt-in progress. */
+async function runWithProgress<T>(
+	extra: ToolExtra,
+	operation: () => Promise<T>,
+): Promise<CallToolResult> {
+	return runTool(extra, async () => {
+		await reportProgress(extra, 0, "Generating plan…");
+		const output = await operation();
+		await reportProgress(extra, PROGRESS_TOTAL, "Done");
+		return output;
+	});
+}
+
 async function runTool<T>(
 	extra: ToolExtra,
 	operation: () => Promise<T>,
@@ -91,7 +125,7 @@ export function registerEngineTools(
 			annotations: generativeAnnotations,
 		},
 		async (args, extra) =>
-			runTool(extra, async () =>
+			runWithProgress(extra, async () =>
 				handlers.createTestPlan(args, await makeContext(extra)),
 			),
 	);
@@ -107,7 +141,7 @@ export function registerEngineTools(
 			annotations: generativeAnnotations,
 		},
 		async (args, extra) =>
-			runTool(extra, async () =>
+			runWithProgress(extra, async () =>
 				handlers.refineTestPlan(args, await makeContext(extra)),
 			),
 	);

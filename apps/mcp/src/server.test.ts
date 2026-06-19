@@ -6,6 +6,7 @@ import test from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { ProgressNotificationSchema } from "@modelcontextprotocol/sdk/types.js";
 import {
 	createFakeProvider,
 	EngineError,
@@ -347,6 +348,66 @@ test("an aborted signal maps any in-flight failure to PROVIDER_CANCELLED", () =>
 	const error = (result.structuredContent as { error: { code: string } }).error;
 	assert.equal(error.code, "PROVIDER_CANCELLED");
 	assert.equal(result.isError, true);
+});
+
+// --- Slice 4: progress reporting (opt-in) --------------------------------------
+
+test("create_test_plan emits monotonic progress when a token is supplied", async () => {
+	const root = await tempRoot();
+	const client = await connectInMemoryClient(
+		fakeRuntimeFactory(createFakeProvider(happyScript()), root),
+	);
+	const progress: Array<{ progress: number; total?: number }> = [];
+	try {
+		const result = await client.callTool(
+			{ name: "create_test_plan", arguments: CREATE_ARGS },
+			undefined,
+			{
+				onprogress: (event) => {
+					progress.push({ progress: event.progress, total: event.total });
+				},
+			},
+		);
+		assert.notEqual(result.isError, true);
+		assert.ok(
+			progress.length >= 1,
+			"expected at least one progress notification",
+		);
+		let previous = Number.NEGATIVE_INFINITY;
+		for (const event of progress) {
+			assert.ok(event.progress >= previous, "progress must be non-decreasing");
+			previous = event.progress;
+			assert.equal(event.total, 2);
+		}
+	} finally {
+		await client.close();
+		await rm(root, { recursive: true, force: true });
+	}
+});
+
+test("no progress notifications are emitted without a token", async () => {
+	const root = await tempRoot();
+	const client = await connectInMemoryClient(
+		fakeRuntimeFactory(createFakeProvider(happyScript()), root),
+	);
+	let progressCount = 0;
+	// Register before the call: with no `onprogress`, the SDK attaches no
+	// progressToken, so the server's gated reporter emits nothing.
+	client.setNotificationHandler(ProgressNotificationSchema, () => {
+		progressCount += 1;
+	});
+	try {
+		const result = await client.callTool({
+			name: "create_test_plan",
+			arguments: CREATE_ARGS,
+		});
+		assert.notEqual(result.isError, true);
+		await new Promise((resolve) => setTimeout(resolve, 10));
+		assert.equal(progressCount, 0);
+	} finally {
+		await client.close();
+		await rm(root, { recursive: true, force: true });
+	}
 });
 
 // --- built stdio handshake (full bootstrap in slice 6) -------------------------
