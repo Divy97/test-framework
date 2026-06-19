@@ -169,3 +169,5 @@ The scan returns paths and reasons only — no file contents or excerpts. The de
 - accepted architecture is in [docs/superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md](/Users/divy/Developer/personal/test-framework/docs/superpowers/specs/2026-06-14-verification-intelligence-architecture-design.md)
 - durable decisions and rejected paths are in [docs/adr](/Users/divy/Developer/personal/test-framework/docs/adr)
 - product baseline is in [docs/product-baseline.md](/Users/divy/Developer/personal/test-framework/docs/product-baseline.md)
+- limitations and the security model are in [docs/limitations-and-security.md](/Users/divy/Developer/personal/test-framework/docs/limitations-and-security.md)
+- the release acceptance check is in [docs/release-acceptance.md](/Users/divy/Developer/personal/test-framework/docs/release-acceptance.md)
