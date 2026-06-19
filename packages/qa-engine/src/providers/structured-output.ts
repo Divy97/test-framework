@@ -8,9 +8,22 @@ import type { RawOutput } from "./types.js";
  * or unvalidated data.
  */
 
-/** Convert a caller Zod schema to the JSON Schema a provider needs. */
+/**
+ * Convert a caller Zod schema to the JSON Schema a provider needs.
+ *
+ * `io: "input"` describes the shape the model should EMIT — `validateOutput`
+ * runs `schema.safeParse`, so the model emits the input side and the schema's
+ * transforms/defaults are applied during validation. `unrepresentable: "any"`
+ * keeps conversion from throwing on the engine's stage schemas, which contain
+ * Zod transforms and `z.custom()` types (e.g. in the cases/details/plan-draft
+ * schemas) with no JSON Schema form: those fields become a permissive `{}` in the
+ * hint given to the model, while `validateOutput` still enforces the FULL strict
+ * schema (transforms and all) on the returned JSON. Without this the cases stage
+ * throws "Transforms cannot be represented in JSON Schema" for every real
+ * provider — a path the deterministic fake never exercises.
+ */
 export function toProviderSchema(schema: ZodType): unknown {
-	return z.toJSONSchema(schema);
+	return z.toJSONSchema(schema, { io: "input", unrepresentable: "any" });
 }
 
 function invalid(detail: string, cause?: unknown): ProviderError {
