@@ -1,143 +1,1125 @@
 {
-	"schemaVersion": "test-graph/v1",
-	"projectId": "prj_813f94d0d9a3e50c0cb9",
-	"planId": "plan_519f2f7e604eae0585f7",
-	"planVersion": 1,
-	"title": "Task authz plan",
-	"status": "draft",
-	"createdAt": "2026-06-15T10:00:00.000Z",
-	"updatedAt": "2026-06-15T10:00:00.000Z",
-	"generation": {
-		"id": "gen_acb01c2ca8e042b2d1e8",
-		"generatedAt": "2026-06-15T10:00:00.000Z",
-		"methodologyVersion": "0.1.0",
-		"workflowVersion": "0.1.0",
-		"inputFingerprint": "sha256:authz-api-raw-model",
-		"generator": {
-			"kind": "model",
-			"provider": "anthropic",
-			"model": "claude-opus-4-8"
-		},
-		"status": "incomplete",
-		"warnings": []
-	},
-	"sources": [
-		{
-			"id": "src_dc9a958334cc61753c60",
-			"kind": "feature-request",
-			"title": "Feature spec",
-			"supplied": true
-		}
-	],
-	"evidence": [
-		{
-			"id": "ev_58c71de3cbe46d3821c2",
-			"sourceId": "src_dc9a958334cc61753c60",
-			"kind": "statement",
-			"claim": "Tasks can be deleted."
-		}
-	],
-	"requirements": [
-		{
-			"id": "req_61a38d77478120f56556",
-			"statement": "Tasks can be deleted.",
-			"kind": "functional",
-			"provenance": {
-				"kind": "explicit",
-				"evidenceIds": [
-					"ev_58c71de3cbe46d3821c2"
-				]
-			},
-			"priority": "p1",
-			"risk": "low",
-			"openQuestionIds": []
-		}
-	],
-	"features": [],
-	"dataRequirements": [],
-	"testCases": [
-		{
-			"id": "case_ca6deb75b48a9c00e291",
-			"title": "Delete a task",
-			"objective": "Delete works.",
-			"type": "positive",
-			"priority": "p2",
-			"risk": "low",
-			"riskRationale": "Happy path.",
-			"provenance": {
-				"kind": "explicit",
-				"evidenceIds": [
-					"ev_58c71de3cbe46d3821c2"
-				]
-			},
-			"requirementIds": [],
-			"featureIds": [],
-			"qualityTags": [],
-			"actor": {
-				"role": "user",
-				"authentication": "authenticated",
-				"permissions": []
-			},
-			"target": {
-				"kind": "api",
-				"method": "DELETE",
-				"path": "/tasks/{id}"
-			},
-			"preconditions": [],
-			"dependsOnCaseIds": [],
-			"consumesDataRequirementIds": [],
-			"producesDataRequirementIds": [],
-			"postconditions": [],
-			"cleanup": {
-				"intent": "none",
-				"dataRequirementIds": [],
-				"afterCaseIds": []
-			},
-			"automation": {
-				"readiness": "ready",
-				"blockers": []
-			}
-		}
-	],
-	"steps": [
-		{
-			"id": "step_5979ae600f02b76400f7",
-			"testCaseId": "case_ca6deb75b48a9c00e291",
-			"order": 1,
-			"description": "Delete a task.",
-			"action": {
-				"kind": "request",
-				"method": "DELETE",
-				"path": "/tasks/1"
-			},
-			"provenance": {
-				"kind": "explicit",
-				"evidenceIds": [
-					"ev_58c71de3cbe46d3821c2"
-				]
-			}
-		}
-	],
 	"assertions": [
 		{
-			"id": "assert_e5801a28e9670a373ad2",
-			"testCaseId": "case_ca6deb75b48a9c00e291",
-			"provenance": {
-				"kind": "explicit",
-				"evidenceIds": [
-					"ev_58c71de3cbe46d3821c2"
-				]
-			},
-			"stepId": "step_5979ae600f02b76400f7",
-			"subject": "status",
+			"expected": 204,
+			"id": "assert_0a1b2c3d4e5f60718293",
+			"matcher": "statusCode",
 			"observationPoint": {
 				"kind": "api",
 				"method": "DELETE",
 				"path": "/tasks/{id}"
 			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_0a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_0a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 404,
+			"id": "assert_1a1b2c3d4e5f60718293",
 			"matcher": "statusCode",
-			"expected": 200
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Deleted task should be gone."
+			},
+			"stepId": "step_1a1b2c3d4e5f60718293",
+			"subject": "follow-up fetch status",
+			"testCaseId": "case_0a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 403,
+			"id": "assert_2a1b2c3d4e5f60718293",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_2a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_1a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 403,
+			"id": "assert_3a1b2c3d4e5f60718293",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_3a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_2a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 404,
+			"id": "assert_4a1b2c3d4e5f60718293",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Not-found for missing id."
+			},
+			"stepId": "step_4a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_3a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 401,
+			"id": "assert_5a1b2c3d4e5f60718293",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Auth required."
+			},
+			"stepId": "step_5a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_4a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 200,
+			"id": "assert_6a1b2c3d4e5f60718293",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_6a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_5a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": "{callerId}",
+			"id": "assert_7a1b2c3d4e5f60718293",
+			"matcher": "equals",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_6a1b2c3d4e5f60718293",
+			"subject": "owner id of every returned task",
+			"testCaseId": "case_5a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": "{otherTaskId}",
+			"id": "assert_8a1b2c3d4e5f60718293",
+			"matcher": "notContains",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_6a1b2c3d4e5f60718293",
+			"subject": "returned task list",
+			"testCaseId": "case_5a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 0,
+			"id": "assert_9a1b2c3d4e5f60718293",
+			"matcher": "count",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"stepId": "step_7a1b2c3d4e5f60718293",
+			"subject": "returned task count",
+			"testCaseId": "case_6a1b2c3d4e5f60718293"
+		},
+		{
+			"expected": 401,
+			"id": "assert_aa1b2c3d4e5f60718293",
+			"matcher": "statusCode",
+			"observationPoint": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Auth required."
+			},
+			"stepId": "step_8a1b2c3d4e5f60718293",
+			"subject": "response status",
+			"testCaseId": "case_7a1b2c3d4e5f60718293"
 		}
 	],
-	"openQuestions": []
+	"createdAt": "2026-06-19T10:00:00Z",
+	"dataRequirements": [
+		{
+			"description": "A task record owned by the authenticated caller.",
+			"id": "data_0a1b2c3d4e5f60718293",
+			"kind": "record",
+			"name": "Caller-owned task",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "generated",
+			"sensitivity": "internal"
+		},
+		{
+			"description": "A task record owned by a different user, used for negative authorization checks.",
+			"id": "data_1a1b2c3d4e5f60718293",
+			"kind": "record",
+			"name": "Other-user task",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "generated",
+			"sensitivity": "internal"
+		},
+		{
+			"description": "An account with admin role to confirm no override behavior.",
+			"id": "data_2a1b2c3d4e5f60718293",
+			"kind": "account",
+			"name": "Admin account",
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"provisioning": "generated",
+			"sensitivity": "internal"
+		}
+	],
+	"evidence": [
+		{
+			"claim": "Only a task owner may delete it.",
+			"id": "ev_0a1b2c3d4e5f60718293",
+			"kind": "statement",
+			"sourceId": "src_0a1b2c3d4e5f60718293"
+		},
+		{
+			"claim": "Listing returns only the caller's tasks.",
+			"id": "ev_1a1b2c3d4e5f60718293",
+			"kind": "statement",
+			"sourceId": "src_0a1b2c3d4e5f60718293"
+		},
+		{
+			"claim": "No admin override.",
+			"id": "ev_2a1b2c3d4e5f60718293",
+			"kind": "statement",
+			"sourceId": "src_0a1b2c3d4e5f60718293"
+		}
+	],
+	"features": [
+		{
+			"description": "DELETE endpoint enforcing owner-only deletion with no admin override.",
+			"id": "feat_0a1b2c3d4e5f60718293",
+			"name": "Task deletion",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293",
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"requirementIds": [
+				"req_0a1b2c3d4e5f60718293",
+				"req_1a1b2c3d4e5f60718293",
+				"req_3a1b2c3d4e5f60718293",
+				"req_4a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"kind": "api",
+					"method": "DELETE",
+					"path": "/tasks/{id}"
+				}
+			]
+		},
+		{
+			"description": "GET endpoint scoping results to the authenticated caller's tasks.",
+			"id": "feat_1a1b2c3d4e5f60718293",
+			"name": "Task listing",
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293",
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"requirementIds": [
+				"req_2a1b2c3d4e5f60718293",
+				"req_3a1b2c3d4e5f60718293",
+				"req_4a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"kind": "api",
+					"method": "GET",
+					"path": "/tasks"
+				}
+			]
+		}
+	],
+	"generation": {
+		"generatedAt": "2026-06-19T10:00:00Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_0a1b2c3d4e5f60718293",
+		"inputFingerprint": "owner-only-task-deletion-v1",
+		"methodologyVersion": "1.0.0",
+		"status": "complete",
+		"warnings": [],
+		"workflowVersion": "1.0.0"
+	},
+	"openQuestions": [
+		{
+			"blockedEntityRefs": [
+				{
+					"id": "case_1a1b2c3d4e5f60718293",
+					"kind": "testCase"
+				},
+				{
+					"id": "case_2a1b2c3d4e5f60718293",
+					"kind": "testCase"
+				}
+			],
+			"blocking": false,
+			"id": "question_0a1b2c3d4e5f60718293",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Brief specifies ownership rule but not the error contract for unauthorized access."
+			},
+			"question": "What status code is returned when a non-owner targets an existing task — 403 (forbidden) or 404 (to avoid disclosing existence)?",
+			"status": "open"
+		}
+	],
+	"planId": "plan_0a1b2c3d4e5f60718293",
+	"planVersion": 1,
+	"projectId": "prj_0a1b2c3d4e5f60718293",
+	"requirements": [
+		{
+			"id": "req_0a1b2c3d4e5f60718293",
+			"kind": "functional",
+			"openQuestionIds": [
+				"question_0a1b2c3d4e5f60718293"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "A task owner can delete their own task."
+		},
+		{
+			"id": "req_1a1b2c3d4e5f60718293",
+			"kind": "security",
+			"openQuestionIds": [
+				"question_0a1b2c3d4e5f60718293"
+			],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "A non-owner cannot delete another user's task."
+		},
+		{
+			"id": "req_2a1b2c3d4e5f60718293",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Listing tasks returns only tasks owned by the caller."
+		},
+		{
+			"id": "req_3a1b2c3d4e5f60718293",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p1",
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"risk": "high",
+			"statement": "Admins receive no override for deleting or listing tasks they do not own."
+		},
+		{
+			"id": "req_4a1b2c3d4e5f60718293",
+			"kind": "security",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293",
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Ownership enforcement implies authentication is required."
+			},
+			"risk": "high",
+			"statement": "Unauthenticated requests to delete or list tasks are rejected."
+		}
+	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_0a1b2c3d4e5f60718293",
+			"kind": "feature-request",
+			"locator": "brief",
+			"supplied": true,
+			"title": "Owner-only task deletion API"
+		},
+		{
+			"id": "src_1a1b2c3d4e5f60718293",
+			"kind": "api-spec",
+			"locator": "brief",
+			"supplied": true,
+			"title": "Task API spec"
+		}
+	],
+	"status": "complete",
+	"steps": [
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {ownerToken}"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{ownTaskId}"
+			},
+			"description": "Send DELETE for a task owned by the caller.",
+			"id": "step_0a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_0a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {ownerToken}"
+				},
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks/{ownTaskId}"
+			},
+			"description": "Attempt to fetch the deleted task to confirm removal.",
+			"id": "step_1a1b2c3d4e5f60718293",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Confirm deletion persisted."
+			},
+			"testCaseId": "case_0a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {nonOwnerToken}"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{otherTaskId}"
+			},
+			"description": "Send DELETE for a task owned by a different user.",
+			"id": "step_2a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_1a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {adminToken}"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{otherTaskId}"
+			},
+			"description": "Send DELETE as an admin for a task owned by another user.",
+			"id": "step_3a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_2a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {ownerToken}"
+				},
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{missingTaskId}"
+			},
+			"description": "Send DELETE for an id that does not exist.",
+			"id": "step_4a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Not-found handling for delete-by-id."
+			},
+			"testCaseId": "case_3a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"kind": "request",
+				"method": "DELETE",
+				"path": "/tasks/{anyTaskId}"
+			},
+			"description": "Send DELETE with no Authorization header.",
+			"id": "step_5a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Auth gate required."
+			},
+			"testCaseId": "case_4a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {ownerToken}"
+				},
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"description": "Send GET /tasks as the caller.",
+			"id": "step_6a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_5a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"headers": {
+					"Authorization": "Bearer {adminToken}"
+				},
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"description": "Send GET /tasks as an admin who owns no tasks.",
+			"id": "step_7a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"testCaseId": "case_6a1b2c3d4e5f60718293"
+		},
+		{
+			"action": {
+				"kind": "request",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"description": "Send GET /tasks with no Authorization header.",
+			"id": "step_8a1b2c3d4e5f60718293",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Auth gate required."
+			},
+			"testCaseId": "case_7a1b2c3d4e5f60718293"
+		}
+	],
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"task:delete"
+				],
+				"role": "owner"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_0a1b2c3d4e5f60718293"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0a1b2c3d4e5f60718293"
+			],
+			"id": "case_0a1b2c3d4e5f60718293",
+			"objective": "Verify a task owner can delete their own task.",
+			"postconditions": [
+				{
+					"description": "The task no longer exists."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task exists owned by the caller."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_0a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Core happy path; failure breaks the feature entirely.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Owner deletes own task",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"task:delete"
+				],
+				"role": "non-owner"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_1a1b2c3d4e5f60718293"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_1a1b2c3d4e5f60718293"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0a1b2c3d4e5f60718293"
+			],
+			"id": "case_1a1b2c3d4e5f60718293",
+			"objective": "Verify a non-owner is denied when deleting a task they do not own.",
+			"postconditions": [
+				{
+					"description": "The task still exists."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task exists owned by a different user."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_1a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Authorization bypass would allow data destruction across tenants.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Non-owner cannot delete another user's task",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"task:delete",
+					"admin"
+				],
+				"role": "admin"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_1a1b2c3d4e5f60718293"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_1a1b2c3d4e5f60718293"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0a1b2c3d4e5f60718293"
+			],
+			"id": "case_2a1b2c3d4e5f60718293",
+			"objective": "Verify an admin cannot delete a task they do not own.",
+			"postconditions": [
+				{
+					"description": "The task still exists."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task exists owned by a non-admin user."
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_3a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Brief explicitly forbids admin override; a leak here is a privilege-escalation defect.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Admin has no override on deletion",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"task:delete"
+				],
+				"role": "owner"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0a1b2c3d4e5f60718293"
+			],
+			"id": "case_3a1b2c3d4e5f60718293",
+			"objective": "Verify deleting a non-existent task returns a not-found response without leaking ownership.",
+			"postconditions": [],
+			"preconditions": [
+				{
+					"description": "No task exists with the requested id."
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Standard not-found handling implied for a delete-by-id endpoint."
+			},
+			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_0a1b2c3d4e5f60718293",
+				"req_1a1b2c3d4e5f60718293"
+			],
+			"risk": "medium",
+			"riskRationale": "Error-shape consistency prevents enumeration of others' task IDs.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Delete non-existent task",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "anonymous"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_0a1b2c3d4e5f60718293"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_0a1b2c3d4e5f60718293"
+			],
+			"id": "case_4a1b2c3d4e5f60718293",
+			"objective": "Verify an anonymous request cannot delete any task.",
+			"postconditions": [
+				{
+					"description": "The task still exists."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "A task exists."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_0a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Ownership enforcement requires an authenticated caller."
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_4a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Missing auth gate would expose all tasks to deletion.",
+			"target": {
+				"kind": "api",
+				"method": "DELETE",
+				"path": "/tasks/{id}"
+			},
+			"title": "Unauthenticated delete is rejected",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"task:list"
+				],
+				"role": "owner"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_0a1b2c3d4e5f60718293",
+				"data_1a1b2c3d4e5f60718293"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_1a1b2c3d4e5f60718293"
+			],
+			"id": "case_5a1b2c3d4e5f60718293",
+			"objective": "Verify the list endpoint returns only tasks owned by the caller.",
+			"postconditions": [],
+			"preconditions": [
+				{
+					"description": "Tasks exist for the caller and for at least one other user."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"data-integrity",
+				"security"
+			],
+			"requirementIds": [
+				"req_2a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Cross-user data exposure if scoping fails.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "Listing returns only caller's tasks",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"task:list",
+					"admin"
+				],
+				"role": "admin"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_1a1b2c3d4e5f60718293"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_1a1b2c3d4e5f60718293"
+			],
+			"id": "case_6a1b2c3d4e5f60718293",
+			"objective": "Verify an admin's list response is scoped to their own tasks, with no override.",
+			"postconditions": [],
+			"preconditions": [
+				{
+					"description": "Tasks exist owned by other users and none owned by the admin."
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293",
+					"ev_2a1b2c3d4e5f60718293"
+				],
+				"kind": "explicit"
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_2a1b2c3d4e5f60718293",
+				"req_3a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Brief forbids admin override; admin must not see others' tasks.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "Admin listing shows only own tasks",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "anonymous"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_1a1b2c3d4e5f60718293"
+			],
+			"id": "case_7a1b2c3d4e5f60718293",
+			"objective": "Verify an anonymous request cannot list tasks.",
+			"postconditions": [],
+			"preconditions": [],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_1a1b2c3d4e5f60718293"
+				],
+				"kind": "inferred",
+				"rationale": "Caller-scoped listing requires an authenticated caller."
+			},
+			"qualityTags": [
+				"security"
+			],
+			"requirementIds": [
+				"req_4a1b2c3d4e5f60718293"
+			],
+			"risk": "high",
+			"riskRationale": "Unauthenticated access would expose task data.",
+			"target": {
+				"kind": "api",
+				"method": "GET",
+				"path": "/tasks"
+			},
+			"title": "Unauthenticated listing is rejected",
+			"type": "security"
+		}
+	],
+	"title": "Owner-only task deletion API — test plan",
+	"updatedAt": "2026-06-19T10:00:00Z"
 }

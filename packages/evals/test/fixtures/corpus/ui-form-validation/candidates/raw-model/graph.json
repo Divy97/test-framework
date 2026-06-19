@@ -1,138 +1,714 @@
 {
-	"schemaVersion": "test-graph/v1",
-	"projectId": "prj_7aea345837d6c05718fa",
-	"planId": "plan_5ccf16397acb229dd764",
-	"planVersion": 1,
-	"title": "Signup form plan",
-	"status": "draft",
-	"createdAt": "2026-06-15T10:00:00.000Z",
-	"updatedAt": "2026-06-15T10:00:00.000Z",
-	"generation": {
-		"id": "gen_ca1eccf338f5560a7f81",
-		"generatedAt": "2026-06-15T10:00:00.000Z",
-		"methodologyVersion": "0.1.0",
-		"workflowVersion": "0.1.0",
-		"inputFingerprint": "sha256:ui-form-validation-raw-model",
-		"generator": {
-			"kind": "model",
-			"provider": "anthropic",
-			"model": "claude-opus-4-8"
-		},
-		"status": "incomplete",
-		"warnings": []
-	},
-	"sources": [
+	"assertions": [
 		{
-			"id": "src_244483676861c8921173",
-			"kind": "feature-request",
-			"title": "Feature spec",
-			"supplied": true
+			"id": "assert_112233445566778899a0",
+			"matcher": "disabled",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "button[type=\"submit\"]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Submit disabled until form is valid."
+			},
+			"stepId": "step_2233445566778899a0b1",
+			"subject": "Submit button",
+			"testCaseId": "case_5566778899aabbccddee"
+		},
+		{
+			"id": "assert_2233445566778899a0b1",
+			"matcher": "visible",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "[data-testid=\"email-error\"]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Email validation must flag malformed input."
+			},
+			"stepId": "step_5566778899a0b1c2d3e4",
+			"subject": "Email validation error message",
+			"testCaseId": "case_66778899aabbccddeeff"
+		},
+		{
+			"id": "assert_33445566778899a0b1c2",
+			"matcher": "disabled",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "button[type=\"submit\"]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Submit stays disabled while form is invalid."
+			},
+			"stepId": "step_5566778899a0b1c2d3e4",
+			"subject": "Submit button",
+			"testCaseId": "case_66778899aabbccddeeff"
+		},
+		{
+			"id": "assert_445566778899a0b1c2d3",
+			"matcher": "enabled",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "button[type=\"submit\"]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Submit enables once the form is valid."
+			},
+			"stepId": "step_8899a0b1c2d3e4f50617",
+			"subject": "Submit button",
+			"testCaseId": "case_778899aabbccddeeff00"
+		},
+		{
+			"id": "assert_5566778899a0b1c2d3e4",
+			"matcher": "disabled",
+			"observationPoint": {
+				"kind": "ui",
+				"route": "/signup",
+				"selector": "button[type=\"submit\"]"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Submit re-disables when the form becomes invalid."
+			},
+			"stepId": "step_a0b1c2d3e4f506172839",
+			"subject": "Submit button",
+			"testCaseId": "case_8899aabbccddeeff0011"
+		}
+	],
+	"createdAt": "2026-06-19T09:00:00Z",
+	"dataRequirements": [
+		{
+			"description": "An invalid email string used to trigger the email validation error path.",
+			"id": "data_99aabbccddeeff001122",
+			"kind": "dataset",
+			"name": "Malformed email sample",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Needed to exercise negative validation."
+			},
+			"provisioning": "generated",
+			"sensitivity": "none"
+		},
+		{
+			"description": "A well-formed email string used to reach the valid form state.",
+			"id": "data_aabbccddeeff00112233",
+			"kind": "dataset",
+			"name": "Valid email sample",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Needed to exercise positive validation and submit enabling."
+			},
+			"provisioning": "generated",
+			"sensitivity": "none"
 		}
 	],
 	"evidence": [
 		{
-			"id": "ev_388688343acd59711aee",
-			"sourceId": "src_244483676861c8921173",
+			"claim": "A signup form validates email and disables submit until the form is valid.",
+			"id": "ev_aabbccddee0011223344",
 			"kind": "statement",
-			"claim": "Email is required."
+			"sourceId": "src_00112233445566778899"
 		}
 	],
+	"features": [
+		{
+			"description": "Signup form validates the email field and gates the submit button on overall form validity.",
+			"id": "feat_445566778899aabbccdd",
+			"name": "Signup form validation and submit gating",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Directly described in the brief."
+			},
+			"requirementIds": [
+				"req_1122334455667788990a",
+				"req_2233445566778899aabb",
+				"req_33445566778899aabbcc"
+			],
+			"risk": "high",
+			"targets": [
+				{
+					"component": "SignupForm",
+					"kind": "ui",
+					"route": "/signup"
+				}
+			]
+		}
+	],
+	"generation": {
+		"generatedAt": "2026-06-19T09:00:00Z",
+		"generator": {
+			"kind": "model",
+			"model": "claude-opus-4-8",
+			"provider": "anthropic"
+		},
+		"id": "gen_1f2e3d4c5b6a79808172",
+		"inputFingerprint": "signup-form-validation-submit-state-v1",
+		"methodologyVersion": "1.0.0",
+		"status": "complete",
+		"warnings": [
+			"Brief is minimal; email validation rules, submit endpoint, and field set are assumed and captured as open questions."
+		],
+		"workflowVersion": "1.0.0"
+	},
+	"openQuestions": [
+		{
+			"blockedEntityRefs": [
+				{
+					"id": "req_1122334455667788990a",
+					"kind": "requirement"
+				}
+			],
+			"blocking": false,
+			"id": "question_aa00bb11cc22dd33ee44",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Brief says email is validated but does not define the rules."
+			},
+			"question": "What are the exact email validation rules (regex, allowed domains, length limits)?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [
+				{
+					"id": "req_2233445566778899aabb",
+					"kind": "requirement"
+				}
+			],
+			"blocking": false,
+			"id": "question_bb11cc22dd33ee44ff55",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Brief references form validity but only names the email field."
+			},
+			"question": "Which fields besides email exist on the signup form, and do they also gate submit validity?",
+			"status": "open"
+		}
+	],
+	"planId": "plan_a1b2c3d4e5f607182930",
+	"planVersion": 1,
+	"projectId": "prj_0a1b2c3d4e5f60718293",
 	"requirements": [
 		{
-			"id": "req_80f8acb3282ce73005a9",
-			"statement": "Email required.",
+			"id": "req_1122334455667788990a",
 			"kind": "functional",
+			"openQuestionIds": [
+				"question_aa00bb11cc22dd33ee44"
+			],
+			"priority": "p0",
 			"provenance": {
-				"kind": "explicit",
 				"evidenceIds": [
-					"ev_388688343acd59711aee"
-				]
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Brief states the form validates email."
 			},
-			"priority": "p1",
-			"risk": "medium",
-			"openQuestionIds": []
-		}
-	],
-	"features": [],
-	"dataRequirements": [],
-	"testCases": [
+			"risk": "high",
+			"statement": "The signup form must validate the email field for correct format."
+		},
 		{
-			"id": "case_80a13d26b78d9e34dd3c",
-			"title": "Check the form",
-			"objective": "Make sure it works.",
-			"type": "positive",
-			"priority": "p2",
-			"risk": "low",
-			"riskRationale": "General.",
+			"id": "req_2233445566778899aabb",
+			"kind": "functional",
+			"openQuestionIds": [
+				"question_bb11cc22dd33ee44ff55"
+			],
+			"priority": "p0",
 			"provenance": {
-				"kind": "explicit",
 				"evidenceIds": [
-					"ev_388688343acd59711aee"
-				]
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Brief states submit is disabled until the form is valid."
 			},
-			"requirementIds": [],
-			"featureIds": [],
-			"qualityTags": [],
-			"actor": {
-				"role": "user",
-				"authentication": "anonymous",
-				"permissions": []
+			"risk": "high",
+			"statement": "The submit button must remain disabled until the form is valid."
+		},
+		{
+			"id": "req_33445566778899aabbcc",
+			"kind": "functional",
+			"openQuestionIds": [],
+			"priority": "p0",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Implied corollary of disabling submit until valid."
 			},
-			"target": {
-				"kind": "generic",
-				"description": "the form"
-			},
-			"preconditions": [],
-			"dependsOnCaseIds": [],
-			"consumesDataRequirementIds": [],
-			"producesDataRequirementIds": [],
-			"postconditions": [],
-			"cleanup": {
-				"intent": "none",
-				"dataRequirementIds": [],
-				"afterCaseIds": []
-			},
-			"automation": {
-				"readiness": "ready",
-				"blockers": []
-			}
+			"risk": "medium",
+			"statement": "The submit button must become enabled once all fields are valid."
 		}
 	],
+	"schemaVersion": "test-graph/v1",
+	"sources": [
+		{
+			"id": "src_00112233445566778899",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Signup form validation and submit state brief"
+		}
+	],
+	"status": "complete",
 	"steps": [
 		{
-			"id": "step_b5ceee34543b4f4ce557",
-			"testCaseId": "case_80a13d26b78d9e34dd3c",
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page.",
+			"id": "step_112233445566778899a0",
 			"order": 1,
-			"description": "Open form.",
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Form must be loaded before observing initial state."
+			},
+			"testCaseId": "case_5566778899aabbccddee"
+		},
+		{
 			"action": {
 				"kind": "observe",
-				"subject": "form"
+				"subject": "Submit button enabled/disabled state"
 			},
+			"description": "Observe the submit button state.",
+			"id": "step_2233445566778899a0b1",
+			"order": 2,
 			"provenance": {
-				"kind": "explicit",
 				"evidenceIds": [
-					"ev_388688343acd59711aee"
-				]
-			}
-		}
-	],
-	"assertions": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Brief requires submit disabled until valid."
+			},
+			"testCaseId": "case_5566778899aabbccddee"
+		},
 		{
-			"id": "assert_af25dd1f972942090457",
-			"testCaseId": "case_80a13d26b78d9e34dd3c",
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page.",
+			"id": "step_33445566778899a0b1c2",
+			"order": 1,
 			"provenance": {
-				"kind": "explicit",
 				"evidenceIds": [
-					"ev_388688343acd59711aee"
-				]
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Form must be loaded before input."
 			},
-			"subject": "page",
-			"observationPoint": {
-				"kind": "generic",
-				"description": "page"
+			"testCaseId": "case_66778899aabbccddeeff"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "[name=\"email\"]",
+				"value": "not-an-email"
 			},
-			"matcher": "exists"
+			"description": "Enter a malformed email into the email field.",
+			"id": "step_445566778899a0b1c2d3",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Exercises the email validation path."
+			},
+			"testCaseId": "case_66778899aabbccddeeff"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "keypress",
+				"selector": "[name=\"email\"]",
+				"value": "Tab"
+			},
+			"description": "Blur the email field to trigger validation.",
+			"id": "step_5566778899a0b1c2d3e4",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "assumption",
+				"rationale": "Validation trigger timing is unspecified; blur is a common default."
+			},
+			"testCaseId": "case_66778899aabbccddeeff"
+		},
+		{
+			"action": {
+				"kind": "navigate",
+				"route": "/signup"
+			},
+			"description": "Navigate to the signup page.",
+			"id": "step_66778899a0b1c2d3e4f5",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Form must be loaded before input."
+			},
+			"testCaseId": "case_778899aabbccddeeff00"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "[name=\"email\"]",
+				"value": "user@example.com"
+			},
+			"description": "Enter a well-formed email into the email field.",
+			"id": "step_778899a0b1c2d3e4f506",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Valid email is required to reach the valid form state."
+			},
+			"testCaseId": "case_778899aabbccddeeff00"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Submit button enabled/disabled state"
+			},
+			"description": "Observe the submit button state.",
+			"id": "step_8899a0b1c2d3e4f50617",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Submit should enable once the form is valid."
+			},
+			"testCaseId": "case_778899aabbccddeeff00"
+		},
+		{
+			"action": {
+				"kind": "interact",
+				"operation": "fill",
+				"selector": "[name=\"email\"]",
+				"value": ""
+			},
+			"description": "With a valid email already entered, clear the email field.",
+			"id": "step_99a0b1c2d3e4f5061728",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Clearing reverts the form to invalid."
+			},
+			"testCaseId": "case_8899aabbccddeeff0011"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "Submit button enabled/disabled state"
+			},
+			"description": "Observe the submit button state.",
+			"id": "step_a0b1c2d3e4f506172839",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Submit should re-disable when the form becomes invalid."
+			},
+			"testCaseId": "case_8899aabbccddeeff0011"
 		}
 	],
-	"openQuestions": []
+	"testCases": [
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "Prospective user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_445566778899aabbccdd"
+			],
+			"id": "case_5566778899aabbccddee",
+			"objective": "Verify the submit button is disabled when the form is first rendered with no input.",
+			"postconditions": [
+				{
+					"description": "Form remains in an empty, unsubmitted state."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup page is reachable and renders the form."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Brief states submit is disabled until valid."
+			},
+			"qualityTags": [
+				"functional",
+				"usability"
+			],
+			"requirementIds": [
+				"req_2233445566778899aabb"
+			],
+			"risk": "high",
+			"riskRationale": "Default disabled state is the core safeguard preventing invalid submissions.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Submit disabled on initial load with empty form",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "Prospective user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_99aabbccddeeff001122"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_445566778899aabbccdd"
+			],
+			"id": "case_66778899aabbccddeeff",
+			"objective": "Verify entering a malformed email flags a validation error and leaves submit disabled.",
+			"postconditions": [
+				{
+					"description": "Email field shows a validation error; submit stays disabled."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup form is rendered and empty."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "explicit",
+				"rationale": "Brief states the form validates email."
+			},
+			"qualityTags": [
+				"data-integrity",
+				"functional"
+			],
+			"requirementIds": [
+				"req_1122334455667788990a",
+				"req_2233445566778899aabb"
+			],
+			"risk": "high",
+			"riskRationale": "Accepting malformed emails would allow invalid accounts to be created.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Invalid email keeps submit disabled and surfaces error",
+			"type": "negative"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "Prospective user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_aabbccddeeff00112233"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_445566778899aabbccdd"
+			],
+			"id": "case_778899aabbccddeeff00",
+			"objective": "Verify a well-formed email (and any required fields) enables the submit button.",
+			"postconditions": [
+				{
+					"description": "Submit button is enabled."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Signup form is rendered and empty."
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Enabling on validity is the corollary of gating on validity."
+			},
+			"qualityTags": [
+				"functional",
+				"usability"
+			],
+			"requirementIds": [
+				"req_1122334455667788990a",
+				"req_33445566778899aabbcc"
+			],
+			"risk": "medium",
+			"riskRationale": "If submit never enables on valid input, signup is fully blocked.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Valid input enables submit",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "Prospective user"
+			},
+			"automation": {
+				"blockers": [],
+				"readiness": "ready"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [],
+				"intent": "none"
+			},
+			"consumesDataRequirementIds": [
+				"data_aabbccddeeff00112233"
+			],
+			"dependsOnCaseIds": [
+				"case_778899aabbccddeeff00"
+			],
+			"featureIds": [
+				"feat_445566778899aabbccdd"
+			],
+			"id": "case_8899aabbccddeeff0011",
+			"objective": "Verify clearing a previously valid email reverts the form to invalid and disables submit again.",
+			"postconditions": [
+				{
+					"description": "Submit button is disabled after the email is cleared."
+				}
+			],
+			"preconditions": [
+				{
+					"description": "Form has a valid email entered and submit is enabled."
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [],
+			"provenance": {
+				"evidenceIds": [
+					"ev_aabbccddee0011223344"
+				],
+				"kind": "inferred",
+				"rationale": "Submit gating must track ongoing validity changes."
+			},
+			"qualityTags": [
+				"functional",
+				"reliability"
+			],
+			"requirementIds": [
+				"req_1122334455667788990a",
+				"req_2233445566778899aabb"
+			],
+			"risk": "medium",
+			"riskRationale": "State must react to field changes in both directions, not just first valid entry.",
+			"target": {
+				"component": "SignupForm",
+				"kind": "ui",
+				"route": "/signup"
+			},
+			"title": "Submit re-disables when valid email is cleared",
+			"type": "edge"
+		}
+	],
+	"title": "Signup form validation and submit state",
+	"updatedAt": "2026-06-19T09:00:00Z"
 }

@@ -1,109 +1,1140 @@
 {
 	"assertions": [
 		{
-			"expected": "text/csv",
-			"id": "assert_481007370e69862a55d5",
-			"matcher": "contains",
+			"expected": "any record owned by a user other than the requesting user",
+			"id": "assert_50468e2ef4be1086a924",
+			"matcher": "notContains",
 			"observationPoint": {
-				"kind": "api",
-				"method": "GET",
-				"path": "/export"
+				"description": "Ownership inspection of records in the scoped CSV export",
+				"kind": "generic"
 			},
 			"provenance": {
 				"evidenceIds": [
-					"ev_499aa89b7f4415b6ddc0"
+					"ev_5c4848e66c14f11a30e8"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Export must contain only the requesting user's data; cross-user records would be a breach (OQ-csv-scope, OQ-csv-access)."
 			},
-			"stepId": "step_7629e5ceb33c27368830",
-			"subject": "content-type",
-			"testCaseId": "case_b895e842e0ef8c9f589b"
+			"stepId": "step_df7caf89bfdb8d20b0ce",
+			"subject": "exported CSV records belonging to other users",
+			"testCaseId": "case_29f317ede3a207dee509"
+		},
+		{
+			"expected": "exactly the requesting user's records from DATA-two-users-distinct-records",
+			"id": "assert_7450c3b9eb1ca5e68854",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Ownership inspection of records in the scoped CSV export",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "The requesting user's own records must be present in their export."
+			},
+			"stepId": "step_df7caf89bfdb8d20b0ce",
+			"subject": "exported CSV records belonging to the requesting user",
+			"testCaseId": "case_29f317ede3a207dee509"
+		},
+		{
+			"expected": "completed without error",
+			"id": "assert_397fffd2dc104b9e50a4",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Status of the export operation on an empty dataset",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Empty input should not error; defined empty-state behaviour is open (OQ-csv-format)."
+			},
+			"stepId": "step_422de2702ea86071d0b2",
+			"subject": "export job outcome",
+			"testCaseId": "case_31cab3d5a91ac58cc07a"
+		},
+		{
+			"id": "assert_7e204ce57cafe1b438c2",
+			"matcher": "conformsToSchema",
+			"observationPoint": {
+				"description": "Parsed content of the empty-state CSV file",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Output must still parse as valid CSV on empty input (OQ-csv-format)."
+			},
+			"schemaRef": "rfc4180-csv",
+			"stepId": "step_743031a2b216fb994125",
+			"subject": "exported empty-state CSV content",
+			"testCaseId": "case_31cab3d5a91ac58cc07a"
+		},
+		{
+			"expected": 0,
+			"id": "assert_b639f639a39482ca8c86",
+			"matcher": "count",
+			"observationPoint": {
+				"description": "Count of data rows (excluding header) in the empty-state CSV",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "With no records, no data rows are expected, subject to empty-state definition (OQ-csv-format)."
+			},
+			"stepId": "step_743031a2b216fb994125",
+			"subject": "CSV data row count",
+			"testCaseId": "case_31cab3d5a91ac58cc07a"
+		},
+		{
+			"expected": "the requesting user's stored records (DATA-user-with-records)",
+			"id": "assert_636278b4b46c22153f96",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Data rows of the downloaded CSV compared to the user's stored records",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "The export must contain the user's data per the capability."
+			},
+			"stepId": "step_5e904ba850f5e9607897",
+			"subject": "CSV data rows",
+			"testCaseId": "case_433d5b8da0a2da20f07a"
+		},
+		{
+			"id": "assert_77381c349afd32eb98f2",
+			"matcher": "exists",
+			"observationPoint": {
+				"description": "Delivered export artifact retrieved after completion",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "A downloadable CSV file must be delivered per the stated capability."
+			},
+			"stepId": "step_5e904ba850f5e9607897",
+			"subject": "downloaded CSV file",
+			"testCaseId": "case_433d5b8da0a2da20f07a"
+		},
+		{
+			"id": "assert_c96f2e68d11bc928ac1b",
+			"matcher": "conformsToSchema",
+			"observationPoint": {
+				"description": "Parsed content of the downloaded CSV file",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "A well-formed CSV is implied by the capability though the precise format is open (OQ-csv-format)."
+			},
+			"schemaRef": "rfc4180-csv",
+			"stepId": "step_5e904ba850f5e9607897",
+			"subject": "exported file content",
+			"testCaseId": "case_433d5b8da0a2da20f07a"
+		},
+		{
+			"expected": "rejected (unauthenticated/unauthorized)",
+			"id": "assert_16b1d20804a9d76d988d",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Response returned to the unauthenticated export attempt",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Authentication assumed mandatory; exact rejection code depends on the access model (OQ-csv-access)."
+			},
+			"stepId": "step_33bd00af8a348a30213c",
+			"subject": "anonymous export response status",
+			"testCaseId": "case_a3e401e3dc9b6dc444df"
+		},
+		{
+			"id": "assert_312af27725a0073cc4c8",
+			"matcher": "notExists",
+			"observationPoint": {
+				"description": "Any export artifact returned to the unauthenticated caller",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "No data should be disclosed to anonymous callers pending OQ-csv-access."
+			},
+			"stepId": "step_33bd00af8a348a30213c",
+			"subject": "CSV file produced for anonymous caller",
+			"testCaseId": "case_a3e401e3dc9b6dc444df"
+		},
+		{
+			"expected": "the exact original field values from DATA-user-special-chars",
+			"id": "assert_4a9f223c566f884701ca",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Field values obtained by re-parsing the exported CSV",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Correct escaping is intrinsic to a valid CSV (OQ-csv-format)."
+			},
+			"stepId": "step_e6bfdfc0856185df931b",
+			"subject": "re-parsed field values",
+			"testCaseId": "case_d0769a9420525fbf7913"
+		},
+		{
+			"expected": "the header column count for every data row",
+			"id": "assert_55b137fc5e27e2ec9a8a",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Column count of each parsed row in the special-character CSV",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Improper escaping causes column misalignment; alignment must be preserved (OQ-csv-format)."
+			},
+			"stepId": "step_e6bfdfc0856185df931b",
+			"subject": "parsed column count per row",
+			"testCaseId": "case_d0769a9420525fbf7913"
+		},
+		{
+			"expected": "completed without timeout or failure",
+			"id": "assert_cedf14a77f98e6f7e820",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Status of the high-volume export operation",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Completion within an acceptable bound assumed pending timeout/delivery model (OQ-csv-volume, OQ-csv-delivery)."
+			},
+			"stepId": "step_24713d881cbc4e71b997",
+			"subject": "large export job outcome",
+			"testCaseId": "case_db486d30fc71b7adda96"
+		},
+		{
+			"expected": "the user's total record count in DATA-user-large-volume",
+			"id": "assert_7f47779c060648650984",
+			"matcher": "equals",
+			"observationPoint": {
+				"description": "Row count of the large-volume CSV compared to total stored records",
+				"kind": "generic"
+			},
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Full export with no truncation assumed pending volume limits (OQ-csv-volume)."
+			},
+			"stepId": "step_f86dc248f1f6d06ade28",
+			"subject": "exported CSV data row count",
+			"testCaseId": "case_db486d30fc71b7adda96"
 		}
 	],
-	"createdAt": "2026-06-15T10:00:00.000Z",
-	"dataRequirements": [],
+	"createdAt": "2026-06-19T18:14:33.219Z",
+	"dataRequirements": [
+		{
+			"description": "A user account whose record count approaches the expected upper bound to test scale.",
+			"id": "data_60d5d51f382ec74a5331",
+			"kind": "dataset",
+			"name": "User dataset with high record count",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "No volume bounds are stated; a high-volume dataset is assumed necessary to validate scale pending OQ-csv-volume."
+			},
+			"provisioning": "generated",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "The CSV file produced when the requesting user has no records; expected to be header-only or a defined empty-state file.",
+			"id": "data_677b581ca9a3077754e2",
+			"kind": "file",
+			"name": "Exported CSV file (empty dataset)",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "A valid CSV must still be produced on empty input per the export contract, though the exact output is unspecified (OQ-csv-format)."
+			},
+			"provisioning": "case-produced",
+			"sensitivity": "none"
+		},
+		{
+			"description": "The CSV file produced from records containing CSV-significant characters, used for round-trip validation.",
+			"id": "data_864e609ef44fddff0f61",
+			"kind": "file",
+			"name": "Exported CSV file (special characters)",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Output file follows from exporting the special-character dataset under the export capability."
+			},
+			"provisioning": "case-produced",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "Records whose field values include commas, double quotes, and embedded newlines to exercise escaping.",
+			"id": "data_8bd2d6b8879af77cbedb",
+			"kind": "dataset",
+			"name": "User dataset with CSV-significant characters",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Producing a valid CSV intrinsically requires correct escaping of significant characters even though escaping rules are unstated (OQ-csv-format)."
+			},
+			"provisioning": "generated",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "At least two user accounts, each owning distinct identifiable records, to verify export scoping.",
+			"id": "data_97caf31c17400376869b",
+			"kind": "dataset",
+			"name": "Two users with distinct attributable records",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Evidence scopes export to a user's own data, requiring a multi-user fixture to prove scoping."
+			},
+			"provisioning": "generated",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "The CSV file produced from a high-volume dataset, checked for completeness and no truncation.",
+			"id": "data_9c00ecbf33935c7538b0",
+			"kind": "file",
+			"name": "Exported CSV file (large volume)",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Large export output is assumed to scale to the full dataset until volume and delivery limits are confirmed (OQ-csv-volume, OQ-csv-delivery)."
+			},
+			"provisioning": "case-produced",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "The CSV file produced by the export operation containing the user's stored records.",
+			"id": "data_a2d4e28de4555d19a3d3",
+			"kind": "file",
+			"name": "Exported CSV file (basic)",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "The export capability explicitly yields a downloadable CSV file."
+			},
+			"provisioning": "case-produced",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "The CSV file produced for the requesting user in a multi-user environment, inspected for foreign records.",
+			"id": "data_b67bbcf42b3b7dcacee1",
+			"kind": "file",
+			"name": "Exported CSV file (scoping check)",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Output of the scoped export, which evidence requires to contain only the requesting user's data."
+			},
+			"provisioning": "case-produced",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "A user account holding at least one record of exportable data, with an active authenticated session.",
+			"id": "data_e9a2becedfa92dc0f13d",
+			"kind": "account",
+			"name": "Authenticated user with exportable records",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Evidence states users export their data, which presupposes a user account holding data."
+			},
+			"provisioning": "existing",
+			"sensitivity": "pii"
+		},
+		{
+			"description": "A user account with an active session but zero exportable records.",
+			"id": "data_fe98b2c170171dcb93da",
+			"kind": "account",
+			"name": "Authenticated user with no records",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Empty-dataset boundary derives from the export capability though empty-state output is undefined (OQ-csv-format)."
+			},
+			"provisioning": "generated",
+			"sensitivity": "internal"
+		}
+	],
 	"evidence": [
 		{
 			"claim": "Users can export their data as a CSV file.",
-			"id": "ev_499aa89b7f4415b6ddc0",
+			"excerpt": "Users can export their data as a CSV file.",
+			"id": "ev_5c4848e66c14f11a30e8",
 			"kind": "statement",
-			"sourceId": "src_154ff58bc3c08ee28900"
+			"sourceId": "src_f4d18771940a37f8ffd8"
 		}
 	],
-	"features": [],
+	"features": [
+		{
+			"description": "Allows users to export their data out of the system in a portable file format, starting with CSV.",
+			"id": "feat_f90bfdb7c6cf92925387",
+			"name": "Data Export",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "REQ-csv-export concerns exporting user data to a file; grouped under a Data Export feature derived directly from the stated CSV export capability."
+			},
+			"requirementIds": [
+				"req_bb09a9a8f2ce2560c162"
+			],
+			"risk": "medium",
+			"targets": [
+				{
+					"description": "CSV export capability enabling users to download their data as a CSV file.",
+					"kind": "generic"
+				}
+			]
+		}
+	],
 	"generation": {
-		"generatedAt": "2026-06-15T10:00:00.000Z",
+		"generatedAt": "2026-06-19T18:14:33.219Z",
 		"generator": {
 			"kind": "model",
-			"model": "claude-opus-4-8",
-			"provider": "anthropic"
+			"model": "opus",
+			"provider": "claude-cli"
 		},
-		"id": "gen_8f81cfcff7191ede488c",
-		"inputFingerprint": "sha256:unsupported-assumptions-qa-engine",
-		"methodologyVersion": "0.1.0",
-		"status": "complete",
-		"warnings": [],
-		"workflowVersion": "0.1.0"
+		"id": "gen_6a4306a2ddccc1717be0",
+		"inputFingerprint": "6c93fe934ba348dfb1e6dac23a43a3151ed85cc69baeb646e46618c1cfeb3b12",
+		"methodologyVersion": "1.0.0",
+		"status": "incomplete",
+		"warnings": [
+			"[critical] Missing IDOR/authorization scenario: no case where an authenticated user attempts to export ANOTHER user's data by manipulating the scope/identifier in the request. OQ-csv-access explicitly raises 'can a user export another user's data', but only implicit ownership scoping (TC-csv-export-scoping-own-data-only, observing one export) is tested. For a PII export with an undefined access model, the active cross-user request attempt is the highest-risk surface and is uncovered. This is material — plan is incomplete on security coverage.",
+			"[warning] Provenance over-claim on scoping. TC-csv-export-scoping-own-data-only and assertions AS-scope-no-foreign-records / AS-scope-contains-own-records are marked provenance.kind 'explicit', but the sole evidence ('users can export their data as a CSV file') does not state that ownership scoping is enforced. Enforcement is an inference, not an explicit claim — these should be 'inferred', consistent with OQ-csv-access/OQ-csv-scope still being open.",
+			"[warning] Priority inconsistency: TC-csv-export-scoping-own-data-only is p0 while its only covered requirement REQ-csv-export is p1. A p0 test cannot exceed the priority of its requirement without justification; either raise REQ-csv-export or reconcile the case priority.",
+			"[warning] Weak/possibly-wrong expected outcomes on empty-dataset case. AS-empty-valid-csv (conformsToSchema) and AS-empty-zero-rows (count=0) assume header-only output, yet OQ-csv-format is unresolved and automation.readiness is 'blocked'. If the defined empty-state behaviour turns out to be an error, an empty file, or a 'no data' message, these assertions will false-fail. Expected results should be flagged as contingent on OQ-csv-format, not asserted as fixed.",
+			"[warning] Missing failure/error-path coverage: no case for export job failure, partial failure mid-export, timeout handling beyond the large-volume happy path, or retry/idempotency. For an async export model (assumed in steps), failure handling is a standard expected path and is absent.",
+			"[warning] Missing delivery/expiry coverage despite OQ-csv-delivery. No case validates the delivery mechanism (synchronous download vs emailed/async link) or download-link expiry behaviour, even though steps assume an async completion-and-retrieve flow with a 30s wait.",
+			"[info] Breadth exceeds confirmed scope: six cases plus performance, security, and format assertions are derived from a single one-line evidence statement. Most are honestly marked 'inferred'/'assumption' and gated on open questions, which is acceptable — but the plan is largely speculative and cannot be executed/validated until the two blocking questions (OQ-csv-scope, OQ-csv-access) are resolved. Four of six cases are automation 'blocked' or 'partial'.",
+			"[info] Invented permission token 'export-own-data' is used across actors and presupposes a permission model that is unconfirmed (OQ-csv-access). Reasonable as an assumption but should be surfaced as such rather than treated as established."
+		],
+		"workflowVersion": "1.0.0"
 	},
-	"openQuestions": [],
-	"planId": "plan_84896009ae1a200ed3ab",
+	"openQuestions": [
+		{
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_0bacaef6f1064ab8c9be",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Delivery mechanism affects the user flow and test design but is not described in the evidence."
+			},
+			"question": "How is the export delivered — synchronous download, emailed link, or async job with notification — and is there a download expiry?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_17c47a67e5174f55f912",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "CSV correctness depends on format conventions that the evidence does not specify."
+			},
+			"question": "What are the required CSV formatting rules (delimiter, encoding, header row, quoting, date/number formats, locale handling)?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": true,
+			"id": "question_4694885a88ac4f3d45e3",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "\"Their data\" implies ownership scoping and access control that must be confirmed to prevent data exposure."
+			},
+			"question": "Who is authorized to trigger an export, and can a user only export their own data versus another user's or organization-wide data?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": true,
+			"id": "question_9caf2074a9bf0a87ae10",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "The evidence references \"their data\" without defining the dataset, fields, or boundaries needed to validate export completeness."
+			},
+			"question": "What exactly does \"their data\" include — which entities, fields, and date ranges are in scope for export?",
+			"status": "open"
+		},
+		{
+			"blockedEntityRefs": [],
+			"blocking": false,
+			"id": "question_bca377e6b6e322cd7a07",
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Large exports commonly hit performance and size limits; assuming this matters until scale is confirmed."
+			},
+			"question": "What is the expected maximum data volume per export, and are there performance, pagination, or row-limit constraints?",
+			"status": "open"
+		}
+	],
+	"planId": "plan_87ef394ae826c71f223e",
 	"planVersion": 1,
-	"projectId": "prj_04b60424d8be6accceed",
+	"projectId": "prj_395994bf2fbe39e87cab",
 	"requirements": [
 		{
-			"id": "req_21a230cd98c15af5926c",
+			"id": "req_bb09a9a8f2ce2560c162",
 			"kind": "functional",
-			"openQuestionIds": [],
+			"openQuestionIds": [
+				"question_0bacaef6f1064ab8c9be",
+				"question_17c47a67e5174f55f912",
+				"question_4694885a88ac4f3d45e3",
+				"question_9caf2074a9bf0a87ae10",
+				"question_bca377e6b6e322cd7a07"
+			],
 			"priority": "p1",
 			"provenance": {
 				"evidenceIds": [
-					"ev_499aa89b7f4415b6ddc0"
+					"ev_5c4848e66c14f11a30e8"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Stated directly in evidence: users can export their data as a CSV file."
 			},
 			"risk": "medium",
-			"statement": "Export data as CSV."
+			"statement": "The system shall allow users to export their data as a CSV file."
 		}
 	],
 	"schemaVersion": "test-graph/v1",
 	"sources": [
 		{
-			"id": "src_154ff58bc3c08ee28900",
+			"id": "src_f4d18771940a37f8ffd8",
 			"kind": "feature-request",
 			"supplied": true,
-			"title": "Feature spec"
+			"title": "CSV export"
+		},
+		{
+			"id": "src_fa26080fe63b3ba7f087",
+			"kind": "feature-request",
+			"supplied": true,
+			"title": "Export spec"
 		}
 	],
-	"status": "complete",
+	"status": "incomplete",
 	"steps": [
 		{
 			"action": {
-				"kind": "request",
-				"method": "GET",
-				"path": "/export?format=csv"
+				"input": {
+					"format": "csv",
+					"scope": "own"
+				},
+				"kind": "invoke",
+				"operation": "request-export",
+				"system": "csv-export"
 			},
-			"description": "Request the export.",
-			"id": "step_7629e5ceb33c27368830",
+			"description": "As authenticated user A in a multi-user environment, trigger a CSV export of own data.",
+			"id": "step_e06287c134970a524c60",
 			"order": 1,
 			"provenance": {
 				"evidenceIds": [
-					"ev_499aa89b7f4415b6ddc0"
+					"ev_5c4848e66c14f11a30e8"
 				],
-				"kind": "explicit"
+				"kind": "explicit",
+				"rationale": "Evidence requires export to be scoped to the requesting user's data."
 			},
-			"testCaseId": "case_b895e842e0ef8c9f589b"
+			"testCaseId": "case_29f317ede3a207dee509"
+		},
+		{
+			"action": {
+				"condition": "export job reports completion and CSV file is available",
+				"kind": "wait",
+				"timeoutMs": 30000
+			},
+			"description": "Wait for the export to complete and retrieve the CSV file.",
+			"id": "step_868df816b103d230625c",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Completion required before inspecting scoped output (OQ-csv-delivery)."
+			},
+			"testCaseId": "case_29f317ede3a207dee509"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "ownership of exported CSV records"
+			},
+			"description": "Inspect the exported CSV records and check ownership against user A and other users.",
+			"id": "step_df7caf89bfdb8d20b0ce",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Verifies the export contains only the requesting user's data (OQ-csv-scope, OQ-csv-access)."
+			},
+			"testCaseId": "case_29f317ede3a207dee509"
+		},
+		{
+			"action": {
+				"input": {
+					"format": "csv",
+					"scope": "own"
+				},
+				"kind": "invoke",
+				"operation": "request-export",
+				"system": "csv-export"
+			},
+			"description": "As the authenticated user with no records, trigger a CSV export.",
+			"id": "step_a1c7c3d27e981eab2d33",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Exercises the export capability on the empty-dataset boundary."
+			},
+			"testCaseId": "case_31cab3d5a91ac58cc07a"
+		},
+		{
+			"action": {
+				"condition": "export job reports completion",
+				"kind": "wait",
+				"timeoutMs": 30000
+			},
+			"description": "Wait for the export to complete.",
+			"id": "step_422de2702ea86071d0b2",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Completion must be reached before evaluating empty-state output (OQ-csv-delivery)."
+			},
+			"testCaseId": "case_31cab3d5a91ac58cc07a"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "exported empty-state CSV file"
+			},
+			"description": "Retrieve and parse the resulting CSV file.",
+			"id": "step_743031a2b216fb994125",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Parsing the file confirms it is valid CSV with no data rows (OQ-csv-format)."
+			},
+			"testCaseId": "case_31cab3d5a91ac58cc07a"
+		},
+		{
+			"action": {
+				"input": {
+					"format": "csv",
+					"scope": "own"
+				},
+				"kind": "invoke",
+				"operation": "request-export",
+				"system": "csv-export"
+			},
+			"description": "As the authenticated user, trigger an export of own data as CSV.",
+			"id": "step_12c72368ceb34ae5f6d9",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Directly invokes the stated capability to export user data as CSV."
+			},
+			"testCaseId": "case_433d5b8da0a2da20f07a"
+		},
+		{
+			"action": {
+				"condition": "export job reports completion and CSV file is available",
+				"kind": "wait",
+				"timeoutMs": 30000
+			},
+			"description": "Wait for the export to complete and the CSV file to become available for download.",
+			"id": "step_62d8203aedf960f9a578",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Delivery is asynchronous or undefined (OQ-csv-delivery); a completion wait is required before observing the file."
+			},
+			"testCaseId": "case_433d5b8da0a2da20f07a"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "downloaded CSV file"
+			},
+			"description": "Retrieve and inspect the downloaded CSV file.",
+			"id": "step_5e904ba850f5e9607897",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Observing the delivered CSV file validates the export output."
+			},
+			"testCaseId": "case_433d5b8da0a2da20f07a"
+		},
+		{
+			"action": {
+				"input": {
+					"format": "csv",
+					"scope": "own"
+				},
+				"kind": "invoke",
+				"operation": "request-export",
+				"system": "csv-export"
+			},
+			"description": "Without any authenticated session, attempt to trigger a CSV export.",
+			"id": "step_8b88b44e76d836b0e7b7",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Assumes authentication is required; access model is unconfirmed (OQ-csv-access)."
+			},
+			"testCaseId": "case_a3e401e3dc9b6dc444df"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "export request response for anonymous caller"
+			},
+			"description": "Observe the response to the anonymous export attempt.",
+			"id": "step_33bd00af8a348a30213c",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Confirms rejection and absence of any produced file pending OQ-csv-access."
+			},
+			"testCaseId": "case_a3e401e3dc9b6dc444df"
+		},
+		{
+			"action": {
+				"input": {
+					"format": "csv",
+					"scope": "own"
+				},
+				"kind": "invoke",
+				"operation": "request-export",
+				"system": "csv-export"
+			},
+			"description": "As the authenticated user with special-character records, trigger a CSV export.",
+			"id": "step_89ca013c7279f87f13f0",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Exports a dataset chosen to exercise escaping behaviour."
+			},
+			"testCaseId": "case_d0769a9420525fbf7913"
+		},
+		{
+			"action": {
+				"condition": "export job reports completion and CSV file is available",
+				"kind": "wait",
+				"timeoutMs": 30000
+			},
+			"description": "Wait for the export to complete and retrieve the CSV file.",
+			"id": "step_ca19cd644ff0be006d8c",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Completion is required before parsing the output (OQ-csv-delivery)."
+			},
+			"testCaseId": "case_d0769a9420525fbf7913"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "re-parsed CSV field values"
+			},
+			"description": "Re-parse the exported CSV and compare each field against the source record values.",
+			"id": "step_e6bfdfc0856185df931b",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Round-trip parsing validates correct escaping for a valid CSV (OQ-csv-format)."
+			},
+			"testCaseId": "case_d0769a9420525fbf7913"
+		},
+		{
+			"action": {
+				"input": {
+					"format": "csv",
+					"scope": "own"
+				},
+				"kind": "invoke",
+				"operation": "request-export",
+				"system": "csv-export"
+			},
+			"description": "As the authenticated user with a high-volume dataset, trigger a CSV export.",
+			"id": "step_d1f70fc99bce0ef1f57a",
+			"order": 1,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Assumes exports must handle a full high-volume dataset pending OQ-csv-volume."
+			},
+			"testCaseId": "case_db486d30fc71b7adda96"
+		},
+		{
+			"action": {
+				"condition": "export job reports completion for high-volume dataset",
+				"kind": "wait",
+				"timeoutMs": 300000
+			},
+			"description": "Wait for the large export to complete without timeout or failure.",
+			"id": "step_24713d881cbc4e71b997",
+			"order": 2,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Timeout bound is assumed since limits and delivery model are undefined (OQ-csv-volume, OQ-csv-delivery)."
+			},
+			"testCaseId": "case_db486d30fc71b7adda96"
+		},
+		{
+			"action": {
+				"kind": "observe",
+				"subject": "exported CSV row count"
+			},
+			"description": "Count rows in the exported CSV and compare against the user's total record count.",
+			"id": "step_f86dc248f1f6d06ade28",
+			"order": 3,
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "Completeness check assumes the full dataset must be exported without truncation (OQ-csv-volume)."
+			},
+			"testCaseId": "case_db486d30fc71b7adda96"
 		}
 	],
 	"testCases": [
 		{
 			"actor": {
 				"authentication": "authenticated",
-				"permissions": [],
+				"permissions": [
+					"export-own-data"
+				],
 				"role": "user"
 			},
 			"automation": {
-				"blockers": [],
-				"readiness": "ready"
+				"blockers": [
+					"Exact data scope and access rules undefined (OQ-csv-scope, OQ-csv-access)"
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_b67bbcf42b3b7dcacee1"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_97caf31c17400376869b"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_f90bfdb7c6cf92925387"
+			],
+			"id": "case_29f317ede3a207dee509",
+			"objective": "Verify an authenticated user's export contains exclusively their own records and no other users' data.",
+			"postconditions": [
+				{
+					"description": "Exported CSV contains only records belonging to the requesting user and none belonging to other users.",
+					"expectedState": "export strictly scoped to requesting user"
+				}
+			],
+			"preconditions": [
+				{
+					"description": "At least two users exist, each with distinct identifiable records.",
+					"requiredState": "multi-user dataset with attributable records"
+				}
+			],
+			"priority": "p0",
+			"producesDataRequirementIds": [
+				"data_b67bbcf42b3b7dcacee1"
+			],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Evidence states users export 'their data', so the export must be scoped to the requesting user."
+			},
+			"qualityTags": [
+				"data-integrity",
+				"security"
+			],
+			"requirementIds": [
+				"req_bb09a9a8f2ce2560c162"
+			],
+			"risk": "high",
+			"riskRationale": "Data scoping is the highest-impact failure mode; cross-user leakage is a serious data-privacy breach. Scope is open (OQ-csv-scope, OQ-csv-access).",
+			"target": {
+				"description": "CSV export capability enabling users to download their data as a CSV file.",
+				"kind": "generic"
+			},
+			"title": "Export returns only the requesting user's own data",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"export-own-data"
+				],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [
+					"Defined empty-state output unknown (OQ-csv-format)"
+				],
+				"readiness": "blocked"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_677b581ca9a3077754e2"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_fe98b2c170171dcb93da"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_f90bfdb7c6cf92925387"
+			],
+			"id": "case_31cab3d5a91ac58cc07a",
+			"objective": "Verify exporting with zero records yields a valid CSV (header only or defined empty-state behaviour) rather than an error or malformed file.",
+			"postconditions": [
+				{
+					"description": "Export completes without error and the resulting file parses as valid CSV.",
+					"expectedState": "valid CSV with no data rows"
+				}
+			],
+			"preconditions": [
+				{
+					"description": "User account exists with no exportable records.",
+					"requiredState": "authenticated session with empty dataset"
+				}
+			],
+			"priority": "p2",
+			"producesDataRequirementIds": [
+				"data_677b581ca9a3077754e2"
+			],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Empty-dataset boundary follows from the export capability though the empty-state output is not defined in evidence."
+			},
+			"qualityTags": [
+				"data-integrity",
+				"functional",
+				"usability"
+			],
+			"requirementIds": [
+				"req_bb09a9a8f2ce2560c162"
+			],
+			"risk": "medium",
+			"riskRationale": "Empty-state handling is unspecified (OQ-csv-format); ambiguous behaviour can produce corrupt files or confusing UX.",
+			"target": {
+				"description": "CSV export capability enabling users to download their data as a CSV file.",
+				"kind": "generic"
+			},
+			"title": "Export when user has no data returns an empty-but-valid CSV",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"export-own-data"
+				],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [
+					"Export format and column scope undefined (OQ-csv-format, OQ-csv-scope)",
+					"Delivery mechanism undefined (OQ-csv-delivery)"
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_a2d4e28de4555d19a3d3"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_e9a2becedfa92dc0f13d"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_f90bfdb7c6cf92925387"
+			],
+			"id": "case_433d5b8da0a2da20f07a",
+			"objective": "Verify an authenticated user can trigger a data export and receive a well-formed CSV file containing their data.",
+			"postconditions": [
+				{
+					"description": "A CSV file is delivered to the user containing rows that match the user's stored data.",
+					"expectedState": "valid CSV file downloaded"
+				}
+			],
+			"preconditions": [
+				{
+					"description": "User account exists and holds at least one record of exportable data.",
+					"requiredState": "authenticated session with non-empty dataset"
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [
+				"data_a2d4e28de4555d19a3d3"
+			],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "explicit",
+				"rationale": "Directly validates the stated capability that users can export their data as a CSV file."
+			},
+			"qualityTags": [
+				"data-integrity",
+				"functional"
+			],
+			"requirementIds": [
+				"req_bb09a9a8f2ce2560c162"
+			],
+			"risk": "medium",
+			"riskRationale": "Core happy-path of the only stated capability; export format and scope are unconfirmed (OQ-csv-scope, OQ-csv-format), so a defect here breaks the primary user value.",
+			"target": {
+				"description": "CSV export capability enabling users to download their data as a CSV file.",
+				"kind": "generic"
+			},
+			"title": "Export user data as CSV produces a downloadable CSV file",
+			"type": "positive"
+		},
+		{
+			"actor": {
+				"authentication": "anonymous",
+				"permissions": [],
+				"role": "anonymous visitor"
+			},
+			"automation": {
+				"blockers": [
+					"Access/authorization model undefined (OQ-csv-access)"
+				],
+				"readiness": "blocked"
 			},
 			"cleanup": {
 				"afterCaseIds": [],
@@ -112,36 +1143,188 @@
 			},
 			"consumesDataRequirementIds": [],
 			"dependsOnCaseIds": [],
-			"featureIds": [],
-			"id": "case_b895e842e0ef8c9f589b",
-			"objective": "Verify CSV download.",
-			"postconditions": [],
-			"preconditions": [],
+			"featureIds": [
+				"feat_f90bfdb7c6cf92925387"
+			],
+			"id": "case_a3e401e3dc9b6dc444df",
+			"objective": "Verify an anonymous request to export data is rejected and no CSV is produced.",
+			"postconditions": [
+				{
+					"description": "Export is denied and no CSV file is generated or returned.",
+					"expectedState": "request rejected, no data disclosed"
+				}
+			],
+			"preconditions": [
+				{
+					"description": "No authenticated session is present.",
+					"requiredState": "no active session"
+				}
+			],
 			"priority": "p1",
 			"producesDataRequirementIds": [],
 			"provenance": {
 				"evidenceIds": [
-					"ev_499aa89b7f4415b6ddc0"
+					"ev_5c4848e66c14f11a30e8"
 				],
-				"kind": "explicit"
+				"kind": "assumption",
+				"rationale": "Evidence scopes export to 'users' but does not state access controls; we assume authentication is required pending OQ-csv-access."
 			},
 			"qualityTags": [
+				"functional",
+				"security"
+			],
+			"requirementIds": [
+				"req_bb09a9a8f2ce2560c162"
+			],
+			"risk": "high",
+			"riskRationale": "Export access controls are unconfirmed (OQ-csv-access); allowing anonymous export would leak user data.",
+			"target": {
+				"description": "CSV export capability enabling users to download their data as a CSV file.",
+				"kind": "generic"
+			},
+			"title": "Unauthenticated user cannot trigger a data export",
+			"type": "security"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"export-own-data"
+				],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [
+					"Escaping/encoding rules unspecified (OQ-csv-format)"
+				],
+				"readiness": "partial"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_864e609ef44fddff0f61"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_8bd2d6b8879af77cbedb"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_f90bfdb7c6cf92925387"
+			],
+			"id": "case_d0769a9420525fbf7913",
+			"objective": "Verify data containing CSV-significant characters is escaped per RFC 4180 so the file parses without column misalignment or data loss.",
+			"postconditions": [
+				{
+					"description": "Re-parsing the exported CSV yields the exact original field values with correct column alignment.",
+					"expectedState": "round-trip parse matches source data"
+				}
+			],
+			"preconditions": [
+				{
+					"description": "User dataset includes values with commas, double quotes, and embedded newlines.",
+					"requiredState": "authenticated session with special-character records"
+				}
+			],
+			"priority": "p1",
+			"producesDataRequirementIds": [
+				"data_864e609ef44fddff0f61"
+			],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "inferred",
+				"rationale": "Field escaping is intrinsic to producing a valid CSV file even though the evidence does not state escaping rules."
+			},
+			"qualityTags": [
+				"data-integrity",
 				"functional"
 			],
 			"requirementIds": [
-				"req_21a230cd98c15af5926c"
+				"req_bb09a9a8f2ce2560c162"
 			],
-			"risk": "medium",
-			"riskRationale": "Core feature.",
+			"risk": "high",
+			"riskRationale": "Improper escaping silently corrupts exported data and undermines the integrity guarantee of the export; format spec is open (OQ-csv-format).",
 			"target": {
-				"kind": "api",
-				"method": "GET",
-				"path": "/export"
+				"description": "CSV export capability enabling users to download their data as a CSV file.",
+				"kind": "generic"
 			},
-			"title": "Export downloads CSV",
-			"type": "positive"
+			"title": "CSV export correctly escapes commas, quotes, and newlines in field values",
+			"type": "edge"
+		},
+		{
+			"actor": {
+				"authentication": "authenticated",
+				"permissions": [
+					"export-own-data"
+				],
+				"role": "user"
+			},
+			"automation": {
+				"blockers": [
+					"Volume limits and timeout/delivery model undefined (OQ-csv-volume, OQ-csv-delivery)"
+				],
+				"readiness": "blocked"
+			},
+			"cleanup": {
+				"afterCaseIds": [],
+				"dataRequirementIds": [
+					"data_9c00ecbf33935c7538b0"
+				],
+				"intent": "delete"
+			},
+			"consumesDataRequirementIds": [
+				"data_60d5d51f382ec74a5331"
+			],
+			"dependsOnCaseIds": [],
+			"featureIds": [
+				"feat_f90bfdb7c6cf92925387"
+			],
+			"id": "case_db486d30fc71b7adda96",
+			"objective": "Verify a user with a high record count can export all data without truncation, timeout, or memory failure.",
+			"postconditions": [
+				{
+					"description": "Exported CSV row count equals the user's total record count with no truncation.",
+					"expectedState": "complete export, all rows present"
+				}
+			],
+			"preconditions": [
+				{
+					"description": "User dataset contains a large number of records near the expected upper bound.",
+					"requiredState": "authenticated session with high-volume dataset"
+				}
+			],
+			"priority": "p2",
+			"producesDataRequirementIds": [
+				"data_9c00ecbf33935c7538b0"
+			],
+			"provenance": {
+				"evidenceIds": [
+					"ev_5c4848e66c14f11a30e8"
+				],
+				"kind": "assumption",
+				"rationale": "No volume bounds are stated; we assume exports must scale to a user's full dataset until OQ-csv-volume is resolved."
+			},
+			"qualityTags": [
+				"data-integrity",
+				"performance",
+				"reliability"
+			],
+			"requirementIds": [
+				"req_bb09a9a8f2ce2560c162"
+			],
+			"risk": "high",
+			"riskRationale": "Export volume limits are undefined (OQ-csv-volume); large exports risk timeouts, truncation, or resource exhaustion.",
+			"target": {
+				"description": "CSV export capability enabling users to download their data as a CSV file.",
+				"kind": "generic"
+			},
+			"title": "Export of a large dataset completes successfully within acceptable limits",
+			"type": "edge"
 		}
 	],
-	"title": "Export plan",
-	"updatedAt": "2026-06-15T10:00:00.000Z"
+	"title": "CSV export",
+	"updatedAt": "2026-06-19T18:14:33.219Z"
 }
