@@ -65,9 +65,6 @@ importers:
       '@test-framework/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@test-framework/planner':
-        specifier: workspace:*
-        version: link:../../packages/planner
       '@test-framework/qa-engine':
         specifier: workspace:*
         version: link:../../packages/qa-engine
@@ -127,25 +124,6 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.22.4
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-
-  packages/planner:
-    dependencies:
-      '@test-framework/core':
-        specifier: workspace:*
-        version: link:../core
-      '@test-framework/repo-scan':
-        specifier: workspace:*
-        version: link:../repo-scan
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@test-framework/config':
-        specifier: workspace:*
-        version: link:../config
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
