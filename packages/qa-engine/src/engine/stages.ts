@@ -156,6 +156,27 @@ export function runReviewStage(
 	return runStage(deps, prompt, reviewStageSchema);
 }
 
+/**
+ * Refine an existing plan draft against scoped feedback. Re-emits the whole draft
+ * (same contract as repair) so the existing review/validate/repair loop runs
+ * unchanged on the revision. Entities the feedback does not touch keep their keys
+ * and content, so their stable ids survive the revision.
+ */
+export function runRefineStage(
+	deps: EngineDeps,
+	priorDraft: PlanDraft,
+	feedback: string,
+): Promise<{ data: PlanDraft; usage: NormalizedUsage }> {
+	const prompt = [
+		"Revise this existing plan draft to address the scoped feedback. Preserve the",
+		"keys and content of entities the feedback does not touch; add/modify/remove",
+		"only what the feedback requires. Keep provenance rules.",
+		contextBlock("Current draft", priorDraft),
+		contextBlock("Feedback", feedback),
+	].join("\n\n");
+	return runStage(deps, prompt, planDraftSchema);
+}
+
 /** Bounded repair: re-emit the whole draft, correcting the reported problems. */
 export function runRepairStage(
 	deps: EngineDeps,
