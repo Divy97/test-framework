@@ -20,8 +20,11 @@ export interface ResolvedConfig {
 	model: string;
 	baseUrl?: string;
 	defaults: ProviderDefaults;
-	/** The resolved key, never the raw string. */
-	key: Secret;
+	/**
+	 * The resolved key, never the raw string. Absent for keyless providers
+	 * (e.g. `claude-cli`, which uses the local Claude Code subscription).
+	 */
+	key?: Secret;
 }
 
 function resolveKey(
@@ -63,6 +66,10 @@ export function resolveConfig(
 		model: invocation?.model ?? config.model,
 		baseUrl: config.baseUrl,
 		defaults,
-		key: resolveKey(config.keySource, opts.getEnv),
+		// Keyless providers (claude-cli) carry no keySource; the config schema
+		// guarantees keyed providers always have one.
+		...(config.keySource !== undefined && {
+			key: resolveKey(config.keySource, opts.getEnv),
+		}),
 	};
 }

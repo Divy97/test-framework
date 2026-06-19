@@ -40,25 +40,39 @@ const CORPUS_DIR = new URL("../../test/fixtures/corpus/", import.meta.url);
 const RAW_MODEL_MAX_OUTPUT_TOKENS = 8192;
 const RAW_MODEL_TIMEOUT_MS = 120_000;
 
-/** A resolved, key-bearing live configuration. */
+/**
+ * A resolved live configuration. Keyed providers reference their key by env var
+ * name (`keyVar`); the keyless `claude-cli` provider has no `keyVar` — it uses
+ * the local Claude Code subscription.
+ */
 export interface LiveRecordingEnv {
 	provider: ProviderConfig["provider"];
 	model: string;
-	keyVar: string;
+	keyVar?: string;
 }
 
 /**
  * Resolve the live recording configuration from the environment, throwing fast if
- * the gate is not satisfied. Mirrors `live.test.ts`: recording requires both
- * `RUN_LIVE_PROVIDER` and the chosen provider's key to be present.
+ * the gate is not satisfied. Mirrors `live.test.ts`: recording requires
+ * `RUN_LIVE_PROVIDER` plus EITHER a provider key OR an explicit keyless
+ * `RECORD_PROVIDER=claude-cli` that drives the local `claude` CLI (no key, no
+ * API cost). CI never has a key nor sets `RECORD_PROVIDER`, so it never records.
  */
 export function requireLiveConfig(
 	env: Record<string, string | undefined>,
 ): LiveRecordingEnv {
 	if (!env.RUN_LIVE_PROVIDER) {
 		throw new Error(
-			"record:arms is a gated live tool: set RUN_LIVE_PROVIDER=1 and a provider key. It never runs in CI.",
+			"record:arms is a gated live tool: set RUN_LIVE_PROVIDER=1 and a provider key (or RECORD_PROVIDER=claude-cli). It never runs in CI.",
 		);
+	}
+
+	// Keyless host-model path: explicit opt-in, or the fallback when no key is set.
+	if (env.RECORD_PROVIDER === "claude-cli") {
+		return {
+			provider: "claude-cli",
+			model: env.RECORD_MODEL ?? "opus",
+		};
 	}
 
 	if (env.ANTHROPIC_API_KEY) {
@@ -77,12 +91,18 @@ export function requireLiveConfig(
 	}
 
 	throw new Error(
-		"record:arms needs ANTHROPIC_API_KEY or OPENROUTER_API_KEY (referenced by env, never inlined).",
+		"record:arms needs ANTHROPIC_API_KEY, OPENROUTER_API_KEY, or RECORD_PROVIDER=claude-cli (keys referenced by env, never inlined).",
 	);
 }
 
-/** Build the provider config from resolved live env. The key stays by reference. */
+/**
+ * Build the provider config from resolved live env. Keyed providers reference
+ * their key by env var; the keyless `claude-cli` provider carries no keySource.
+ */
 export function providerConfigFor(live: LiveRecordingEnv): ProviderConfig {
+	if (live.keyVar === undefined) {
+		return { provider: live.provider, model: live.model };
+	}
 	return {
 		provider: live.provider,
 		model: live.model,

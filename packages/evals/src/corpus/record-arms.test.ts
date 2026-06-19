@@ -165,7 +165,7 @@ test("requireLiveConfig throws without RUN_LIVE_PROVIDER", () => {
 test("requireLiveConfig throws when no provider key is present", () => {
 	assert.throws(
 		() => requireLiveConfig({ RUN_LIVE_PROVIDER: "1" }),
-		/ANTHROPIC_API_KEY or OPENROUTER_API_KEY/,
+		/ANTHROPIC_API_KEY, OPENROUTER_API_KEY, or RECORD_PROVIDER=claude-cli/,
 	);
 });
 
@@ -176,6 +176,31 @@ test("requireLiveConfig resolves anthropic when its key is set", () => {
 	});
 	assert.equal(live.provider, "anthropic");
 	assert.equal(live.keyVar, "ANTHROPIC_API_KEY");
+});
+
+test("requireLiveConfig resolves keyless claude-cli via RECORD_PROVIDER", () => {
+	const live = requireLiveConfig({
+		RUN_LIVE_PROVIDER: "1",
+		RECORD_PROVIDER: "claude-cli",
+	});
+	assert.equal(live.provider, "claude-cli");
+	assert.equal(live.keyVar, undefined);
+	assert.equal(live.model, "opus");
+});
+
+test("RECORD_PROVIDER=claude-cli takes precedence over a present key", () => {
+	const live = requireLiveConfig({
+		RUN_LIVE_PROVIDER: "1",
+		RECORD_PROVIDER: "claude-cli",
+		ANTHROPIC_API_KEY: "sk-ant-x",
+	});
+	assert.equal(live.provider, "claude-cli");
+});
+
+test("providerConfigFor omits keySource for the keyless claude-cli provider", () => {
+	const config = providerConfigFor({ provider: "claude-cli", model: "opus" });
+	assert.ok(!("keySource" in config), "claude-cli config must carry no key");
+	assert.equal(config.provider, "claude-cli");
 });
 
 test("validateAndSerialize emits canonical, re-parseable bytes for a valid graph", () => {

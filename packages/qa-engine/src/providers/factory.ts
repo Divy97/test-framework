@@ -3,6 +3,7 @@ import { ProviderError } from "./errors.js";
 import type { LogEntry } from "./redaction.js";
 import { type ResilienceDeps, withResilience } from "./resilience.js";
 import { type InvocationOverrides, resolveConfig } from "./resolve-config.js";
+import type { Secret } from "./secret.js";
 import { validateOutput } from "./structured-output.js";
 import type {
 	GenerationCallOptions,
@@ -40,6 +41,22 @@ function defaultSleep(ms: number, signal?: AbortSignal): Promise<void> {
 			{ once: true },
 		);
 	});
+}
+
+/**
+ * Narrow the optional resolved key to a present `Secret` for keyed providers.
+ * The config schema already guarantees a `keySource` for these providers, so a
+ * missing key here is an internal invariant violation, not user input.
+ */
+function requireKey(key: Secret | undefined, provider: string): Secret {
+	if (key === undefined) {
+		throw new ProviderError(
+			"PROVIDER_CONFIG_INVALID",
+			`provider ${provider} requires a key but none was resolved`,
+			false,
+		);
+	}
+	return key;
 }
 
 function resilienceDepsFrom(deps?: ProviderDeps): ResilienceDeps {
@@ -146,7 +163,7 @@ export async function createProvider(
 				"./adapters/anthropic.js"
 			);
 			raw = createAnthropicAdapter({
-				key: resolved.key,
+				key: requireKey(resolved.key, resolved.provider),
 				model: resolved.model,
 				baseUrl: resolved.baseUrl,
 			});
@@ -157,10 +174,19 @@ export async function createProvider(
 				"./adapters/openrouter.js"
 			);
 			raw = createOpenRouterAdapter({
-				key: resolved.key,
+				key: requireKey(resolved.key, resolved.provider),
 				model: resolved.model,
 				baseUrl: resolved.baseUrl,
 			});
+			break;
+		}
+		case "claude-cli": {
+			// Keyless: drives the local `claude` CLI under the user's Claude Code
+			// subscription. No key is resolved or passed.
+			const { createClaudeCliAdapter } = await import(
+				"./adapters/claude-cli.js"
+			);
+			raw = createClaudeCliAdapter({ model: resolved.model });
 			break;
 		}
 	}

@@ -11,7 +11,7 @@ const valid = {
 test("accepts a minimal env-keyed anthropic config", () => {
 	const parsed = providerConfigSchema.parse(valid);
 	assert.equal(parsed.provider, "anthropic");
-	assert.equal(parsed.keySource.kind, "env");
+	assert.equal(parsed.keySource?.kind, "env");
 });
 
 test("accepts the openrouter provider", () => {
@@ -20,6 +20,31 @@ test("accepts the openrouter provider", () => {
 			.success,
 		true,
 	);
+});
+
+test("accepts a keyless claude-cli config (no keySource)", () => {
+	const result = providerConfigSchema.safeParse({
+		provider: "claude-cli",
+		model: "opus",
+	});
+	assert.equal(result.success, true);
+});
+
+test("rejects a claude-cli config that carries a keySource", () => {
+	const result = providerConfigSchema.safeParse({
+		provider: "claude-cli",
+		model: "opus",
+		keySource: { kind: "env", var: "ANTHROPIC_API_KEY" },
+	});
+	assert.equal(result.success, false);
+});
+
+test("rejects a keyed provider with no keySource", () => {
+	const result = providerConfigSchema.safeParse({
+		provider: "anthropic",
+		model: "claude-opus-4-8",
+	});
+	assert.equal(result.success, false);
 });
 
 test("rejects the fake provider as a configurable value (DI-only test seam)", () => {
