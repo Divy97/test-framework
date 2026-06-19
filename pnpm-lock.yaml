@@ -62,9 +62,6 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: 'catalog:'
         version: 1.29.0(zod@4.4.3)
-      '@test-framework/artifacts':
-        specifier: workspace:*
-        version: link:../../packages/artifacts
       '@test-framework/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -93,25 +90,6 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.22.4
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-
-  packages/artifacts:
-    dependencies:
-      '@test-framework/core':
-        specifier: workspace:*
-        version: link:../core
-      zod:
-        specifier: 'catalog:'
-        version: 4.4.3
-    devDependencies:
-      '@test-framework/config':
-        specifier: workspace:*
-        version: link:../config
-      '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
