@@ -12,7 +12,6 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "catalog:",
-		"@test-framework/core": "workspace:*",
 		"@test-framework/qa-engine": "workspace:*",
 		"@test-framework/repo-scan": "workspace:*",
 		"zod": "catalog:"
