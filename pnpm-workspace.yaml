@@ -4,7 +4,7 @@ packages:
 allowBuilds:
   esbuild: true
 catalog:
-  "@anthropic-ai/sdk": ^0.104.2
+  "@anthropic-ai/sdk": ^0.105.0
   "@modelcontextprotocol/sdk": 1.29.0
   openai: ^6.44.0
   zod: ^4.1.13
