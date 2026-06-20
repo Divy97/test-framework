@@ -20,7 +20,7 @@
 		"typescript": "catalog:",
 		"tsdown": "^0.22.2",
 		"tsx": "^4.19.2",
-		"@types/node": "^25.9.3",
+		"@types/node": "^26.0.0",
 		"@test-framework/config": "workspace:*"
 	}
 }
